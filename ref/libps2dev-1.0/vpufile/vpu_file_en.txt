@@ -1,0 +1,73 @@
+NAME
+    vpu_file - API that handles the vpu file
+
+SYNOPSIS
+    #include "vpu_file.h"
+
+
+ESCRIPTION
+	vpu_file provides the API that handles the ELF file for VPU generated 
+	with the linker script vpu.cmd.
+
+  Functions
+
+    VPUFILE * vpuobj_open(char * file, unsigned int opt);
+	It executes the mmap of the text (section name ".vutext") and the 
+	data (section name ".vudata") of the ELF file specified with 'file'.  
+	It also reads the symbol information. The return value is the VPU file 
+	descriptor (VPUFILE *). If  O_TEXT_PS2MEM is specified at 'opt', text 
+	area is allocated from ps2mem(4) using mmap(2). The O_DATA_PS2MEM flag
+	means same acition to be taken against the data area. You can specify
+	both flags at the same.
+
+	It is assumed that both text and data are linked to the starting 
+	address as 0 and relocations are fixed using "vpu.cmd" as the 
+	linker script, and vpu_open() does not do anything about relocation.
+
+	It adds the value of the start address of the mapped area to 
+	the symbol information in order to show the position in 
+	mapped memory.
+
+    void vpuobj_close(VPUFILE * f);
+	It releases the resources concerning the VPU object file specified 
+	with the VPU file descriptor 'f'.
+
+    int vpuobj_text(VPUFILE *f, void **start, int *size);
+	It obtains the text area (starting position: void *start and size: 
+	int size) of the file specified with the VPU file descriptor 'f'.
+
+    int vpuobj_data(VPUFILE *f, void **start, int *size);
+	It obtains the data area (starting position: void *start and size: 
+	int size) of the data specified with the VPU file descriptor 'f'.
+	
+    int vpuobj_symbol_nr(VPUFILE *f);
+	It obtains the number of the global symbols included in the file 
+	specified with VPU file descriptor 'f'.
+
+    int vpuobj_symbol(VPUFILE *f, int index, char **name,
+                        unsigned long *val, int *section);
+	It obtains the nth symbol name, its value and its section included 
+	in the file specified with the VPU file descriptor 'f'.
+		'section' == 0 represents a text section.
+		'section' == 1 represents a data section.
+
+    int vpuobj_symbol_by_name(VPUFILE *f, char *name,
+                        unsigned long *val, int *section);
+	It obtains from the 'symbol name' the value and section of the symbol 
+	included in the file specified with the VPU file descriptor 'f'.
+		'section' == 0 represents a text section.
+		'section' == 1 represents a data section.
+
+  Declaration of variables
+
+    IMPORT_VPU_SYMBOL(symbol, char *file)
+	It imports variables value from VPU object file.
+	Once the variable is declared on the program, the value of the 
+	matching var is initialized when dvp_open() is executed.
+	Once 0 is set to file, it searches for symbols irrespective of the 
+	file name to be opened with dvp_open(). var is declared as void *.
+
+	It can be used only in the shared object in which the vpu_file() 
+	function itself exists.
+
+

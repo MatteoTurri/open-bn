@@ -1,0 +1,189 @@
+# Assets extracted from the user's original ELF at build time (never committed: docs/original-bytes.md).
+# Only the address, size and SHA1 of the bytes are here: the bytes never enter the repo.
+# tools/extract_assets.py reads orig/bn-jpn.elf, checks the SHA1 and writes assets/<file>
+# as the body of a C initializer (`0x.., 0x.., ...`), included by the source with
+# `#include "../assets/<file>"`. It runs before the gate (`make check`) and tools/match.
+#
+# name | address | bytes | sha1 | file in assets/
+#
+# RSA public keys (DER SubjectPublicKeyInfo, 1024 bits) and 128-byte blobs of the DNAS2
+# signature verifiers, treated as assets. Every DNAS2 row is named <unit>_<role>: the unit that
+# includes it and the variable it initializes there.
+dnas2m60_verify_hdr_pubkey             | 0x944a80 | 162 | cdafdd0616280866 | dnas/dnas2m60_verify_hdr_pubkey.inc
+dnas2m60_verify_digest_pubkey          | 0x944b24 | 162 | 40bfe28cb158b641 | dnas/dnas2m60_verify_digest_pubkey.inc
+dnas2m61_verify_hdr_pubkey             | 0x944c30 | 162 | bd557eed2369c6d0 | dnas/dnas2m61_verify_hdr_pubkey.inc
+dnas2m61_verify_digest_pubkey          | 0x944cd4 | 162 | 2df1cf6b69c50081 | dnas/dnas2m61_verify_digest_pubkey.inc
+dnas2read_prof_key_pubkey              | 0x9453cc | 162 | 76ba3422830028b0 | dnas/dnas2read_prof_key_pubkey.inc
+dnas2read_prof_digest_pubkey           | 0x945470 | 162 | bd8d9ba2da9d16d7 | dnas/dnas2read_prof_digest_pubkey.inc
+dnas2read_prof_hdr_seed                | 0x945514 | 128 | 1e733fd7a37ae116 | dnas/dnas2read_prof_hdr_seed.inc
+dnas2read_prof_body_seed               | 0x945594 | 128 | 3169667ccddb64d0 | dnas/dnas2read_prof_body_seed.inc
+# DES keys/IVs of the DNAS2 modules: brace initializers of 8/16/24 bytes (no NUL: they are
+# contiguous in the original), locals or file-scope statics, in the compiled .rodata of the
+# units; high entropy, opaque cryptographic material.
+dnas2m12_records_name_key              | 0x9456d0 | 8 | ddec674f0f81b4f2 | dnas/dnas2m12_records_name_key.inc
+dnas2m12_records_enc_mem_device_name   | 0x9456d8 | 16 | 63b127ff0cefd05f | dnas/dnas2m12_records_enc_mem_device_name.inc
+dnas2m12_records_blkrec_last_key       | 0x9456e8 | 8 | d4400b27ceba73a5 | dnas/dnas2m12_records_blkrec_last_key.inc
+dnas2m12_records_blkrec_last_iv        | 0x9456f0 | 8 | 9bb2948c6482b37c | dnas/dnas2m12_records_blkrec_last_iv.inc
+dnas2m12_records_blkrec_sched_key      | 0x9456f8 | 8 | e9dc7024f528cec7 | dnas/dnas2m12_records_blkrec_sched_key.inc
+dnas2m12_records_blkrec_sched_iv       | 0x945700 | 8 | 2bf14d3df37a9dfa | dnas/dnas2m12_records_blkrec_sched_iv.inc
+dnas2m12_records_blkrec_chain          | 0x945708 | 8 | 8d82779df0cc7c3f | dnas/dnas2m12_records_blkrec_chain.inc
+dnas2m12_records_idrec_last_key        | 0x945710 | 8 | aae1dcfbea757de5 | dnas/dnas2m12_records_idrec_last_key.inc
+dnas2m12_records_idrec_last_iv         | 0x945718 | 8 | 957b167b4e8aa5ef | dnas/dnas2m12_records_idrec_last_iv.inc
+dnas2m12_records_idrec_sched_key       | 0x945720 | 8 | 344977398c295bb4 | dnas/dnas2m12_records_idrec_sched_key.inc
+dnas2m12_records_idrec_sched_iv        | 0x945728 | 8 | 0c4501aa23bc5faa | dnas/dnas2m12_records_idrec_sched_iv.inc
+dnas2m12_records_idrec_chain           | 0x945730 | 8 | 42e4e66498074574 | dnas/dnas2m12_records_idrec_chain.inc
+dnas2m12_records_ptr_keys              | 0x945738 | 16 | 5470ed28b2e24f6b | dnas/dnas2m12_records_ptr_keys.inc
+dnas2m12_records_enc_map_off           | 0x100a3bf0 | 8 | 30ef0bb88bbc072f | dnas/dnas2m12_records_enc_map_off.inc
+dnas2m12_records_enc_ptr_off           | 0x100a3bf8 | 8 | 47e90c606c6a3d83 | dnas/dnas2m12_records_enc_ptr_off.inc
+dnas2m12_records_offset_key            | 0x100a3c00 | 8 | 76dd6ae720d38c52 | dnas/dnas2m12_records_offset_key.inc
+dnas2m12_identity_ptr_keys             | 0x945770 | 16 | 5470ed28b2e24f6b | dnas/dnas2m12_identity_ptr_keys.inc
+dnas2m12_identity_name_key             | 0x945780 | 8 | ddec674f0f81b4f2 | dnas/dnas2m12_identity_name_key.inc
+dnas2m12_identity_enc_mount_device     | 0x945788 | 8 | 71ac8b446245d9ae | dnas/dnas2m12_identity_enc_mount_device.inc
+dnas2m12_identity_enc_flag_file_name   | 0x945790 | 24 | 3d5f264cc0101697 | dnas/dnas2m12_identity_enc_flag_file_name.inc
+dnas2m12_identity_enc_partition_name   | 0x9457a8 | 16 | dd9ff690a8294c2c | dnas/dnas2m12_identity_enc_partition_name.inc
+dnas2m12_identity_enc_data_dir_name    | 0x9457b8 | 16 | bbcfed3d715d85a4 | dnas/dnas2m12_identity_enc_data_dir_name.inc
+dnas2m12_identity_enc_mem_device_name  | 0x9457c8 | 16 | 63b127ff0cefd05f | dnas/dnas2m12_identity_enc_mem_device_name.inc
+dnas2m11_identity_ptr_keys             | 0x944e30 | 16 | 5470ed28b2e24f6b | dnas/dnas2m11_identity_ptr_keys.inc
+dnas2m11_identity_name_key             | 0x944e40 | 8 | ddec674f0f81b4f2 | dnas/dnas2m11_identity_name_key.inc
+dnas2m11_identity_enc_mount_device     | 0x944e48 | 8 | 71ac8b446245d9ae | dnas/dnas2m11_identity_enc_mount_device.inc
+dnas2m11_identity_enc_flag_file_name   | 0x944e50 | 24 | 3d5f264cc0101697 | dnas/dnas2m11_identity_enc_flag_file_name.inc
+dnas2m11_identity_enc_partition_name   | 0x944e68 | 16 | dd9ff690a8294c2c | dnas/dnas2m11_identity_enc_partition_name.inc
+dnas2m11_identity_enc_data_dir_name    | 0x944e78 | 16 | bbcfed3d715d85a4 | dnas/dnas2m11_identity_enc_data_dir_name.inc
+dnas2m11_identity_enc_mem_device_name  | 0x944e88 | 16 | 63b127ff0cefd05f | dnas/dnas2m11_identity_enc_mem_device_name.inc
+dnas2m12_des_name_mask                 | 0x100a2eb0 | 8 | ada8e8278a0b3c46 | dnas/dnas2m12_des_name_mask.inc
+dnas2m12_des_name_nopad                | 0x944de0 | 8 | 089a34ca67f1fa27 | dnas/dnas2m12_des_name_nopad.inc
+dnas2m12_des_name_des                  | 0x944de8 | 8 | 06a4757e38286129 | dnas/dnas2m12_des_name_des.inc
+dnas2m12_des_name_ecb                  | 0x944df0 | 8 | 4928768ab1b8bbc7 | dnas/dnas2m12_des_name_ecb.inc
+dnas2m12_des_name_cbc                  | 0x944df8 | 8 | a011f29a4ebfd222 | dnas/dnas2m12_des_name_cbc.inc
+dnas2m12_des_name_des_ede              | 0x944e00 | 8 | a826eb4b49acecf2 | dnas/dnas2m12_des_name_des_ede.inc
+dnas2m12_rc6_name_mask                 | 0x100a2f30 | 8 | cc57094a8215bc8f | dnas/dnas2m12_rc6_name_mask.inc
+dnas2m12_rc6_name_rc6                  | 0x944e10 | 8 | d0d4630e1e364380 | dnas/dnas2m12_rc6_name_rc6.inc
+dnas2m12_rc6_name_cbc                  | 0x944e18 | 8 | 32ca9f5db339b31d | dnas/dnas2m12_rc6_name_cbc.inc
+dnas2m12_rc6_name_nopad                | 0x944e20 | 8 | 6a50cade799b4138 | dnas/dnas2m12_rc6_name_nopad.inc
+dnas2m11_des_name_mask                 | 0x100a3070 | 8 | ada8e8278a0b3c46 | dnas/dnas2m11_des_name_mask.inc
+dnas2m11_des_name_nopad                | 0x944ea0 | 8 | 089a34ca67f1fa27 | dnas/dnas2m11_des_name_nopad.inc
+dnas2m11_des_name_des                  | 0x944ea8 | 8 | 06a4757e38286129 | dnas/dnas2m11_des_name_des.inc
+dnas2m11_des_name_ecb                  | 0x944eb0 | 8 | 4928768ab1b8bbc7 | dnas/dnas2m11_des_name_ecb.inc
+dnas2m11_des_name_cbc                  | 0x944eb8 | 8 | a011f29a4ebfd222 | dnas/dnas2m11_des_name_cbc.inc
+dnas2m11_des_name_des_ede              | 0x944ec0 | 8 | a826eb4b49acecf2 | dnas/dnas2m11_des_name_des_ede.inc
+#
+# Key material of src/cfd/cfd2.c (IVs and keys of __cfd_symbol4 and its helpers), treated like
+# the DNAS keys above.
+cfd2_path_iv       | 0x96db90 | 8 | ddec674f0f81b4f2 | cfd/cfd2_path_iv.inc
+cfd2_path_key      | 0x96db98 | 16 | 63b127ff0cefd05f | cfd/cfd2_path_key.inc
+cfd2_symbol4_key   | 0x96dba8 | 16 | 5470ed28b2e24f6b | cfd/cfd2_symbol4_key.inc
+cfd2_symbol4_lit1  | 0x100c5170 | 8 | 3d6824b592b5afad | cfd/cfd2_symbol4_lit1.inc
+cfd2_symbol4_lit2  | 0x100c5178 | 8 | 8677f56fdb82a084 | cfd/cfd2_symbol4_lit2.inc
+cfd2_off_iv        | 0x100c5180 | 8 | 8271640e6d7c2d96 | cfd/cfd2_off_iv.inc
+# Tail of the .data of src/dnas/dnas2m11_identity.c and src/dnas/dnas2m12_identity.c, after
+# __sce_dnas2_symbol11073/12074, like the dnas2m12_records_enc_* rows above: DES-encrypted offsets
+# (enc_*_off, decrypted with offset_key), the encrypted triple-DES keys and IV of the key file
+# (tdes_key_src, 4 DES blocks) and their DES key (tdes_key_mask); high entropy, opaque
+# cryptographic material.
+dnas2m11_identity_enc_rec_off          | 0x100a3028 | 8 | 7f34a2bf097b0412 | dnas/dnas2m11_identity_enc_rec_off.inc
+dnas2m11_identity_enc_slot_off         | 0x100a3030 | 8 | 0091a3193b950f68 | dnas/dnas2m11_identity_enc_slot_off.inc
+dnas2m12_identity_enc_rec_off          | 0x100a3ce8 | 8 | 7f34a2bf097b0412 | dnas/dnas2m12_identity_enc_rec_off.inc
+dnas2m12_identity_enc_slot_off         | 0x100a3cf0 | 8 | 0091a3193b950f68 | dnas/dnas2m12_identity_enc_slot_off.inc
+dnas2m11_identity_tdes_key_src         | 0x100a3038 | 32 | 9fa33a6366105925 | dnas/dnas2m11_identity_tdes_key_src.inc
+dnas2m11_identity_tdes_key_mask        | 0x100a3058 | 8 | 238f19a6b50a09de | dnas/dnas2m11_identity_tdes_key_mask.inc
+dnas2m11_identity_enc_ptr_off          | 0x100a3060 | 8 | a3f9c31b0b42e423 | dnas/dnas2m11_identity_enc_ptr_off.inc
+dnas2m11_identity_offset_key           | 0x100a3068 | 8 | 1b717091c4f98d67 | dnas/dnas2m11_identity_offset_key.inc
+dnas2m12_identity_tdes_key_src         | 0x100a3cf8 | 32 | 9fa33a6366105925 | dnas/dnas2m12_identity_tdes_key_src.inc
+dnas2m12_identity_tdes_key_mask        | 0x100a3d18 | 8 | 238f19a6b50a09de | dnas/dnas2m12_identity_tdes_key_mask.inc
+dnas2m12_identity_enc_ptr_off          | 0x100a3d20 | 8 | a3f9c31b0b42e423 | dnas/dnas2m12_identity_enc_ptr_off.inc
+dnas2m12_identity_offset_key           | 0x100a3d28 | 8 | 1b717091c4f98d67 | dnas/dnas2m12_identity_offset_key.inc
+# Head of the .data of dnas2m11_identity.c: encrypted map offset, encrypted RSA public key of the
+# key-file record and its DES key, identity tag, encrypted signing keys and their DES key;
+# re-included so that the local GOT gate can anchor them.
+dnas2m11_identity_enc_map_off          | 0x100a2f50 | 8 | 6b99900d73f2bd89 | dnas/dnas2m11_identity_enc_map_off.inc
+dnas2m11_identity_rec_pubkey_key       | 0x100a2f58 | 8 | dbab705de6e1443d | dnas/dnas2m11_identity_rec_pubkey_key.inc
+dnas2m11_identity_rec_pubkey           | 0x100a2f60 | 162 | c3b36ea7702ea5db | dnas/dnas2m11_identity_rec_pubkey.inc
+dnas2m11_identity_id_tag               | 0x100a3004 | 8 | 628f245b67b617fa | dnas/dnas2m11_identity_id_tag.inc
+dnas2m11_identity_sig_key_src          | 0x100a300c | 16 | 34ccfbc82cfd29df | dnas/dnas2m11_identity_sig_key_src.inc
+dnas2m11_identity_sig_key_mask         | 0x100a301c | 8 | c4dcad79545f8a20 | dnas/dnas2m11_identity_sig_key_mask.inc
+# Audio data of src/audio/sound.c: the CSL banks of the TU (SSsq = sequences, bd = SPU2 ADPCM
+# samples, SShd = headers) that soundSetup transfers to IOP memory and to the SPU2. They are
+# initialized .data of the TU (bbsebd/bbsehdo GLOBAL in .dynsym, the others static), 64-byte
+# aligned; addresses and sizes come from the GOT_PAGE+LO16 addends of soundSetup and from
+# .dynsym, the padding between banks is zero.
+snd_sdSeqA                             | 0x1000d180 | 320 | af5c0495f30b45cb | sound/sdSeqA.inc
+snd_sdSeqB                             | 0x1000d2c0 | 320 | 92add0bcf493c9b9 | sound/sdSeqB.inc
+snd_sdSeqC                             | 0x1000d400 | 448 | ec2629c458f977fe | sound/sdSeqC.inc
+snd_bbsebd                             | 0x1000d5c0 | 177136 | 12cab185e6966c6a | sound/bbsebd.inc
+snd_sdBgmBd                            | 0x100389c0 | 424240 | 79a9442e8acd6744 | sound/sdBgmBd.inc
+snd_bbsehdo                            | 0x100a0300 | 2784 | 125ff817e876e01a | sound/bbsehdo.inc
+snd_sdBgmHd                            | 0x100a0e00 | 1394 | c2e8b8039784321d | sound/sdBgmHd.inc
+snd_sdSeq1                             | 0x100a1380 | 1495 | 73338222561ca29e | sound/sdSeq1.inc
+snd_sdSeq2                             | 0x100a1980 | 1276 | aa83a93cbc3828cc | sound/sdSeq2.inc
+snd_sdSeq3                             | 0x100a1e80 | 402 | 83f3ef36b77598f7 | sound/sdSeq3.inc
+snd_sdSeq4                             | 0x100a2040 | 307 | eadae4d9264885b0 | sound/sdSeq4.inc
+snd_sdSeq5                             | 0x100a2180 | 1100 | 31e6d2b32ab40d46 | sound/sdSeq5.inc
+# The six root CAs of src/dnas/dnas_pwrap.c: X.509 subject name and RSA public key in DER,
+# pointed to by _sce_dnas2_CA_data; all GLOBAL in .dynsym with the names below (with
+# _sce_dnas2_ in place of the dnas2_ca_ prefix), at the head of the TU's .data (addresses and
+# sizes from .dynsym, pointers and lengths from _sce_dnas2_CA_data).
+dnas2_ca_debugserver_subject_name      | 0x100a2710 | 172 | 3b8a0de8725ce90e | dnas/dnas2_ca_debugserver_subject_name.inc
+dnas2_ca_debugserver_public_key        | 0x100a27bc | 294 | df08d01dc75b5c52 | dnas/dnas2_ca_debugserver_public_key.inc
+dnas2_ca_testca_subject_name           | 0x100a28e4 | 78 | 1e688278a52fb82c | dnas/dnas2_ca_testca_subject_name.inc
+dnas2_ca_testca_public_key             | 0x100a2934 | 94 | 656fc355f2d5c3a6 | dnas/dnas2_ca_testca_public_key.inc
+dnas2_ca_verisignclass1_subject_name   | 0x100a2994 | 97 | 70e4f4545f8ee6f2 | dnas/dnas2_ca_verisignclass1_subject_name.inc
+dnas2_ca_verisignclass1_public_key     | 0x100a29f8 | 162 | 2343d148a255899b | dnas/dnas2_ca_verisignclass1_public_key.inc
+dnas2_ca_verisignclass2_subject_name   | 0x100a2a9c | 97 | 63f85e36a86e9b53 | dnas/dnas2_ca_verisignclass2_subject_name.inc
+dnas2_ca_verisignclass2_public_key     | 0x100a2b00 | 162 | 42c657693968282e | dnas/dnas2_ca_verisignclass2_public_key.inc
+dnas2_ca_verisignclass3_subject_name   | 0x100a2ba4 | 97 | 48b76449f3d5fefa | dnas/dnas2_ca_verisignclass3_subject_name.inc
+dnas2_ca_verisignclass3_public_key     | 0x100a2c08 | 162 | e27f7bd877d5df9e | dnas/dnas2_ca_verisignclass3_public_key.inc
+dnas2_ca_verisignss_subject_name       | 0x100a2cac | 97 | 0e9290b27aa8baf6 | dnas/dnas2_ca_verisignss_subject_name.inc
+dnas2_ca_verisignss_public_key         | 0x100a2d10 | 158 | 15a144603a5e09fc | dnas/dnas2_ca_verisignss_public_key.inc
+# Head of the .data of src/dnas/dnas2m12_identity.c: exact twins of the dnas2m11_identity_* rows
+# from enc_map_off to sig_key_mask above (same bytes, same SHA1), before __sce_dnas2_symbol12074.
+dnas2m12_identity_enc_map_off          | 0x100a3c10 | 8 | 6b99900d73f2bd89 | dnas/dnas2m12_identity_enc_map_off.inc
+dnas2m12_identity_rec_pubkey_key       | 0x100a3c18 | 8 | dbab705de6e1443d | dnas/dnas2m12_identity_rec_pubkey_key.inc
+dnas2m12_identity_rec_pubkey           | 0x100a3c20 | 162 | c3b36ea7702ea5db | dnas/dnas2m12_identity_rec_pubkey.inc
+dnas2m12_identity_id_tag               | 0x100a3cc4 | 8 | 628f245b67b617fa | dnas/dnas2m12_identity_id_tag.inc
+dnas2m12_identity_sig_key_src          | 0x100a3ccc | 16 | 34ccfbc82cfd29df | dnas/dnas2m12_identity_sig_key_src.inc
+dnas2m12_identity_sig_key_mask         | 0x100a3cdc | 8 | c4dcad79545f8a20 | dnas/dnas2m12_identity_sig_key_mask.inc
+# .data of the DNAS2 TUs dnas2m12_blocks.c (0x100a3d30..0x100a3ece), dnas2m12_slots.c (0x100a3ed0..0x100a3fa8)
+# and dnas2keyload.c (dnas2_keyslots, 0x100a3fb0..0x100a8dd0): addresses from the code anchors of
+# the functions, sizes from the distance between consecutive objects.
+dnas2m12_blocks_msg_wrap_key           | 0x100a3d30 | 8 | 1b2a98724779fc7e | dnas/dnas2m12_blocks_msg_wrap_key.inc
+dnas2m12_blocks_msg_wrapped_keys       | 0x100a3d38 | 32 | 7becf753b8fc2d9c | dnas/dnas2m12_blocks_msg_wrapped_keys.inc
+dnas2m12_blocks_blk_pubkey_key         | 0x100a3d58 | 8 | e69ad267d6892da9 | dnas/dnas2m12_blocks_blk_pubkey_key.inc
+dnas2m12_blocks_blk_pubkey             | 0x100a3d60 | 162 | 4054b50a16862edd | dnas/dnas2m12_blocks_blk_pubkey.inc
+dnas2m12_blocks_blk_marker             | 0x100a3e04 | 32 | b4f59910a69b1d74 | dnas/dnas2m12_blocks_blk_marker.inc
+dnas2m12_blocks_sig_pubkey_key         | 0x100a3e24 | 8 | 3fddb2aac8c9b6dc | dnas/dnas2m12_blocks_sig_pubkey_key.inc
+dnas2m12_blocks_sig_pubkey             | 0x100a3e2c | 162 | db18cf2e221fd9c6 | dnas/dnas2m12_blocks_sig_pubkey.inc
+dnas2m12_slots_dec_a_keys              | 0x100a3ed0 | 32 | 22926c2e23cfec48 | dnas/dnas2m12_slots_dec_a_keys.inc
+dnas2m12_slots_dec_a_key               | 0x100a3ef0 | 8 | f511994825f305e2 | dnas/dnas2m12_slots_dec_a_key.inc
+dnas2m12_slots_dec_b_keys              | 0x100a3ef8 | 32 | 642a70d8799538dc | dnas/dnas2m12_slots_dec_b_keys.inc
+dnas2m12_slots_dec_b_key               | 0x100a3f18 | 8 | 3e84845b6afd7f18 | dnas/dnas2m12_slots_dec_b_key.inc
+dnas2m12_slots_slot_key                | 0x100a3f20 | 8 | 33f5612c055b5c78 | dnas/dnas2m12_slots_slot_key.inc
+dnas2m12_slots_slot2_keys              | 0x100a3f28 | 32 | bd403583adac578a | dnas/dnas2m12_slots_slot2_keys.inc
+dnas2m12_slots_slot3_keys              | 0x100a3f48 | 32 | e8143411da73a37c | dnas/dnas2m12_slots_slot3_keys.inc
+dnas2m12_slots_slot4_keys              | 0x100a3f68 | 32 | 3c646e5ba56444e3 | dnas/dnas2m12_slots_slot4_keys.inc
+dnas2m12_slots_slot5_keys              | 0x100a3f88 | 32 | 1ba2b438a45b77f5 | dnas/dnas2m12_slots_slot5_keys.inc
+dnas2_keyslots                         | 0x100a3fb0 | 20000 | edc9c9eef6741017 | dnas/dnas2_keyslots.inc
+# .data of the DNAS2 TUs dnas2m11_blocks.c (0x100a30f0..0x100a328e) and dnas2m11_slots.c (0x100a3290..0x100a3368,
+# then 8 bytes of padding), twins of dnas2m12_blocks.c / dnas2m12_slots.c: addresses from the anchors of the
+# decrypted code, sizes from the distance between consecutive objects and from the module 4 twins.
+dnas2m11_blocks_msg_wrap_key           | 0x100a30f0 | 8 | 1b2a98724779fc7e | dnas/dnas2m11_blocks_msg_wrap_key.inc
+dnas2m11_blocks_msg_wrapped_keys       | 0x100a30f8 | 32 | 7becf753b8fc2d9c | dnas/dnas2m11_blocks_msg_wrapped_keys.inc
+dnas2m11_blocks_blk_pubkey_key         | 0x100a3118 | 8 | e69ad267d6892da9 | dnas/dnas2m11_blocks_blk_pubkey_key.inc
+dnas2m11_blocks_blk_pubkey             | 0x100a3120 | 162 | 4054b50a16862edd | dnas/dnas2m11_blocks_blk_pubkey.inc
+dnas2m11_blocks_blk_marker             | 0x100a31c4 | 32 | b4f59910a69b1d74 | dnas/dnas2m11_blocks_blk_marker.inc
+dnas2m11_blocks_sig_pubkey_key         | 0x100a31e4 | 8 | 3fddb2aac8c9b6dc | dnas/dnas2m11_blocks_sig_pubkey_key.inc
+dnas2m11_blocks_sig_pubkey             | 0x100a31ec | 162 | db18cf2e221fd9c6 | dnas/dnas2m11_blocks_sig_pubkey.inc
+dnas2m11_slots_dec_a_keys              | 0x100a3290 | 32 | 22926c2e23cfec48 | dnas/dnas2m11_slots_dec_a_keys.inc
+dnas2m11_slots_dec_a_key               | 0x100a32b0 | 8 | f511994825f305e2 | dnas/dnas2m11_slots_dec_a_key.inc
+dnas2m11_slots_dec_b_keys              | 0x100a32b8 | 32 | 642a70d8799538dc | dnas/dnas2m11_slots_dec_b_keys.inc
+dnas2m11_slots_dec_b_key               | 0x100a32d8 | 8 | 3e84845b6afd7f18 | dnas/dnas2m11_slots_dec_b_key.inc
+dnas2m11_slots_slot_key                | 0x100a32e0 | 8 | 33f5612c055b5c78 | dnas/dnas2m11_slots_slot_key.inc
+dnas2m11_slots_slot2_keys              | 0x100a32e8 | 32 | bd403583adac578a | dnas/dnas2m11_slots_slot2_keys.inc
+dnas2m11_slots_slot3_keys              | 0x100a3308 | 32 | e8143411da73a37c | dnas/dnas2m11_slots_slot3_keys.inc
+dnas2m11_slots_slot4_keys              | 0x100a3328 | 32 | 3c646e5ba56444e3 | dnas/dnas2m11_slots_slot4_keys.inc
+dnas2m11_slots_slot5_keys              | 0x100a3348 | 32 | 1ba2b438a45b77f5 | dnas/dnas2m11_slots_slot5_keys.inc
+# VU1 microcode of src/gfx/gm_graph.cpp: the two programs that gm_graph::Init loads with
+# CreateVertexShader (VIF packets: NOP + MPG, then the VU1 code; produced by dvp-as, not by gcc).
+# They are the head of the TU's .data (0x100b73f0, 16-byte aligned), static (no name in .dynsym),
+# reached from Init through GOT_PAGE+LO16.
+gm_vu1_prog0                           | 0x100b73f0 | 15312 | 9f7202e67613ba4a | gm/vu1_prog0.inc
+gm_vu1_prog1                           | 0x100bafc0 | 16336 | a529b9b39f462463 | gm/vu1_prog1.inc

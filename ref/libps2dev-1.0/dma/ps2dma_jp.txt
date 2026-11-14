@@ -1,0 +1,30 @@
+NAME
+    ps2dma.c - chain mode DMA emulation library
+
+SYNOPSIS
+#include "ps2dma.h"
+
+
+ESCRIPTION
+	ps2mem provides the API that handles chain and 
+	non-chain mode DMA.
+
+FUNCTIONS
+
+    int ps2_dma_start(int fd, VPUFILE *vfd, ps2_dmatag *tag);
+	Start chain mode DMA packets reside in TAG, 
+	belong to VFD.
+
+    int ps2_dma_start_n(int fd, void *ptr, int qwc);
+	Start non-chain mode DMA packets reside in PTR. 
+	Length of packets is given as QWC in quad-word unit.
+
+    int ps2_dma_wait(int fd, int n);
+	Wait until DMA queue length become less than N.
+
+    int ps2_dma_send(int fd, VPUFILE *vfd, ps2_dmatag *tag);
+	Do ps2_dma_start() and wait until done.
+
+    int ps2_dma_send_n(int fd, void *ptr, int qwc);
+	Do ps2_dma_start_n() and wait until done.
+

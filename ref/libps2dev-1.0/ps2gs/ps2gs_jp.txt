@@ -1,0 +1,1386 @@
+
+			    GS基本ライブラリ
+			   =================
+
+
+ 1 構造体
+==========
+
+=========================================================================
+ps2_gs_alphaenv							 [構造体]
+=========================================================================
+				   アルファブレンディング関連の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_alpha alpha1;
+		ps2_gsreg_addr	alpha1addr;
+		//
+		ps2_gsreg_pabe	pabe;
+		ps2_gsreg_addr	pabeaddr;
+		//
+		ps2_gsreg_texa	texa;
+		ps2_gsreg_addr	texaaddr;
+		//
+		ps2_gsreg_fba	fba1;
+		ps2_gsreg_addr	fba1addr;
+	} ps2_gs_alphaenv __attribute__((aligned(16)));
+
+[メンバ]
+	alpha1		ALPHA_1レジスタの設定値
+	alpha1addr	ALPHA_1レジスタのアドレス
+	pabe		PABEレジスタの設定値
+	pabeaddr	PABEレジスタのアドレス
+	texa		TEXAレジスタの設定値
+	texaaddr	TEXAレジスタのアドレス
+	fba1		FBA_1レジスタの設定値
+	fba1addr	FBA_1レジスタのアドレス
+
+[解説]
+	アルファブレンディング情報(コンテキスト1)を保持する構造体です。
+	ps2_gs_set_alphaenv()関数で、構造体に値を設定できます。構造体
+	のメモリ上での直前に、GIFtag(PACKETモード,REGS=A+D)を付ければ、
+	そのままGIFに転送できる構造になっています。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_alphaenv2						 [構造体]
+=========================================================================
+				   アルファブレンディング関連の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_alpha		alpha2;
+		ps2_gsreg_addr		alpha2addr;
+		//
+		ps2_gsreg_pabe		pabe;
+		ps2_gsreg_addr		pabeaddr;
+		//
+		ps2_gsreg_texa		texa;
+		ps2_gsreg_addr		texaaddr;
+		//
+		ps2_gsreg_fba		fba2;
+		ps2_gsreg_addr		fba2addr;
+	} ps2_gs_alphaenv2 __attribute__((aligned(16)));
+
+[メンバ]
+	alpha2		ALPHA_2レジスタの設定値
+	alpha2addr	ALPHA_2レジスタのアドレス
+	pabe		PABEレジスタの設定値
+	pabeaddr	PABEレジスタのアドレス
+	texa		TEXAレジスタの設定値
+	texaaddr	TEXAレジスタのアドレス
+	fba2		FBA_2レジスタの設定値
+	fba2addr	FBA_2レジスタのアドレス
+
+[解説]
+	アルファブレンディング情報(コンテキスト2)を保持する構造体です。
+	ps2_gs_set_alphaenv2()関数で、構造体に値を設定できます。構造体
+	のメモリ上での直前に、GIFtag(PACKETモード,REGS=A+D)を付ければ、
+	そのままGIFに転送できる構造になっています。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+	PABE, TEXAは、コンテキスト切り替えができませんので、コンテキス
+	ト1と異なる値を設定する場合には、注意してご使用ください。
+
+=========================================================================
+ps2_gs_clear							 [構造体]
+=========================================================================
+						   バッファクリア用データ
+[構造]
+	typedef struct {
+		ps2_gsreg_test		testa;
+		ps2_gsreg_addr		testaaddr;
+		//
+		ps2_gsreg_prim		prim;
+		ps2_gsreg_addr		primaddr;
+		//
+		ps2_gsreg_rgbaq		rgbaq;
+		ps2_gsreg_addr		rgbaqaddr;
+		//
+		ps2_gsreg_xyz		xyz2a;
+		ps2_gsreg_addr		xyz2aaddr;
+		//
+		ps2_gsreg_xyz		xyz2b;
+		ps2_gsreg_addr		xyz2baddr;
+		//
+		ps2_gsreg_test		testb;
+		ps2_gsreg_addr		testbaddr;
+	} ps2_gs_clear __attribute__((aligned(16)));
+
+[メンバ]
+	testa		クリア用TESTレジスタの設定値
+	testaaddr	TESTレジスタのアドレス
+	prim		クリア用スプライトのPRIM設定値
+	primaddr	PRIMレジスタのアドレス
+	rgbaq		フレームバッファクリア値
+	rgbaqaddr	RGBAQレジスタのアドレス
+	xyz2a		クリア用スプライトの左上端点座標
+	xyz2aaddr	XYZ2レジスタのアドレス
+	xyz2b		クリア用スプライトの右下端点座標
+	testb		TESTレジスタの再設定値
+	testbaddr	TESTレジスタのアドレス
+
+[解説]
+	バッファクリア用のデータを保持する構造体です。
+	構造体のメモリ上での直前に、GIFtag(PACKETモード,REGS=A+D)を付
+	ければ、そのままGIFに転送できる構造になっています。実体は単な
+	るスプライト描画ですので、直前に設定されたXYOFFSETやSCISSOR等
+	の描画環境設定の影響を受けます。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_dbuff							 [構造体]
+=========================================================================
+					 ダブルバッファに関する設定データ
+[構造]
+	typedef struct {
+		ps2_gs_dispenv		disp[2];
+		ps2_giftag		giftag0;
+		ps2_gs_drawenv1		draw0;
+		ps2_gs_clear		clear0;
+		ps2_giftag		giftag1;
+		ps2_gs_drawenv1		draw1;
+		ps2_gs_clear		clear1;
+	} ps2_gs_dbuff __attribute__((aligned(16)));
+
+[メンバ]
+	disp[2]		表示環境
+	giftag0		描画環境用GIFtag(バッファ0用)
+	draw0		描画環境(バッファ0用)
+	clear0		描画バッファクリア環境(バッファ0用)
+	giftag1		描画環境用GIFtag(バッファ1用)
+	draw1		描画環境(バッファ1用)
+	clear1		描画バッファクリア環境(バッファ1用)
+
+[解説]
+	ダブルバッファ情報を保持する構造体です。
+	ps2_gs_set_dbuff()関数で、構造体に値を設定できます。
+	ps2_gs_swap_dbuff()関数で、GS(GIF)に値を転送できます。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+	この構造体は、コンテキスト1の設定のみを保持します。コンテキス
+	ト2を併用する場合は、ps2_gs_dbuff_dcを使用してください。
+
+=========================================================================
+ps2_gs_dbuff_dc							 [構造体]
+=========================================================================
+					 ダブルバッファに関する設定データ
+[構造]
+	typedef struct {
+		ps2_gs_dispenv		disp[2];
+		ps2_giftag		giftag0;
+		ps2_gs_drawenv1		draw01;
+		ps2_gs_drawenv2		draw02;
+		ps2_gs_clear		clear0;
+		ps2_giftag		giftag1;
+		ps2_gs_drawenv1		draw11;
+		ps2_gs_drawenv2		draw12;
+		ps2_gs_clear		clear1;
+	} ps2_gs_dbuffdc __attribute__((aligned(16)));
+
+[メンバ]
+	disp[2]		表示環境
+	giftag0		描画環境用GIFtag(バッファ0用)
+	draw01		描画環境(コンテキスト1、バッファ0用)
+	draw02		描画環境(コンテキスト2、バッファ0用)
+	clear0		描画バッファクリア環境(バッファ0用)
+	giftag1		描画環境用GIFtag(バッファ1用)
+	draw11		描画環境(コンテキスト1、バッファ1用)
+	draw12		描画環境(コンテキスト2、バッファ1用)
+	clear1		描画バッファクリア環境(バッファ1用)
+
+[解説]
+	2コンテキスト併用のダブルバッファ情報を保持する構造体です。
+	ps2_gs_set_dbuff_dc()関数で、構造体に値を設定できます。
+	ps2_gs_swap_dbuff_dc()関数で、GS(GIF)に値を転送できます。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_dispenv							 [構造体]
+=========================================================================
+						     表示環境の設定データ
+[構造]
+	typedef struct {
+		ps2_gssreg_dispfb	dispfb;
+		ps2_gssreg_bgcolor	bgcolor;
+	} ps2_gs_dispenv __attribute__((aligned(16)));
+
+[メンバ]
+	dispfb	表示フレームバッファの設定値(DISPFB2レジスタの値)
+	bgcolor バックグラウンドカラーの設定値(BGCOLORレジスタの値)
+
+[解説]
+	表示関連の設定、GSの矩形読み出し回路に関する設定データを保持す
+	る構造体です。
+	ps2_gs_set_dispenv()関数で、構造体に値を設定できます。
+	ps2_gs_put_dispenv()関数で、構造体の値をGSに設定できます。
+
+[備考]
+
+=========================================================================
+ps2_gs_drawenv1							 [構造体]
+=========================================================================
+						     描画環境の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_frame		frame1;
+		ps2_gsreg_addr		frame1addr;
+		//
+		ps2_gsreg_zbuf		zbuf1;
+		ps2_gsreg_addr		zbuf1addr;
+		//
+		ps2_gsreg_xyoffset	xyoffset1;
+		ps2_gsreg_addr		xyoffset1addr;
+		//
+		ps2_gsreg_scissor	scissor1;
+		ps2_gsreg_addr		scissor1addr;
+		//
+		ps2_gsreg_prmodecont	prmodecont;
+		ps2_gsreg_addr		prmodecontaddr;
+		//
+		ps2_gsreg_colclamp	colclamp;
+		ps2_gsreg_addr		colclampaddr;
+		//
+		ps2_gsreg_dthe		dthe;
+		ps2_gsreg_addr		dtheaddr;
+		//
+		ps2_gsreg_test		test1;
+		ps2_gsreg_addr		test1addr;
+	} ps2_gs_drawenv1 __attribute__((aligned(16)));
+
+[メンバ]
+	frame1		FRAME_1レジスタの設定値
+	frame1addr	FRAME_1レジスタのアドレス
+	zbuf1		ZBUF_1レジスタの設定値
+	zbuf1addr	ZBUF_1レジスタのアドレス
+	xyoffset1	XYOFFSET_1レジスタの設定値
+	xyoffset1addr	XYOFFSET_1レジスタのアドレス
+	scissor1	SCISSOR_1レジスタの設定値
+	scissor1addr	SCISSOR_1レジスタのアドレス
+	prmodecont	PRMODECONTレジスタの設定値
+	prmodecontaddr	PRMODECONTレジスタのアドレス
+	colclamp	COLCLAMPレジスタの設定値
+	colclampaddr	COLCLAMPレジスタのアドレス
+	dthe		DTHEレジスタの設定値
+	dtheaddr	DTHEレジスタのアドレス
+	test1		TEST_1レジスタの設定値
+	test1addr	TEST_1レジスタのアドレス
+
+[解説]
+	描画環境情報(コンテキスト1)を保持する構造体です。
+	ps2_gs_set_drawenv()関数で、構造体に値を設定できます。また、こ
+	の構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を付ければ、
+	ps2_gs_put_drawenv()関数を用いてGSにそのまま転送することができ
+	ます。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_drawenv2							 [構造体]
+=========================================================================
+						     描画環境の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_frame		frame2;
+		ps2_gsreg_addr		frame2addr;
+		//
+		ps2_gsreg_zbuf		zbuf2;
+		ps2_gsreg_addr		zbuf2addr;
+		//
+		ps2_gsreg_xyoffset	xyoffset2;
+		ps2_gsreg_addr		xyoffset2addr;
+		//
+		ps2_gsreg_scissor	scissor2;
+		ps2_gsreg_addr		scissor2addr;
+		//
+		ps2_gsreg_prmodecont	prmodecont;
+		ps2_gsreg_addr		prmodecontaddr;
+		//
+		ps2_gsreg_colclamp	colclamp;
+		ps2_gsreg_addr		colclampaddr;
+		//
+		ps2_gsreg_dthe		dthe;
+		ps2_gsreg_addr		dtheaddr;
+		//
+		ps2_gsreg_test		test2;
+		ps2_gsreg_addr		test2addr;
+	} ps2_gs_drawenv2 __attribute__((aligned(16)));
+
+[メンバ]
+	frame2		FRAME_2レジスタの設定値
+	frame2addr	FRAME_2レジスタのアドレス
+	zbuf2		ZBUF_2レジスタの設定値
+	zbuf2addr	ZBUF_2レジスタのアドレス
+	xyoffset2	XYOFFSET_2レジスタの設定値
+	xyoffset2addr	XYOFFSET_2レジスタのアドレス
+	scissor2	SCISSOR_2レジスタの設定値
+	scissor2addr	SCISSOR_2レジスタのアドレス
+	prmodecont	PRMODECONTレジスタの設定値
+	prmodecontaddr	PRMODECONTレジスタのアドレス
+	colclamp	COLCLAMPレジスタの設定値
+	colcalmpaddr	COLCLAMPレジスタのアドレス
+	dthe		DTHEレジスタの設定値
+	dtheaddr	DTHEレジスタのアドレス
+	test2		TEST_2レジスタの設定値
+	test2addr	TEST_2レジスタのアドレス
+
+[解説]
+	描画環境情報(コンテキスト2)を保持する構造体です。
+	ps2_gs_SetDefDrawEnv2()関数で、構造体に値を設定できます。また、
+	この構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を付ければ、
+	ps2_gs_PutDrawEnv()関数を用いてGSにそのまま転送することができ
+	ます。
+
+[備考]
+	この構造体にはDMAで直接GSに転送されるデータが設定されますので、
+	先頭を16byteアライメントに必ず合わせてメモリに配置してください。
+	PRMODECONT, COLCLAMP, DTHEは、コンテキスト切り替えができません
+	ので、コンテキスト1の設定と異なる値を設定する場合は注意してく
+	ださい。
+
+=========================================================================
+ps2_gs_finish							 [構造体]
+=========================================================================
+						     描画終了待ち用データ
+[構造]
+	typedef struct {
+		ps2_giftag		giftag;
+		ps2_gsreg_finish	finish;
+		ps2_gsreg_addr		finishaddr;
+	} ps2_gs_finish __attribute__((aligned(16)));
+
+[メンバ]
+	giftag		転送用GIFtag
+	finish		FINISHレジスタの設定値
+	finishaddr	FINISHレジスタのアドレス
+
+[解説]
+	GSによる描画処理が完全に終わったことを確認する場合に用いられるデータで
+	す。ps2_gs_set_finish()で値を設定し、描画終了を待ちたい場所で
+	ps2_gs_wait_finish()を呼び出します。ps2_gs_wait_finish()は描画終了まで
+	ブロックします。
+
+=========================================================================
+ps2_gs_gparam							 [構造体]
+=========================================================================
+						   ライブラリシステム情報
+[構造]
+	typedef struct {
+		int fd_gs;
+		int fd_event;
+		int fd_event_open;
+		int version;
+		int interlace_mode;
+		int out_mode;
+		int ff_mode;
+		int interlace_format;
+		int resolution;
+		int refresh_rate;
+		int width;
+		int height;
+		int center_x;
+		int center_y;
+		int offset_x;
+		int offset_y;
+		float pixel_ratio;
+	} ps2_gs_gparam;
+
+[メンバ]
+	fd_gs			/dev/ps2gsへのファイルディスクリプタ
+	fd_event		/dev/ps2eventへのファイルディスクリプタ
+	fd_event_open		ps2_gs_open()内で/dev/ps2eventをオープ
+				ンしたかどうか
+	version			GSのバージョン
+	interlace_mode		インタレース/ノンインタレースの設定値
+	out_mode		NTSC/PALの設定値
+	ff_mode			FIELD/FRAMEの設定値
+	interlace_format	インタレース/ノンインタレースの設定値
+	resolution		解像度
+	refresh_rate		リフレッシュレート
+	width			幅
+	height			高さ
+	center_x		中心(x方向)
+	center_y		中心(y方向)
+	offset_x		オフセット(x方向)
+	offset_y		オフセット(y方向)
+	pixel_ratio		ピクセルの縦横比(幅/高さ)
+
+[解説]
+	ライブラリで使用するパラメータを保持する構造体です。
+	ライブラリで使用中のデータはps2_gs_get_gparam()で参照(読み出し
+	のみ)することができます。このデータはps2_gs_open()、
+	ps2_gs_reset()、ps2_gs_set_center()により設定されます。
+
+=========================================================================
+ps2_gs_texenv							 [構造体]
+=========================================================================
+					       テクスチャ関連の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_texflush	texflush;
+		ps2_gsreg_addr		texflushaddr;
+		//
+		ps2_gsreg_tex1		tex11;
+		ps2_gsreg_addr		tex11addr;
+		//
+		ps2_gsreg_tex0		tex01;
+		ps2_gsreg_addr		tex01addr;
+		//
+		ps2_gsreg_clamp		clamp1;
+		ps2_gsreg_addr		clamp1addr;
+	} ps2_gs_texenv __attribute__((aligned(16)));
+
+[メンバ]
+	texflush	TEXFLUSHレジスタの値
+	texflushaddr	TEXFLUSHレジスタのアドレス
+	tex01		TEX0_1レジスタの値
+	tex01addr	TEX0_1レジスタのアドレス
+	tex11		TEX1_1レジスタの値
+	tex11addr	TEX1_1レジスタのアドレス
+	clamp1		CLAMP_1レジスタの値
+	clamp1addr	CLAMP_1レジスタのアドレス
+
+[解説]
+	テクスチャ情報(コンテキスト1)を保持する構造体です。
+	ps2_gs_set_texenv()関数で、構造体に値を設定できます。構造体の
+	メモリ上での直前に、GIFtag(PACKETモード,REGS=A+D)を付ければ、
+	そのままGIFに転送できる構造になっています。mipmapを使用する場
+	合には、この他にMIPTBP1_1, MIPTBP2_1レジスタの設定が必要です。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_texenv2							 [構造体]
+=========================================================================
+					       テクスチャ関連の設定データ
+[構造]
+	typedef struct {
+		ps2_gsreg_texflush	texflush;
+		ps2_gsreg_addr		texflushaddr;
+		//
+		ps2_gsreg_tex1		tex12;
+		ps2_gsreg_addr		tex12addr;
+		//
+		ps2_gsreg_tex0		tex02;
+		ps2_gsreg_addr		tex02addr;
+		//
+		ps2_gsreg_clamp		clamp2;
+		ps2_gsreg_addr		clamp2addr;
+	} ps2_gs_texenv2 __attribute__((aligned(16)));
+
+[メンバ]
+	texflush	TEXFLUSHレジスタの値
+	texflushaddr	TEXFLUSHレジスタのアドレス
+	tex02		TEX0_2レジスタの値
+	tex02addr	TEX0_2レジスタのアドレス
+	tex12		TEX1_2レジスタの値
+	tex12addr	TEX1_2レジスタのアドレス
+	clamp2		CLAMP_2レジスタの値
+	clamp2addr	CLAMP_2レジスタのアドレス
+
+[解説]
+	テクスチャ情報(コンテキスト2)を保持する構造体です。
+	ps2_gs_set_texenv2()関数で、構造体に値を設定できます。構造体の
+	メモリ上での直前に、GIFtag(PACKETモード,REGS=A+D)を付ければ、
+	そのままGIFに転送できる構造になっています。mipmapを使用する場
+	合には、この他にMIPTBP1_2, MIPTBP2_2レジスタの設定が必要です。
+
+[備考]
+	この構造体にはDMAでGSに転送されるデータが設定されますので、先
+	頭を16byteアライメントに必ず合わせてメモリに配置してください。
+
+
+
+ 2 関数
+========
+
+=========================================================================
+ps2_gs_get_gparam						   [関数]
+=========================================================================
+					     ライブラリシステム情報を獲得
+[形式]
+	ps2_gs_gparam *ps2_gs_get_gparam(void)
+
+[引数]
+	なし
+
+[返り値]
+	システムで使用中の構造体のポインタ
+
+[解説]
+	ライブラリで使用中のシステム情報構造体のポインタを返します。
+	このポインタ経由で変更を行わないで下さい。変更はps2_gs_open()、
+	ps2_gs_reset()、ps2_gs_set_center()を用いて行います。
+
+=========================================================================
+ps2_gs_load_image						   [関数]
+=========================================================================
+							  LoadImageの実行
+[形式]
+	int ps2_gs_load_image(
+		struct ps2_image *lp
+	)
+
+[引数]
+	lp		画像情報が設定されている構造体のアドレス
+
+[返り値]
+	終了状態
+	正数:	正常終了(転送バイト数)
+	-1:	異常終了
+
+[解説]
+	メインメモリからGSのローカルメモリへイメージデータを転送します。
+	転送はioctl(PS2IOC_LOADIMAGE)により行われます。
+	(ps2dev_ioctls_jp.txtを参照)
+
+[備考]
+	新しいテクスチャをGSに転送した場合、テクスチャの再設定を行う必
+	要があります。ps2_gs_set_texenv()関数の説明を参照してください。
+
+=========================================================================
+ps2_gs_put_dispenv						   [関数]
+=========================================================================
+						       表示関連の初期設定
+[形式]
+	void ps2_gs_put_dispenv(
+		ps2_gs_dispenv *disp
+	)
+
+[引数]
+	disp		表示環境を設定する構造体のアドレス
+
+[返り値]
+	なし
+
+[解説]
+	dispの内容をGSのレジスタに設定します。
+
+=========================================================================
+ps2_gs_put_drawenv						   [関数]
+=========================================================================
+						       描画関連の初期設定
+[形式]
+	int ps2_gs_putdrawenv(
+		ps2_giftag *giftag
+	)
+
+[引数]
+	giftag		描画環境設定データの先頭アドレス
+
+[返り値]
+	終了状態
+	0:	正常終了
+	-1:	異常終了
+
+[解説]
+	描画環境の設定データをGSに転送し、所要のレジスタに設定します。
+	適切な値が設定された描画環境構造体ps2_gs_drawenvを用意し、その
+	直前にGIFtag（PACKEDモード,REGS=A+D）を置き、そのGIFtagのアド
+	レスを引数giftagに指定してください。この関数はDMA転送を開始す
+	るとただちに（転送終了を待たずに）終了します。
+
+[備考]
+	DMAを使用してデータ転送を行うため、GIFtag16byteアライメントに
+	必ず合わせてメモリに配置してください。
+
+=========================================================================
+ps2_gs_reset							   [関数]
+=========================================================================
+							       GSの初期化
+[形式]
+	void ps2_gs_reset(
+		int mode,
+		int inter,
+		int omode,
+		int ffmode,
+		int resolution,
+		int refresh_rate
+	)
+
+[引数]
+	mode リセットモード
+		0:	オールリセット
+		1:	描画リセット
+	inter インタレース/ノンインタレースの設定(mode==0の時のみ有効)
+		PS2_GS_NOINTERLACE:	non-interlace
+		PS2_GS_INTERLACE:	interlace
+	omode ビデオ信号フォーマットの設定(mode==0の時のみ有効)
+		PS2_GS_VESA:	VESA
+		PS2_GS_DTV:	DTV
+		PS2_GS_NTSC:	NTSC
+		PS2_GS_PAL:	PAL
+	ffmode FRAME/FIELDモードの設定(mode==0、interlace時のみ有効)
+		PS2_GS_FIELD:	FIELDモード始点から1ラインおきに読む
+				(+0,+2,+4,... / +1,+3,+5,...)
+		PS2_GS_FRAME:	FRAMEモード始点から1ラインずつ読む
+				(+0,+1,+2,+3,...)
+	resolution	解像度の設定(mode==0の時のみ有効)
+		omode==PS2_GS_VESAの時
+			PS2_GS_640x480:		640x480
+			PS2_GS_800x600:		800x600
+			PS2_GS_1024x768:	1024x768
+			PS2_GS_1280x1024:	1280x1024
+		omode==PS2_GS_DTVの時
+			PS2_GS_480P:	480P
+			PS2_GS_1080I:	1080I
+			PS2_GS_720P:	720P
+	refresh_rate	リフレッシュレートの設定(mode==0の時のみ有効)
+		omode==PS2_GS_VESAの時
+			0		デフォルト(約75Hz)
+			PS2_GS_60Hz	約60Hz
+			PS2_GS_75Hz	約75Hz
+
+[返り値]
+	なし
+
+[解説]
+	GSを指定したモードでリセットします。
+	modeに0を指定した場合はGS全体をリセットします。modeに1を指定し
+	た場合は、描画中の処理をキャンセルし、GSの内部バッファにあるプ
+	リミティブデータを破棄します。（描画環境／表示環境は保持されま
+	す）オールリセット時には表示は停止されます。
+	ps2_gs_start_display()で表示を開始して下さい。
+
+[備考]
+	オールリセット時は、GSのローカルメモリの内容は保証されません。
+
+=========================================================================
+ps2_gs_set_alphaenv						   [関数]
+=========================================================================
+				   アルファブレンディング設定データの作成
+[形式]
+	int ps2_gs_set_alphaenv(
+		ps2_gs_alphaenv *ap,
+		int pabe
+	)
+
+[引数]
+	ap	アルファブレンディング情報を設定する構造体のアドレス
+	pabe	ピクセル単位のアルファブレンディングの制御
+			0:	行わない
+			1:	行う（A値のMSBが0のピクセルに対しては
+				アルファブレンディングoff)
+
+[返り値]
+	ps2_gs_alphaenv構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	アルファブレンディングの設定(コンテキスト1)に関するデータを、
+	ps2_gs_alphaenv構造体の各メンバにセットします。
+	この構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を置くと、そ
+	のままGIFに転送することができます。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_alphaenv2						   [関数]
+=========================================================================
+				   アルファブレンディング設定データの作成
+[形式]
+	int ps2_gs_set_alphaenv2(
+		ps2_gs_alphaenv2 *ap,
+		int pabe
+	)
+
+[引数]
+	ap	アルファブレンディング情報を設定する構造体のアドレス
+	pabe	ピクセル単位のアルファブレンディングの制御
+			0:	行わない
+			1:	行う（A値のMSBが0のピクセルに対しては
+				アルファブレンディングoff)
+
+[返り値]
+	ps2_gs_alphaenv2構造体のサイズ
+
+[解説]
+	アルファブレンディングの設定(コンテキスト2)に関するデータを、
+	ps2_gs_alphaenv2構造体の各メンバにセットします。
+	この構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を置くと、そ
+	のままGIFに転送することができます。PABE, TEXAは、コンテキスト
+	切り替えができませんので、コンテキスト1と異なる値を設定する場
+	合は注意してください。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_clear						   [関数]
+=========================================================================
+					     バッファクリア用データの作成
+[形式]
+	int ps2_gs_set_clear(
+		ps2_gs_clear *cp,
+		int ztest,
+		int x, int y,
+		int w, int h,
+		int r, int g, int b, int a,
+		__u32 z
+	)
+
+[引数]
+	cp	バッファクリア用データを設定する構造体のアドレス
+	ztest	デプステスト方式
+		PS2_GS_TEST_ZTST_NEVER:
+			デプステストなし（Zバッファ不使用）
+		PS2_GS_TEST_ZTST_ALWAYS:
+			Zバッファの値にかかわらず全ピクセルを描画
+		PS2_GS_TEST_ZTST_GEQUAL:
+			Z値がZバッファの値以上のピクセルを描画
+		PS2_GS_TEST_ZTST_GREATER:
+			Z値がZバッファの値より大きいピクセルを描画
+	x, y	クリア領域左上端点座標
+	w, h	クリア領域の幅、高さ(ピクセル単位)
+	r, g, b, a フレームバッファのクリア値
+	z	Zバッファのクリア値
+
+[返り値]
+	ps2_gs_clear構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	バッファクリア用のデータを、指定されたps2_gs_clear構造体の各メ
+	ンバにセットします。
+	この構造体の直前にGIFtag（PACKEDモード、A+D）を置いてGIFに転送
+	すると、コンテキスト１のフレームバッファをr,g,b,aに指定した値
+	で、同じくコンテキスト１のZバッファをzに指定した値でクリアする
+	ことになります。ztestにNEVER以外を指定した場合は、デプステスト
+	方式をいったんALWAYSとしてフレームバッファとZバッファをクリア
+	し、あらためてztestに指定した方式を設定するようになります。
+	ztestにNEVERを指定した場合は、ztest=ALWAYSと等価な動作をします
+	ので、必ず、ZBUFのZMSKの値をPS2_GS_ZBUF_ZMSK_MSKにしてからご使
+	用ください。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_clear2						   [関数]
+=========================================================================
+					     バッファクリア用データの作成
+[形式]
+	int ps2_gs_set_clear2(
+		ps2_gs_clear *cp,
+		int ztest,
+		int x, int y,
+		int w, int h,
+		int r, int g, int b, int a,
+		__u32 z
+	)
+
+[引数]
+	ps2_gs_set_clear()参照
+
+[返り値]
+	ps2_gs_clear構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	バッファクリア用のデータを、指定されたps2_gs_clear構造体の各メ
+	ンバにセットします。
+	この構造体の直前にGIFtag（PACKEDモード、A+D）を置いてGIFに転送
+	すると、コンテキスト２のフレームバッファをr,g,b,aに指定した値
+	で、同じくコンテキスト２のZバッファをzに指定した値でクリアする
+	ことになります。ztestにNEVER以外を指定した場合は、デプステスト
+	方式をいったんALWAYSとしてフレームバッファとZバッファをクリア
+	し、あらためてztestに指定した方式を設定するようになります。
+	ztestにNEVERを指定した場合は、ztest=ALWAYSと等価な動作をします
+	ので、必ず、ZBUFのZMSKの値をPS2_GS_ZBUF_ZMSK_MSKにしてからご使
+	用ください。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_dbuff						   [関数]
+=========================================================================
+						     ダブルバッファの設定
+[形式]
+	void ps2_gs_set_dbuff(
+		ps2_gs_dbuff *db,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+		int clear,
+	)
+
+[引数]
+	db ダブルバッファ情報を設定する構造体アドレス
+	psm 描画ピクセルフォーマット
+		PS2_GS_PSMCT32
+		PS2_GS_PSMCT24
+		PS2_GS_PSMCT16
+		PS2_GS_PSMCT16S
+	w, h 表示/描画領域の幅、高さ(ピクセル単位)
+	ztest デプステスト方式
+		PS2_GS_TEST_ZTST_NEVER:
+			デプステストなし（Zバッファマスク）
+		PS2_GS_TEST_ZTST_ALWAYS:
+			Zバッファの値にかかわらず全ピクセルを描画
+		PS2_GS_TEST_ZTST_GEQUAL:
+			Z値がZバッファの値以上のピクセルを描画
+		PS2_GS_TEST_ZTST_GREATER:
+			Z値がZバッファの値より大きいピクセルを描画
+	zpsm Z値格納フォーマット
+		(ztest!=PS2_GS_TEST_ZTST_NEVERの時のみ有効)
+			PS2_GS_PSMZ32
+			PS2_GS_PSMZ24
+			PS2_GS_PSMZ16
+			PS2_GS_PSMZ16S
+	clear 描画領域のクリア制御
+		0:	クリアしない
+		1:	クリアする
+
+[返り値]
+	なし
+
+[解説]
+	ダブルバッファ情報構造体中にある2組の描画環境/表示環境/バッファ
+	クリア用データに、引数にしたがってそれぞれ適切な値を設定します。
+	clearに1を指定した場合、ps2_gs_swap_dbuff()関数を用いてダブル
+	バッファを切り替える際にフレームバッファとZバッファが0クリアさ
+	れるようになります。この関数は、コンテキスト1の環境のみを設定
+	します。ztest==NEVERで呼び出した場合、ztest=ALWAYS, ZBUF.ZMSK=
+	PS2_GS_ZBUF_ZMSK_MSKに設定されます。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_dbuff_dc						   [関数]
+=========================================================================
+						     ダブルバッファの設定
+[形式]
+	void ps2_gs_set_dbuff_dc(
+		ps2_gs_dbuff_dc *db,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+		int clear,
+	)
+
+[引数]
+	ps2_gs_set_dbuff()参照
+
+[返り値]
+	なし
+
+[解説]
+	ダブルバッファ情報構造体中にある2組の描画環境/表示環境/バッファ
+	クリア用データに、引数にしたがってそれぞれ適切な値を設定します。
+	clearに1を指定した場合、ps2_gs_swap_dbuff()関数を用いてダブル
+	バッファを切り替える際にフレームバッファとZバッファが0クリアさ
+	れるようになります。この関数は、コンテキスト1と2の両方の環境を
+	設定します。ztest==NEVERで呼び出した場合、ztest=ALWAYS,
+	ZBUF.ZMSK= PS2_GS_ZBUF_ZMSK_MSKに設定されます。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_dispenv						   [関数]
+=========================================================================
+						     表示環境データの作成
+[形式]
+	void ps2_gs_set_dispenv(
+		ps2_gs_dispenv *disp,
+		int psm,
+		int w, int h,
+		int dx, int dy,
+	)
+
+[引数]
+	disp 表示環境を設定する構造体のアドレス
+	psm ピクセルフォーマット
+		PS2_GS_PSMCT32
+		PS2_GS_PSMCT24
+		PS2_GS_PSMCT16
+		PS2_GS_PSMCT16S
+	w, h 表示領域の幅、高さ(ピクセル単位)
+	dx, dy 表示領域左上端点のテレビ画面上での位置
+	       (ピクセル単位)
+
+[返り値]
+	なし
+
+[解説]
+	表示環境構造体のメンバに値を設定します。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_drawenv						   [関数]
+=========================================================================
+						     描画環境データの作成
+[形式]
+	int ps2_gs_set_drawenv(
+		ps2_gs_drawenv1 *draw,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+	)
+
+[引数]
+	draw 描画環境を設定する構造体のアドレス
+	psm 描画ピクセルフォーマット
+		PS2_GS_PSMCT32
+		PS2_GS_PSMCT24
+		PS2_GS_PSMCT16
+		PS2_GS_PSMCT16S
+	w, h 描画領域の幅、高さ(ピクセル単位)
+	ztest デプステスト方式
+		PS2_GS_TEST_ZTST_NEVER:
+			デプステストなし（Zバッファマスク）
+		PS2_GS_TEST_ZTST_ALWAYS:
+			Zバッファの値にかかわらず全ピクセルを描画
+		PS2_GS_TEST_ZTST_GEQUAL:
+			Z値がZバッファの値以上のピクセルを描画
+		PS2_GS_TEST_ZTST_GREATER:
+			Z値がZバッファの値より大きいピクセルを描画
+	zpsm Z値格納フォーマット
+		(ztest!=PS2_GS_TEST_ZTST_NEVERの時のみ有効)
+			PS2_GS_PSMZ32
+			PS2_GS_PSMZ24
+			PS2_GS_PSMZ16
+			PS2_GS_PSMZ16S
+
+[返り値]
+	ps2_gs_drawenv1構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	コンテキスト1用描画環境構造体のメンバに値を設定します。
+
+[備考]
+	ztest==NEVERで呼び出した場合、ztest=ALWAYS ZBUF.ZMSK=MSKに設定
+	されます。
+
+=========================================================================
+ps2_gs_set_drawenv2						   [関数]
+=========================================================================
+						     描画環境データの作成
+[形式]
+	int ps2_gs_set_drawenv2(
+		ps2_gs_DrawEnv2 *draw,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+	)
+
+[引数]
+	ps2_gs_set_drawenv()参照。
+
+[返り値]
+	ps2_gs_drawenv2構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	コンテキスト2用描画環境構造体のメンバに値を設定します。
+
+[備考]
+	PRMODECONT, COLCLAMP, DTHEは、コンテキスト切り替えができません
+	ので、コンテキスト1と異なる値を設定する場合は注意してください。
+	ztest==NEVERで呼び出した場合、ztest=ALWAYS ZBUF.ZMSK=MSKに設定
+	されます。
+
+=========================================================================
+ps2_gs_set_finish						   [関数]
+=========================================================================
+						 描画終了待ちデータの設定
+[形式]
+	void ps2_gs_set_finish(
+		ps2_gs_finish *p
+	)
+
+[引数]
+	p		描画終了待ちデータを設定する構造体のアドレス
+
+[返り値]
+	なし
+
+[解説]
+	描画終了待ちのためのデータをps2_gs_finish構造体の各メンバに設
+	定します。GSの完全な描画終了を待ちたい場合、この関数で値を設定
+	してps2_gs_wait_finish()を呼び出します。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_half_offset						   [関数]
+=========================================================================
+					       描画オフセットデータの作成
+[形式]
+	void ps2_gs_set_half_offset(
+		ps2_gs_drawenv1 *draw,
+		int halfoff
+	)
+
+[引数]
+	draw		 描画環境を設定する構造体のアドレス
+	halfoff		 オフセット加算の制御
+			 0:	加算しない
+			 1:	加算する
+
+[返り値]
+	なし
+
+[解説]
+	描画領域の中心座標から描画オフセット座標を計算し、描画環境構造
+	体内のXYOFFSET1の値を設定します。
+	その際に、halfoffに1が指定されていれば、ハーフピクセル分として
+	y方向オフセットに8を加算して設定します。
+
+[備考]
+	インタレースモードではoddフィールドとevenフィールドに半ピクセ
+	ル分ずれた画像を描画させることによって、見かけ上の縦解像度を走
+	査線数の2倍に引き上げることができます。バッファをFRAMEモードと
+	した場合は、両フィールドのオフセット値をずらすことで半ピクセル
+	分ずれた画像を描画させることができます。
+
+=========================================================================
+ps2_gs_set_half_offset2						   [関数]
+=========================================================================
+					       描画オフセットデータの作成
+[形式]
+	void ps2_gs_set_half_offset2(
+		ps2_gs_DrawEnv2 *draw,
+		int halfoff
+	)
+
+[引数]
+	draw		 描画環境を設定する構造体のアドレス
+	halfoff		 オフセット加算の制御
+			 0:	加算しない
+			 1:	加算する
+
+[返り値]
+	なし
+
+[解説]
+	描画領域(コンテキスト2)の中心座標から描画オフセット座標を計算
+	し、描画環境構造体内のXYOFFSET2の値を設定します。
+	その際に、halfoffに1が指定されていれば、ハーフピクセル分として
+	y方向オフセットに8を加算して設定します。
+
+[備考]
+	インタレースモードではoddフィールドとevenフィールドに半ピクセ
+	ル分ずれた画像を描画させることによって、見かけ上の縦解像度を走
+	査線数の2倍に引き上げることができます。バッファをFRAMEモードと
+	した場合は、両フィールドのオフセット値をずらすことで半ピクセル
+	分ずれた画像を描画させることができます。
+
+=========================================================================
+ps2_gs_set_image						   [関数]
+=========================================================================
+							   画像情報の設定
+[形式]
+	int ps2_gs_set_image(
+		ps2_image *lp,
+		int dbp,
+		int dbw,
+		int dpsm,
+		int x, int y,
+		int w, int h
+	)
+
+[引数]
+	lp  画像情報を設定する構造体のアドレス
+	dbp  dbp転送先バッファベースアドレス
+	     (dpb x 64が実際のアドレスになる)
+	dbw  dbw転送先バッファ幅
+	     (dbw x 64が実際の幅になる)
+	dpsm 転送データのピクセルフォーマット
+		PS2_GS_PSMCT32（ピクセルサイズ:32bit）
+		PS2_GS_PSMCT24（ピクセルサイズ:24bit）
+		PS2_GS_PSMCT16（ピクセルサイズ:16bit）
+		PS2_GS_PSMCT16S（ピクセルサイズ:16bit）
+		PS2_GS_PSMT8（ピクセルサイズ:8bit）
+		PS2_GS_PSMT4（ピクセルサイズ:4bit）
+		PS2_GS_PSMT8H（ピクセルサイズ:8bit）
+		PS2_GS_PSMT4HL（ピクセルサイズ:4bit）
+		PS2_GS_PSMT4HH（ピクセルサイズ:4bit）
+		PS2_GS_PSMZ32（ピクセルサイズ:32bit）
+		PS2_GS_PSMZ24（ピクセルサイズ:24bit）
+		PS2_GS_PSMZ16（ピクセルサイズ:16bit）
+		PS2_GS_PSMZ16S（ピクセルサイズ:16bit）
+	x, y 転送先領域の左上端点
+	w, h 転送領域の幅、高さ(ピクセル単位)
+
+[返り値]
+	なし
+
+[解説]
+	ps2_gs_load_image()、ps2_gs_store_image()での画像の読み書きお
+	よびps2_gs_set_texenv()でのテキスチャ画像の設定に用いる画像情
+	報を設定します。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_texenv						   [関数]
+=========================================================================
+					       テクスチャ設定データの作成
+[形式]
+	int ps2_gs_set_texenv(
+		ps2_gs_texenv *tp,
+		int flush,
+		struct ps2_image *image,
+		int w, h,
+		int tfx
+		int cbp,
+		int cpsm,
+		int cld,
+		int filter
+	)
+
+[引数]
+	tp  テクスチャ情報を設定する構造体のアドレス
+	flush  テクスチャページバッファの無効化
+		0:	無効化しない
+		1:	無効化する
+	image  テキスチャ画像情報
+	w2, h2  テクスチャの幅、高さ
+	       (2^w2および2^h2が実際のサイズになる)
+	tfx  テキスチャファンクション
+	cbp  CLUTデータのベースアドレス
+	     (cbp x 64が実際のアドレスになる)
+	cpsm  CLUTエントリ格納フォーマット
+		PS2_GS_PSMCT32
+		PS2_GS_PSMCT24
+		PS2_GS_PSMCT16
+		PS2_GS_PSMCT16S
+	cld  CLUTバッファのロード制御
+		PS2_GS_TEX_CLD_NOUPDATE:
+			ロードしない
+		PS2_GS_TEX_CLD_LOAD:
+			cbpからロードする
+		PS2_GS_TEX_CLD_LOAD_COPY0:
+			cbpからロードし,GS内部レジスタCBP0にcbp値を設定
+		PS2_GS_TEX_CLD_LOAD_COPY1:
+			cbpからロードし,GS内部レジスタCBP1にcbp値を設定
+		PS2_GS_TEX_CLD_TEST0_LOAD_COPY0:
+			CBP0!=cbpならロードし,CBP0にcbp値を設定
+		PS2_GS_TEX_CLD_TEST0_LOAD_COPY1:
+			CBP1!=cbpならロードし,CBP1にcbp値を設定
+	filter フィルタリング方式の指定
+		PS2_GS_TEX1_MMIN_NEAREST:
+			min:	NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_LINEAR:
+			min:	LINEAR
+			mag:	LINEAR
+		PS2_GS_TEX1_MMIN_NEAREST_MIPMAP_NEAREST:
+			min:	NEAREST_MIPMAP_NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_NEAREST_MIPMAP_LINEAR:
+			min:	NEAREST_MIPMAP_LINEAR
+			mag:	LINEAR
+		PS2_GS_TEX1_MMIN_LINEAR_MIPMAP_NEAREST:
+			min:	LINEAR_MIPMAP_NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_LINEAR_MIPMAP_LINEAR:
+			min:	LINEAR_MIPMAP_LINEAR
+			mag:	LINEAR
+
+[返り値]
+	ps2_gs_texenv構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	テクスチャの設定に関するデータ(コンテキスト1)を、ps2_gs_texenv
+	構造体の各メンバに設定します。
+	この構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を置くと、そ
+	のままGIFに転送することができます。新しいテクスチャをGSに転送
+	したときには、flushに1を指定して作成したps2_gs_texenv構造体を
+	用いて、テクスチャの再設定を行ってください。
+
+[備考]
+
+=========================================================================
+ps2_gs_set_texenv2						   [関数]
+=========================================================================
+					       テクスチャ設定データの作成
+[形式]
+	int ps2_gs_set_texenv2(
+		ps2_gs_texenv2 *tp,
+		int flush,
+		struct ps2_image *image,
+		int w, h,
+		int tfx
+		int cbp,
+		int cpsm,
+		int cld,
+		int filter
+	)
+
+[引数]
+	ps2_gs_set_texenv()参照。
+
+[返り値]
+	ps2_gs_texenv2構造体のサイズ(qword(16byte/128bit)単位)
+
+[解説]
+	テクスチャの設定に関するデータ(コンテキスト2)を、
+	ps2_gs_texenv2構造体の各メンバに設定します。
+	この構造体の直前にGIFtag（PACKEDモード,REGS=A+D）を置くと、そ
+	のままGIFに転送することができます。新しいテクスチャをGSに転送
+	したときには、flushに1を指定して作成したps2_gs_texenv2構造体を
+	用いて、テクスチャの再設定を行ってください。
+
+[備考]
+
+=========================================================================
+ps2_gs_start_display						   [関数]
+=========================================================================
+							 表示の開始と停止
+
+[形式]
+	int ps2_gs_start_display(
+		int start
+	)
+
+[引数]
+	start	表示の開始/停止
+		0:	表示停止
+		1:	表示開始
+
+[返り値]
+	終了状態
+	0:	正常終了
+	-1:	異常終了
+
+[解説]
+	表示の開始/停止を設定します。ps2_gs_reset()でオールリセットを行った場
+	合、表示は停止状態になっています。
+
+[備考]
+
+=========================================================================
+ps2_gs_store_image						   [関数]
+=========================================================================
+							 StoreImageの実行
+[形式]
+	int ps2_gs_store_image(
+		ps2_image *sp
+	)
+
+[引数]
+	sp		画像情報が設定されている構造体のアドレス
+
+[返り値]
+	終了状態
+	0:	正常終了
+	-1:	異常終了
+
+[解説]
+	GSのローカルメモリからメインメモリへイメージデータを転送します。
+	転送はioctl(PS2IOC_STOREIMAGE)により行われます。
+	(ps2dev_ioctls_jp.txtを参照)
+
+[備考]
+
+=========================================================================
+ps2_gs_swap_dbuff						   [関数]
+=========================================================================
+						 ダブルバッファの切り替え
+[形式]
+	int ps2_gs_swap_dbuff(
+		ps2_gs_dbuff *db,
+		int id,
+	)
+
+[引数]
+	db	ダブルバッファ情報が設定されている構造体のアドレス
+	id	バッファ番号(最下位1bitのみ有効)
+
+[返り値]
+	終了状態
+	0:	正常終了
+	-1:	異常終了
+
+[解説]
+	引数idの指定にしたがって、ダブルバッファ情報構造体中にある2組
+	のうちいずれかの描画環境および表示環境をGSに設定します。この関
+	数は、コンテキスト1の環境のみを設定します。
+
+[備考]
+
+=========================================================================
+ps2_gs_swap_dbuff_dc						   [関数]
+=========================================================================
+						 ダブルバッファの切り替え
+[形式]
+	int ps2_gs_swap_dbuff_dc(
+		ps2_gs_dbuffdc *db,
+		int id,
+	)
+
+[引数]
+	db	ダブルバッファ情報が設定されている構造体のアドレス
+	id	バッファ番号(最下位1bitのみ有効)
+
+[返り値]
+	終了状態
+	0:	正常終了
+	-1:	異常終了
+
+[解説]
+	引数idの指定にしたがって、ダブルバッファ情報構造体中にある2組
+	のうちいずれかの描画環境および表示環境をGSに設定します。この関
+	数は、コンテキスト1と2の両方の環境を設定します。
+
+[備考]
+
+=========================================================================
+ps2_gs_sync_v							   [関数]
+=========================================================================
+						      V-Blankとの同期待ち
+[形式]
+	int ps2_gs_sync_v(
+		int mode
+	)
+
+[引数]
+	mode		reserved(0を指定すること)
+
+[返り値]
+	インタレースモードでのFIELD情報
+	0:	even field
+	1:	odd field
+	ノンインタレースモード時は必ず1を返す
+
+[解説]
+	V-Blank期間の開始までプログラムをブロックします。
+	modeは将来の機能拡張に備えて用意されている引数です。現バージョ
+	ンでは必ず0を指定してください。
+
+=========================================================================
+ps2_gs_wait_finish						   [関数]
+=========================================================================
+							     描画終了待ち
+[形式]
+	void ps2_gs_wait_finish(
+		ps2_gs_finish *p
+	)
+
+[引数]
+	p		描画終了待ちデータ
+
+[返り値]
+	なし
+
+[解説]
+	GSの完全な描画終了を待ちます。描画終了待ちデータは
+	ps2_gs_set_finish()で設定します。
+
+[備考]

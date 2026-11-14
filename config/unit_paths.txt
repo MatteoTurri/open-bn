@@ -1,0 +1,198 @@
+# Paths by which the original build named the source
+# gcc 2.95 writes into `__FILE__` (assert, ERR_put_error...) the command-line argument as it
+# is: to get the same literals in .rodata the gate compiles these units from the cwd with the
+# relative path of the original (tools/srcpath.py, in tools/check.py and tools/match).
+# Source: the 116 paths read in the original .rodata (assert and ERR_put_error literals),
+# assigned to the units by name, or by content where noted below.
+# unit | original path
+src/ui/simpletextedit.cpp | objSimpleTextEdit.cpp
+ref/sqlite-2.7.2/src/btree.c | ./src/btree.c
+ref/sqlite-2.7.2/src/build.c | ./src/build.c
+ref/sqlite-2.7.2/src/delete.c | ./src/delete.c
+ref/sqlite-2.7.2/src/expr.c | ./src/expr.c
+ref/sqlite-2.7.2/src/func.c | ./src/func.c
+ref/sqlite-2.7.2/src/hash.c | ./src/hash.c
+ref/sqlite-2.7.2/src/insert.c | ./src/insert.c
+ref/sqlite-2.7.2/src/main.c | ./src/main.c
+ref/sqlite-2.7.2/src/os.c | ./src/os.c
+ref/sqlite-2.7.2/src/pager.c | ./src/pager.c
+ref/sqlite-2.7.2/src/select.c | ./src/select.c
+ref/sqlite-2.7.2/src/trigger.c | ./src/trigger.c
+ref/sqlite-2.7.2/src/update.c | ./src/update.c
+ref/sqlite-2.7.2/src/vdbe.c | ./src/vdbe.c
+ref/sqlite-2.7.2/src/where.c | ./src/where.c
+ref/sslc-2.1.0/crypto/bio/b_print.c | ./bio/../bio/b_print.c
+ref/sslc-2.1.0/crypto/bio/bf_buff.c | ./bio/../bio/bf_buff.c
+ref/sslc-2.1.0/crypto/bio/bio_lib.c | ./bio/../bio/bio_lib.c
+ref/sslc-2.1.0/crypto/bio/bss_file.c | ./bio/../bio/bss_file.c
+ref/sslc-2.1.0/crypto/bio/bss_mem.c | ./bio/../bio/bss_mem.c
+ref/sslc-2.1.0/crypto/buffer/buffer.c | ./buffer/../buffer/buffer.c
+ref/sslc-2.1.0/crypto/asn1/a_bitstr.c | ./crypto/asn1/../../crypto/asn1/a_bitstr.c
+ref/sslc-2.1.0/crypto/asn1/a_bool.c | ./crypto/asn1/../../crypto/asn1/a_bool.c
+ref/sslc-2.1.0/crypto/asn1/a_bytes.c | ./crypto/asn1/../../crypto/asn1/a_bytes.c
+ref/sslc-2.1.0/crypto/asn1/a_d2i_fp.c | ./crypto/asn1/../../crypto/asn1/a_d2i_fp.c
+ref/sslc-2.1.0/crypto/asn1/a_dup.c | ./crypto/asn1/../../crypto/asn1/a_dup.c
+ref/sslc-2.1.0/crypto/asn1/a_int.c | ./crypto/asn1/../../crypto/asn1/a_int.c
+ref/sslc-2.1.0/crypto/asn1/a_object.c | ./crypto/asn1/../../crypto/asn1/a_object.c
+ref/sslc-2.1.0/crypto/asn1/a_octet.c | ./crypto/asn1/../../crypto/asn1/a_octet.c
+ref/sslc-2.1.0/crypto/asn1/a_set.c | ./crypto/asn1/../../crypto/asn1/a_set.c
+ref/sslc-2.1.0/crypto/asn1/a_type.c | ./crypto/asn1/../../crypto/asn1/a_type.c
+ref/sslc-2.1.0/crypto/asn1/a_utctm.c | ./crypto/asn1/../../crypto/asn1/a_utctm.c
+ref/sslc-2.1.0/crypto/asn1/a_verify.c | ./crypto/asn1/../../crypto/asn1/a_verify.c
+ref/sslc-2.1.0/crypto/asn1/asn1_lib.c | ./crypto/asn1/../../crypto/asn1/asn1_lib.c
+ref/sslc-2.1.0/crypto/asn1/d2i_dsap.c | ./crypto/asn1/../../crypto/asn1/d2i_dsap.c
+ref/sslc-2.1.0/crypto/asn1/d2i_pr.c | ./crypto/asn1/../../crypto/asn1/d2i_pr.c
+ref/sslc-2.1.0/crypto/asn1/d2i_pu.c | ./crypto/asn1/../../crypto/asn1/d2i_pu.c
+ref/sslc-2.1.0/crypto/asn1/d2i_s_pr.c | ./crypto/asn1/../../crypto/asn1/d2i_s_pr.c
+ref/sslc-2.1.0/crypto/asn1/d2i_s_pu.c | ./crypto/asn1/../../crypto/asn1/d2i_s_pu.c
+ref/sslc-2.1.0/crypto/asn1/f_int.c | ./crypto/asn1/../../crypto/asn1/f_int.c
+ref/sslc-2.1.0/crypto/asn1/i2d_dsap.c | ./crypto/asn1/../../crypto/asn1/i2d_dsap.c
+ref/sslc-2.1.0/crypto/asn1/i2d_pu.c | ./crypto/asn1/../../crypto/asn1/i2d_pu.c
+ref/sslc-2.1.0/crypto/asn1/i2d_s_pu.c | ./crypto/asn1/../../crypto/asn1/i2d_s_pu.c
+ref/sslc-2.1.0/crypto/asn1/x_algor.c | ./crypto/asn1/../../crypto/asn1/x_algor.c
+ref/sslc-2.1.0/crypto/asn1/x_cinf.c | ./crypto/asn1/../../crypto/asn1/x_cinf.c
+ref/sslc-2.1.0/crypto/asn1/x_crl.c | ./crypto/asn1/../../crypto/asn1/x_crl.c
+ref/sslc-2.1.0/crypto/asn1/x_exten.c | ./crypto/asn1/../../crypto/asn1/x_exten.c
+ref/sslc-2.1.0/crypto/asn1/x_name.c | ./crypto/asn1/../../crypto/asn1/x_name.c
+ref/sslc-2.1.0/crypto/asn1/x_pubkey.c | ./crypto/asn1/../../crypto/asn1/x_pubkey.c
+ref/sslc-2.1.0/crypto/asn1/x_sig.c | ./crypto/asn1/../../crypto/asn1/x_sig.c
+ref/sslc-2.1.0/crypto/asn1/x_val.c | ./crypto/asn1/../../crypto/asn1/x_val.c
+ref/sslc-2.1.0/crypto/asn1/x_x509.c | ./crypto/asn1/../../crypto/asn1/x_x509.c
+ref/sslc-2.1.0/crypto/objects/obj_dat.c | ./crypto/objects/../../crypto/objects/obj_dat.c
+ref/sslc-2.1.0/crypto/objects/obj_lib.c | ./crypto/objects/../../crypto/objects/obj_lib.c
+ref/sslc-2.1.0/crypto/pem/pem_lib.c | ./crypto/pem/../../crypto/pem/pem_lib.c
+ref/sslc-2.1.0/crypto/x509/by_dir.c | ./crypto/x509/../../crypto/x509/by_dir.c
+ref/sslc-2.1.0/crypto/x509/by_file.c | ./crypto/x509/../../crypto/x509/by_file.c
+ref/sslc-2.1.0/crypto/x509/x509_d2.c | ./crypto/x509/../../crypto/x509/x509_d2.c
+ref/sslc-2.1.0/crypto/x509/x509_obj.c | ./crypto/x509/../../crypto/x509/x509_obj.c
+ref/sslc-2.1.0/crypto/x509/x509_v3.c | ./crypto/x509/../../crypto/x509/x509_v3.c
+ref/sslc-2.1.0/crypto/x509/x509_vfy.c | ./crypto/x509/../../crypto/x509/x509_vfy.c
+ref/sslc-2.1.0/crypto/x509/x509name.c | ./crypto/x509/../../crypto/x509/x509name.c
+ref/sslc-2.1.0/crypto/err/err.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/evp/digest.c | ./evp/../evp/digest.c
+ref/sslc-2.1.0/crypto/evp/encode.c | ./evp/../evp/encode.c
+ref/sslc-2.1.0/crypto/evp/evp_enc.c | ./evp/../evp/evp_enc.c
+ref/sslc-2.1.0/crypto/evp/evp_md.c | ./evp/../evp/evp_md.c
+ref/sslc-2.1.0/crypto/evp/p_lib.c | ./evp/../evp/p_lib.c
+ref/sslc-2.1.0/crypto/evp/p_sign.c | ./evp/../evp/p_sign.c
+ref/sslc-2.1.0/crypto/evp/p_verify.c | ./evp/../evp/p_verify.c
+ref/sslc-2.1.0/ssl/s23_clnt.c | ./ssl/../ssl/s23_clnt.c
+ref/sslc-2.1.0/ssl/s23_lib.c | ./ssl/../ssl/s23_lib.c
+ref/sslc-2.1.0/ssl/s2_clnt.c | ./ssl/../ssl/s2_clnt.c
+ref/sslc-2.1.0/ssl/s2_enc.c | ./ssl/../ssl/s2_enc.c
+ref/sslc-2.1.0/ssl/s2_lib.c | ./ssl/../ssl/s2_lib.c
+ref/sslc-2.1.0/ssl/s2_pkt.c | ./ssl/../ssl/s2_pkt.c
+ref/sslc-2.1.0/ssl/s3_both.c | ./ssl/../ssl/s3_both.c
+ref/sslc-2.1.0/ssl/s3_clnt.c | ./ssl/../ssl/s3_clnt.c
+ref/sslc-2.1.0/ssl/s3_enc.c | ./ssl/../ssl/s3_enc.c
+ref/sslc-2.1.0/ssl/s3_lib.c | ./ssl/../ssl/s3_lib.c
+ref/sslc-2.1.0/ssl/s3_pkt.c | ./ssl/../ssl/s3_pkt.c
+ref/sslc-2.1.0/ssl/ssl_cert.c | ./ssl/../ssl/ssl_cert.c
+ref/sslc-2.1.0/ssl/ssl_ciph.c | ./ssl/../ssl/ssl_ciph.c
+ref/sslc-2.1.0/ssl/ssl_lib.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_rsa.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_sess.c | ./ssl/../ssl/ssl_sess.c
+ref/sslc-2.1.0/ssl/t1_enc.c | ./ssl/../ssl/t1_enc.c
+ref/tiff-3.4beta037/tif_dirinfo.c | ../libtiff/tif_dirinfo.c
+ref/tiff-3.4beta037/tif_fax3.c | ../libtiff/tif_fax3.c
+ref/tiff-3.4beta037/tif_luv.c | ../libtiff/tif_luv.c
+ref/tiff-3.4beta037/tif_lzw.c | ../libtiff/tif_lzw.c
+ref/tiff-3.4beta037/tif_packbits.c | ../libtiff/tif_packbits.c
+ref/tiff-3.4beta037/tif_predict.c | ../libtiff/tif_predict.c
+ref/tiff-3.4beta037/tif_read.c | ../libtiff/tif_read.c
+ref/tiff-3.4beta037/tif_write.c | ../libtiff/tif_write.c
+ref/sqlite-2.7.2/src/util.c | ./src/util.c
+ref/rcom-1.1.0/bn_lib.c | ./bn/../bn/bn_lib.c
+ref/rcom-1.1.0/cert.c | ./crypto/../crypto/cert.c
+ref/sslc-2.1.0/crypto/hmac/hmac.c | ./digest/hmac/../../digest/hmac/hmac.c
+ref/sslc-2.1.0/crypto/ex_data.c | ./ex_data/../ex_data/ex_data.c
+ref/rcom-1.1.0/r_lock.c | ./os/lock/../../os/lock/r_lock.c
+ref/sslc-2.1.0/crypto/rsa/rsa_pk.c | ./pubkey/rsa/../../pubkey/rsa/rsa_pk.c
+ref/sslc-2.1.0/crypto/rsa/rsa_sign_cb.c | ./crypto/pubkey/sign_rsa.c
+ref/sslc-2.1.0/crypto/rsa/rsa_saos_cb.c | ./crypto/pubkey/sgn_rsaa.c
+ref/sslc-2.1.0/crypto/dsa/dsa_sign_cb.c | ./crypto/pubkey/sign_dsa.c
+ref/sslc-2.1.0/crypto/dsa/dsa_vrf_cb.c | ./crypto/pubkey/sgn_dsav.c
+# assigned by content: units that are pieces of a split original file; the original path is in
+# the placed .rodata block, at the offset of our __FILE__
+ref/sslc-2.1.0/crypto/asn1/x_name_entry.c | ./crypto/asn1/../../crypto/asn1/x_name.c
+# no row for x509_rcom.c and x509_lu.c: their only __FILE__ belonged to X509_reference_inc (now in
+# x_x509.c) and X509_STORE_CTX_new (now in x509_st_ctx.c, with the x509_st.c TU)
+ref/sslc-2.1.0/crypto/x509/x509_st_ctx.c | ./crypto/x509/../../crypto/x509/x509_st.c
+ref/sslc-2.1.0/crypto/evp/evp_enc2.c | ./evp/../evp/evp_enc.c
+ref/sslc-2.1.0/ssl/ssl_clear.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/crypto/asn1/x_name_d2i.c | ./crypto/asn1/../../crypto/asn1/x_name.c
+src/rcom/sio_ioctl.c | ./sio/../sio/s_sock.c
+ref/sslc-2.1.0/crypto/err/err_load.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/err/err_free.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/err/err_remove.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/err/err_getst.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/err/err_nlib.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/err/err_adata.c | ./err/../err/err.c
+ref/sslc-2.1.0/crypto/asn1/a_obj_new.c | ./crypto/asn1/../../crypto/asn1/a_object.c
+ref/sslc-2.1.0/crypto/asn1/x_name_entry_new.c | ./crypto/asn1/../../crypto/asn1/x_name.c
+ref/sslc-2.1.0/crypto/asn1/x_name_new.c | ./crypto/asn1/../../crypto/asn1/x_name.c
+ref/sslc-2.1.0/crypto/pem/pem_asn1rd.c | ./crypto/pem/../../crypto/pem/pem_lib.c
+ref/sslc-2.1.0/crypto/pem/pem_pwd.c | ./crypto/pem/../../crypto/pem/pem_lib.c
+ref/sslc-2.1.0/ssl/ssl_set_cert.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_set_pkey.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/s2_lib_buf.c | ./ssl/../ssl/s2_lib.c
+ref/sslc-2.1.0/ssl/s3_both_cert.c | ./ssl/../ssl/s3_both.c
+ref/sslc-2.1.0/ssl/s3_both_bufs.c | ./ssl/../ssl/s3_both.c
+ref/sslc-2.1.0/ssl/ssl_lib_free.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_rw.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_ctxctrl.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_wbio.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_feature.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_exidx.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_version.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_cert_free.c | ./ssl/../ssl/ssl_cert.c
+ref/sslc-2.1.0/ssl/ssl_cert_type.c | ./ssl/../ssl/ssl_cert.c
+ref/sslc-2.1.0/ssl/ssl_cert_verify.c | ./ssl/../ssl/ssl_cert.c
+ref/sslc-2.1.0/ssl/ssl_rsa_use_pkey.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_cert.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_pkey_file.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_cert_file.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_pkey.c | ./ssl/../ssl/ssl_rsa.c
+ref/sslc-2.1.0/crypto/evp/evp_enc_init.c | ./evp/../evp/evp_enc.c
+ref/sslc-2.1.0/crypto/evp/evp_enc_dec.c | ./evp/../evp/evp_enc.c
+ref/sslc-2.1.0/crypto/rsa/pk_default.c | ./pubkey/dsa/../../pubkey/dsa/dsa_api.c
+ref/sslc-2.1.0/crypto/dsa/dsa_internal.c | ./pubkey/dsa/../../pubkey/dsa/dsa_lib.c
+ref/sslc-2.1.0/crypto/pem/pem_lib_readbio.c | ./crypto/pem/../../crypto/pem/pem_lib.c
+# TUs split off, recognized by their own copy of __FILE__
+ref/sslc-2.1.0/crypto/x509/x509_gpp.c | ./crypto/x509/../../crypto/x509/x509_gpp.c
+ref/sslc-2.1.0/crypto/asn1/a_object_a2d.c | ./crypto/asn1/../../crypto/asn1/a_object.c
+ref/sslc-2.1.0/crypto/asn1/a_object_d2i.c | ./crypto/asn1/../../crypto/asn1/a_object.c
+ref/sslc-2.1.0/crypto/asn1/a_utctm_set.c | ./crypto/asn1/../../crypto/asn1/a_utctm.c
+ref/sslc-2.1.0/crypto/rsa/rsa_obj.c | ./pubkey/rsa/../../pubkey/rsa/rsa_pk.c
+ref/sslc-2.1.0/crypto/rsa/rsa_obj_new.c | ./pubkey/rsa/../../pubkey/rsa/rsa_pk.c
+ref/sslc-2.1.0/crypto/evp/evp_md_set.c | ./evp/../evp/evp_md.c
+# EVP_MD_CTX_init: its own copy of the evp_md.c __FILE__
+ref/sslc-2.1.0/crypto/evp/evp_md_init.c | ./evp/../evp/evp_md.c
+# not assigned to a unit by name: bastring.cc is the path of the libstdc++ headers
+# (tools/check.py CROSS_CXX). sign_rsa/sgn_rsaa/sign_dsa/sgn_dsav are assigned above by content
+# (their path is in the original .rodata block of the unit). x509_st.c is the path of x509_st_ctx.c
+# above and a literal in the x509_st_* units, dh_meth.c a literal in the dh_meth_* units, s_sock.c
+# the path of sio_ioctl.c above (dsa_api.c and dsa_lib.c are assigned above by content).
+ref/sslc-2.1.0/ssl/s2_cipher.c | ./ssl/../ssl/s2_enc.c
+ref/sslc-2.1.0/ssl/s2_mac.c | ./ssl/../ssl/s2_enc.c
+ref/sslc-2.1.0/ssl/s3_finish_mac.c | ./ssl/../ssl/s3_enc.c
+ref/sslc-2.1.0/crypto/asn1/a_utctm_d2i.c | ./crypto/asn1/../../crypto/asn1/a_utctm.c
+ref/sslc-2.1.0/crypto/evp/evp_encrypt_update.c | ./evp/../evp/evp_enc.c
+# SSL-C splits that used to name the source with `#line N "path"`: __FILE__ comes from the build
+# as for the other split units, a #line stays only where its line number is proven
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_getobj.c | ./crypto/asn1/../../crypto/asn1/asn1_lib.c
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_strnew.c | ./crypto/asn1/../../crypto/asn1/asn1_lib.c
+ref/sslc-2.1.0/crypto/bio/bio_lib_ctrl.c | ./bio/../bio/bio_lib.c
+ref/sslc-2.1.0/crypto/bio/bio_lib_gets.c | ./bio/../bio/bio_lib.c
+ref/sslc-2.1.0/crypto/bio/bio_lib_read.c | ./bio/../bio/bio_lib.c
+ref/sslc-2.1.0/crypto/bio/bio_lib_write.c | ./bio/../bio/bio_lib.c
+ref/sslc-2.1.0/crypto/dh/dh_meth_free.c | ./pubkey/dh/../../pubkey/dh/dh_meth.c
+ref/sslc-2.1.0/crypto/dh/dh_meth_new.c | ./pubkey/dh/../../pubkey/dh/dh_meth.c
+ref/sslc-2.1.0/crypto/evp/evp_enc_ctxnew.c | ./evp/../evp/evp_enc.c
+ref/sslc-2.1.0/crypto/x509/x509_st_addcert.c | ./crypto/x509/../../crypto/x509/x509_st.c
+ref/sslc-2.1.0/crypto/x509/x509_st_addcrl.c | ./crypto/x509/../../crypto/x509/x509_st.c
+ref/sslc-2.1.0/ssl/ssl_lib_badmeth.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_cache.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_ciplist.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_ctx.c | ./ssl/../ssl/ssl_lib.c
+ref/sslc-2.1.0/ssl/ssl_lib_hshake.c | ./ssl/../ssl/ssl_lib.c

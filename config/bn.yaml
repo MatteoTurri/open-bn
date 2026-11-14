@@ -1,0 +1,40 @@
+# splat configuration for bn (PSBBN); target: orig/bn-jpn.elf. The sha1 below is also the
+# checksum that tools/check.py and tools/relink/make_blobs.py verify.
+#
+# bn is not a native PS2 ELF (no KELF/ee-gcc). PSBBN runs on PS2 Linux: bn is a
+# dynamically linked MIPS-III C++ userland executable, built with g++ 2.95.x of the PS2
+# Linux toolchain (old-GNU mangling, libstdc++-libc6.2-2.so.3).
+# .dynsym holds ~9400 named symbols -> config/symbol_addrs.txt
+#
+# ELF layout (from pyelftools):
+#   entry:   0x0047C1D0
+#   .text    0x0047C1D0  size 0x4BFCE8
+#   .rodata  0x0093BF40  size 0x3D004
+#   .data    0x10000000  size 0xCB858
+#   .bss     0x100DB400  size 0x1D606C
+options:
+  platform: ps2
+  basename: bn
+  base_path: ..
+  target_path: orig/bn-jpn.elf
+  sha1: 0bb9908a1d423edc77d116514003866898e5cf6b
+  asm_path: asm
+  src_path: src
+  build_path: build
+  compiler: GCC            # g++ 2.95.x (PS2 Linux toolchain), not ee-gcc
+  symbol_addrs_path: config/symbol_addrs.txt
+  undefined_funcs_auto_path: config/undefined_funcs_auto.txt
+  undefined_syms_auto_path: config/undefined_syms_auto.txt
+  find_file_boundaries: yes
+  mnemonic_ljust: 11
+  asm_jtbl_label_macro: jlabel
+
+segments:
+  # Single placeholder segment: the per-function split is done by tools/split.py
+  # (`make split`), not by splat.
+  - name: main
+    type: code
+    start: 0x0
+    vram: 0x00400000
+    subsegments:
+      - [0x0, asm]

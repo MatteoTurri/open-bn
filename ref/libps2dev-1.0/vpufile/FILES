@@ -1,0 +1,6 @@
+FILES
+Makefile
+vpu_file.c
+vpu_file.h
+vpu_file_en.txt
+vpu_file_jp.txt

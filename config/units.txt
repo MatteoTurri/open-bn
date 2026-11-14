@@ -1,0 +1,1156 @@
+# Compilation units. Format (separator |):
+#   <source> | <cflags> | <asflags> | <symbols to skip, csv>
+# make check compiles every unit and requires all the defined functions that exist in the
+# symbol table of the binary to match (minus the skips).
+#
+# asflags: SQLite was assembled with -g2 (mips_optimize=1: gas does not swap branches and
+# leaves the nop in the delay slot where gcc did not fill it); zlib/libpng without -g (swap
+# on). It is a flag, not a patch: separate builds per library, consistent with their
+# different -O levels.
+# This file is only configuration: edit it with python3 tools/unitedit.py.
+
+ref/zlib-1.1.3/adler32.c  | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/crc32.c    | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/deflate.c  | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/inflate.c  | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/infblock.c | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/infcodes.c | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/inffast.c  | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/inftrees.c | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/infutil.c  | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/trees.c    | -Iref/zlib-1.1.3 -O3 | |
+ref/zlib-1.1.3/zutil.c    | -Iref/zlib-1.1.3 -O3 | |
+ref/libpng-1.0.3/png.c       | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngerror.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngget.c    | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngmem.c    | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngread.c   | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngrio.c    | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngrtran.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngrutil.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngset.c    | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngtrans.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngwio.c    | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngwrite.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngwtran.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/libpng-1.0.3/pngwutil.c  | -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 -O3 -funroll-loops | |
+ref/sqlite-2.7.2/src/btree.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/build.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/delete.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/expr.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/func.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/insert.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/main.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DHAVE_USLEEP=1 -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/os.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DHAVE_USLEEP=1 -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/pager.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/printf.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/random.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/select.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/table.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/tokenize.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/trigger.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/update.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/util.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/vdbe.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/where.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/src/hash.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/gen/opcodes.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+ref/sqlite-2.7.2/gen/parse.c | -Iref/sqlite-2.7.2/gen -Iref/sqlite-2.7.2/src -DTHREADSAFE=1 -g | -g2 | 
+src/scene/object.cpp | -fno-exceptions -O3 |  | _S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/gfx/vecmath.cpp | -fno-exceptions -O3 |  | 
+src/scene/effoptionstate.cpp | -fno-exceptions -O3 |  | 
+src/scene/light.cpp | -O3 -fno-exceptions |  | 
+src/xml/xml_gcobject.cpp | -fno-exceptions |  | 
+src/xml/xml_dom.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_element.cpp | -fno-exceptions |  | 
+src/xml/xml_text.cpp | -fno-exceptions |  | 
+src/xml/xml_attr.cpp | -fno-exceptions |  | 
+src/xml/xml_chardata.cpp | -fno-exceptions |  | 
+src/xml/xml_chardataimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_attrimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_comment.cpp | -fno-exceptions |  | 
+src/xml/xml_cdata.cpp | -fno-exceptions |  | 
+src/xml/xml_pi.cpp | -fno-exceptions |  | 
+src/xml/xml_docfrag.cpp | -fno-exceptions |  | 
+src/xml/xml_textimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_commentimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_cdataimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_piimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_docfragimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_nodelist.cpp | -fno-exceptions |  | 
+src/xml/xml_nnmap.cpp | -fno-exceptions |  | 
+src/xml/xml_domimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_mmobject.cpp | -fno-exceptions |  | 
+src/xml/xml_domexception.cpp | -fno-exceptions |  | 
+src/xml/xml_saxexception.cpp | -fno-exceptions |  | 
+src/xml/xml_saxparseexception.cpp | -fno-exceptions |  | 
+src/xml/xml_attributelist.cpp | -fno-exceptions -O3 |  | 
+src/xml/xml_locatorimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_declaration.cpp | -fno-exceptions |  | 
+src/xml/xml_entitydeclaration.cpp | -fno-exceptions |  | 
+src/xml/xml_validator.cpp | -fno-exceptions |  | 
+src/xml/xml_entitydeclmanager.cpp | -fno-exceptions |  | 
+src/xml/xml_entityscanner.cpp | -fno-exceptions |  | 
+src/xml/xml_nodeimpl.cpp | -fno-exceptions -O3 |  | 
+src/xml/xml_inputsource.cpp | -fno-exceptions |  | 
+src/xml/xml_inputstreamimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_streammanager.cpp | -fno-exceptions |  | 
+src/xml/xml_outputdirective.cpp | -fno-exceptions -DNDEBUG |  | 
+src/xml/xml_outputsource.cpp | -fno-exceptions -O3 |  | 
+src/xml/xml_nodelistimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_nnmapimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_scanner.cpp | -fno-exceptions |  | 
+src/xml/xml_misc.cpp | -fno-exceptions |  | 
+src/xml/xml_unicodeutils.cpp | -fno-exceptions -finline-functions | |
+src/xml/xml_utf8utils.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_domunit.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_document.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_documentimpl.cpp | -fno-exceptions -finline-functions |  | 
+src/xml/xml_elementimpl.cpp | -fno-exceptions |  | 
+src/image/pgprops.cpp | -g | -g2 | 
+src/image/imagergba.cpp | -g | -g2 | 
+src/gfx/gm_packet.cpp | -fno-exceptions -Iref/libps2dev-1.0/ps2vpu |  | 
+src/image/rawimg.cpp | -g | -g2 | 
+src/thread/thposixthread.cpp | -fno-exceptions |  | 
+src/install/trypfsproxy.cpp | -g -pg | -g2 | 
+src/fs/thfilelist.cpp | -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/fs/thmediachecker.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/image/thimagedecoder.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/http/httpfile.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+src/fs/thdbaccess.cpp | -fno-exceptions -DNDEBUG |  | clear__t10_List_base2Z13_command_infoZt9allocator1Z13_command_info,_S_refill__t24__default_alloc_template2b1i0Ui,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,lexicographical_compare__H2ZPCScZPCSc_X01X01X11X11_b,__lexicographical_compare_3way__H2ZPCScZPCSc_X01X01X11X11_i,_S_oom_malloc__t23__malloc_alloc_template1i0Ui,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/fs/thfileoperation.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+ref/jpeg-6b/jerror.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jutils.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jmemmgr.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jmemnobs.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcapimin.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcapistd.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcparam.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcinit.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jccoefct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jccolor.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcdctmgr.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jchuff.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcmainct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcmarker.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcmaster.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcomapi.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcphuff.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcprepct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jcsample.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdapimin.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdapistd.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdcoefct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdcolor.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jddctmgr.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdhuff.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdinput.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdmainct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdmarker.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdmaster.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdmerge.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdphuff.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdpostct.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jdsample.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jfdctflt.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jfdctfst.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jfdctint.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jidctflt.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jidctfst.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jidctint.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jidctred.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jquant1.c | -Iref/jpeg-6b |  | 
+ref/jpeg-6b/jquant2.c | -Iref/jpeg-6b |  | 
+ref/libmng-1.0.3/libmng_callback_xs.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_chunk_io.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_chunk_prc.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_cms.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_display.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_error.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_filter.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_hlapi.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_jpeg.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_object_prc.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_pixels.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_prop_xs.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_read.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_write.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/libmng-1.0.3/libmng_zlib.c | -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.4 -Iref/jpeg-6b -g | -g2 | 
+ref/sslc-2.1.0/crypto/md5/md5_dgst.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -DPURIFY -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/sha/sha1dgst.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_all.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/objects/obj_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/conf/conf_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bn/bn_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dh/dh_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dsa/dsa_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/buffer/buf_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_err.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_acc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bss_file.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bss_mem.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bf_buff.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bss_sock.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/b_print.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/encode.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_key.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/e_rc4.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/e_cbc_3d.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/e_cbc_d.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/e_cbc_r2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/e_null.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_md5.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_sha1.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_md2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_dss1.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/md2/md2_dgst.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/p_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/names.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/digest.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/ex_data.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/objects/obj_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/objects/obj_dat.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_type.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_bytes.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_octet.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_bool.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_utctm.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_object.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_print.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_dup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/t_x509.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_val.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_dir.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_dirinfo.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_aux.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_strip.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_tile.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_swab.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_open.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_close.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_unix.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -DHAVE_MMAP -g | -g2 | 
+ref/tiff-3.4beta037/tif_error.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_warning.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_flush.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_read.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_write.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_dirread.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_dirwrite.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_getimage.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_compress.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_fax3.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_luv.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_lzw.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_next.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_packbits.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_predict.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_thunder.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_dumpmode.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+ref/small-fmt6/amx.c | -DSN_TARGET_PS2 -DNDEBUG -finline-functions -DAMX_COMPACTMARGIN=32 |  | 
+ref/small-fmt6/amx_strpack.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/giflib-4.1.0/gifalloc.c   | -Iref/giflib-4.1.0 -O0 -g | -g2 |
+ref/giflib-4.1.0/gif_err.c | -Iref/giflib-4.1.0 -O0 -g | -g2 | 
+ref/giflib-4.1.0/quantize.c | -Iref/giflib-4.1.0 -O0 -g | -g2 | 
+ref/giflib-4.1.0/dgif_lib.c | -Iref/giflib-4.1.0 -O0 -g | -g2 | 
+ref/giflib-4.1.0/egif_lib.c | -Iref/giflib-4.1.0 -O0 -g | -g2 | 
+src/gfx/gm_graph.cpp | -fno-exceptions |  | 
+src/script/script.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/ui/simpletextedit.cpp | -fno-exceptions |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi
+src/scene/plane.cpp | -fno-exceptions -O3 |  | 
+src/ui/textfield.cpp | -fno-exceptions -O3 |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/scene/scene.cpp | -O3 -fno-exceptions |  | 
+src/scene/model.cpp | -fno-exceptions -O3 |  | 
+src/scene/modeldata.cpp | -O3 -fno-exceptions |  | 
+src/script/scenewindow.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/ime/textim.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/ui/label.cpp | -fno-exceptions -O3 |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,alloc__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Uib,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/ui/multilinelabel.cpp | -fno-exceptions -O3 |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/scene/animation.cpp | -fno-exceptions -O3 |  | 
+src/app/systemoptions.cpp | -fno-exceptions |  | 
+src/image/inputdatafilter.cpp | -g | -g2 | 
+src/image/eiclfile.cpp | -g | -g2 | 
+src/image/rawimgbgr.cpp | -g | -g2 | 
+src/image/theimagedecoder.cpp | -g | -g2 | 
+src/fs/thloadicon.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+src/scene/particle.cpp | -fno-exceptions -O3 |  | __as__t6vector2ZfZt9allocator1ZfRCt6vector2ZfZt9allocator1Zf,__as__t6vector2ZiZt9allocator1ZiRCt6vector2ZiZt9allocator1Zi,insert__t6vector2ZfZt9allocator1ZfPfUiRCf,insert__t6vector2ZiZt9allocator1ZiPiUiRCi,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/app/thdlmodule.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/script/thxmlloader.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/app/variables.cpp | -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/image/eiclsize.cpp | -g | -g2 | 
+src/image/rawimgdib.cpp | -g | -g2 | 
+src/dnas/dnas2sysupmanager.cpp |  |  | 
+src/scene/disp2d.cpp | -fno-exceptions -O3 |  | 
+src/scene/defocus.cpp | -O3 -fno-exceptions |  | 
+src/scene/sscope0.cpp | -fno-exceptions -O3 |  | 
+src/scene/camera.cpp | -fno-exceptions -O3 |  | 
+src/scene/prim.cpp | -fno-exceptions |  | 
+src/dnas/dnas2sysupdater.cpp |  |  | 
+src/install/tryinstaller.cpp | -g -pg | -g2 | 
+src/image/inputiofilter.cpp | -g | -g2 | 
+src/image/outputiofilter.cpp | -g | -g2 | 
+src/image/inputiofilefilter.cpp | -g | -g2 | 
+src/image/outputiofilefilter.cpp | -g | -g2 | 
+src/image/outputdatafilter.cpp | -g | -g2 | 
+src/scene/line3d.cpp | -fno-exceptions |  | 
+src/scene/animmoveline.cpp | -fno-exceptions |  | 
+src/scene/animmovehermite.cpp | -O3 -fno-exceptions |  | 
+src/scene/hermite.cpp | -fno-exceptions |  | 
+src/image/exifreader.cpp | -g | -g2 | 
+src/image/inputdatafiltermng.cpp | -g -DMNG_SUPPORT_READ -DMNG_SUPPORT_WRITE -DMNG_SUPPORT_DISPLAY -DMNG_ERROR_TELLTALE -Iref/libmng-1.0.3 -Iref/zlib-1.1.3 -Iref/jpeg-6b | -g2 | 
+src/scene/animcolor.cpp | -fno-exceptions |  | 
+src/scene/animscale.cpp | -fno-exceptions |  | 
+src/scene/animrotate.cpp | -fno-exceptions |  | 
+src/install/tryinstmanager.cpp | -g -pg | -g2 | 
+src/gfx/gm_texture.cpp | -O3 -fno-exceptions |  | 
+src/image/outputdatafilterbmp.cpp | -g | -g2 | 
+src/app/bnapi.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/scene/mesh_class.cpp | -fno-exceptions -O3 |  | insert__t6vector2ZfZt9allocator1ZfPfUiRCf,__as__t6vector2ZfZt9allocator1ZfRCt6vector2ZfZt9allocator1Zf,insert__t6vector2ZiZt9allocator1ZiPiUiRCi,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi,_M_insert_aux__t6vector2ZiZt9allocator1ZiPiRCi
+src/image/outputdatafiltertiff.cpp | -g | -g2 | 
+src/image/outputdatafilterpng.cpp | -g -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 | -g2 | 
+src/image/outputdatafiltergif.cpp | -g -Iref/giflib-4.1.0 | -g2 | 
+src/image/outputdatafilterjpeg.cpp | -g -Iref/jpeg-6b | -g2 | 
+src/image/inputdatafilterbmp.cpp | -g | -g2 | 
+src/image/inputdatafilterpng.cpp | -g -Iref/libpng-1.0.3 -Iref/zlib-1.1.3 | -g2 | 
+src/image/inputdatafiltertiff.cpp | -g | -g2 | 
+src/scene/icon.cpp | -fno-exceptions -O3 |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/scene/cloud.cpp | -O3 -fno-exceptions |  | 
+src/scene/crystal.cpp | -fno-exceptions -O3 |  | 
+src/gfx/texture.cpp | -fno-exceptions |  | 
+src/scene/objecttable.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/xml/xml_utf8stream.cpp | -fno-exceptions |  | 
+src/image/inputdatafiltergif.cpp | -g -Iref/giflib-4.1.0 | -g2 | 
+src/gfx/font.cpp | -fno-exceptions |  | 
+src/image/inputdatafilterjpeg.cpp | -g -Iref/jpeg-6b | -g2 | 
+src/app/desktop.cpp | -fno-exceptions |  | 
+src/xml/tagnamestack.cpp | -fno-exceptions |  | 
+src/scene/hook.cpp | -fno-exceptions -O3 |  | _S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/app/biff.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/app/command.cpp | -fno-exceptions -DNDEBUG |  | _$_7Command,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/input/irrm.cpp | -fno-exceptions |  | 
+src/thread/thjob.cpp | -fno-exceptions |  | 
+src/fs/bburl.cpp | -fno-exceptions |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep
+ref/libps2dev-1.0/ps2gs/gs_gparam.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_image.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_disp.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_draw.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_dbuff.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_clear.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2gs/gs_internal.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/dma/dmalib.c | -Iref/libps2dev-1.0/vpufile -Iref/libps2dev-1.0/ps2mem -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2vpu/ps2vpu.c | -DDEBUG -fno-common |  | 
+ref/libps2dev-1.0/ps2mem/memlib.c | -DDEBUG -fno-common -g |  | 
+ref/libps2dev-1.0/ps2gs/gs_open.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common -g | -g2 | 
+ref/libps2dev-1.0/ps2gs/gs_reset.c | -Iref/libps2dev-1.0/dma -Iref/libps2dev-1.0/vpufile -DDEBUG -fno-common |  | 
+src/ime/atok.c | -D__NO_STRING_INLINES -fno-common |  | 
+src/gfx/tm2.cpp | -fno-exceptions -O3 |  | _S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+# -O3 like tm2, the neighbouring unit of the image codec. ld writes into .dynsym the size of the last linkonce copy (bfd/elflink.h:1281-1291): the original has 940 B for _M_insert_aux<img_image*>/<img_pict*>, the -O3 copy; .text/.rodata/.data unchanged
+src/gfx/bmp.cpp | -fno-exceptions -O3 |  | _M_insert_aux__t6vector2ZP8img_pictZt9allocator1ZP8img_pictPP8img_pictRCP8img_pict,_M_insert_aux__t6vector2ZP9img_imageZt9allocator1ZP9img_imagePP9img_imageRCP9img_image,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/gfx/pltm.c | -D__NO_STRING_INLINES -O2 |  | 
+src/ime/fepmain.c | -O3 -fno-common |  | 
+src/ime/skbcore.c | -O3 -fno-common |  | 
+ref/rcom-1.1.0/cmp.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_modexp.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_mont.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_div.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_vecmul.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/ime/textim.c | -fno-common |  | 
+ref/rcom-1.1.0/bn_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_expand2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_numbits.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_add_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sub_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lshift1.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_rshift1.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lshift.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_rshift.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_uadd.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_usub.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_add.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sub.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mulw.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_subw.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+src/gfx/gmo.cpp | -fno-exceptions -finline-functions |  | _S_chunk_alloc__t24__default_alloc_template2b1i0UiRi,_M_insert_aux__t6vector2ZiZt9allocator1ZiPiRCi
+src/ime/skbmain.c | -mmemcpy -fno-common |  | 
+src/ime/unicode.c |  |  | 
+src/ime/textimsub.c | -D__NO_STRING_INLINES -fno-builtin |  | 
+src/ime/bar.c | -fno-common |  | 
+src/ime/fepbar.c |  |  | 
+src/ime/skbbar.c |  |  | 
+src/ime/tfont.c |  |  | 
+src/ime/conkbd.c |  |  | 
+ref/rcom-1.1.0/bn_mont.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mont_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mod.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_2scomp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_modinv.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_div.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mulnorm.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sqrnorm.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_frommont.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_frommont2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_modmulmont.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mulcomba8.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sqrcomba8.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sqrcomba4.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mul.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sqr.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mulrec.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_sqrrec.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+src/dnas/scednas2.c | -D__NO_STRING_INLINES -fno-common -g | -g2 | 
+src/memcard/scemc.c | -O0 -g | -g2 | 
+src/lib/scepfsd.c | -fno-builtin |  | 
+src/memcard/vmc.c | | |
+src/audio/msin.c | -O0 -g | -g2 |
+src/lib/ccc.c |  |  | 
+src/http/scehttp.c |  |  | 
+ref/rcom-1.1.0/bsafe_ai.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_mempool.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_infocache.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_key.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_alg.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_t.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/dnas/dnaspwrap.c | -g | -g2 | 
+src/dnas/dnas_ar.c | -pg -fexceptions -g |  | 
+src/memcard/card.c |  |  | 
+ref/sslc-2.1.0/ssl/s2_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | ssl3_alert_code,ssl3_cert_verify_mac
+ref/sslc-2.1.0/ssl/s3_both.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_evp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_def.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_cmp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_obj.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_cert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_ciph.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_ext.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/by_file.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_d2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_algor.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/cert.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/berder.c | -Iref/rcom-1.1.0 | -g2 | 
+ref/sslc-2.1.0/crypto/stack/stack.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/chloe/chloe.c |  |  | 
+src/fw/fw.c | -fno-common -Iref/libps2dev-1.0/ps2gs -Iref/libps2dev-1.0/ps2vpu |  | 
+ref/rcom-1.1.0/r_time.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/asn.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/pk.c | -Iref/rcom-1.1.0 -O0 -g | -g2 |
+ref/sslc-2.1.0/crypto/asn1/x_x509.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_cinf.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_pubkey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_sig.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_exten.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_name.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_name_entry.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_crl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/ime/feplist.c |  |  | 
+src/install/scetryinst.cpp | -g -pg | -g2 | 
+ref/rcom-1.1.0/ki.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x_all.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/rcom/umempool.c |  |  | 
+ref/sslc-2.1.0/crypto/x509/x509_rcom.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_int.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/i2d_dsap.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/i2d_s_pu.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_set.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_d2i_fp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/i2d_pu.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/d2i_pu.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/d2i_pr.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509name.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/fw/dmem.c | -fno-common |  | 
+ref/rcom-1.1.0/kit_24byte.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_des8.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_misc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_8byte.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_rsapublic.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_pkcs_rsaprivate.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/oldber.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/gfx/tm.c |  |  | 
+src/gfx/tm_image.c |  |  | 
+src/gfx/tm_texture.c |  |  | 
+ref/rcom-1.1.0/r_rand.c | -Iref/rcom-1.1.0 -O0 -g | -g2 |
+ref/rcom-1.1.0/r_rand_sha1.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_v3.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lu.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | X509_STORE_get_by_subject
+ref/sslc-2.1.0/crypto/x509/x509_vfy.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/pk_default.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dsa/dsa_internal.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dsa/dsa_cb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/dnas/dnas2m12_des.c | -g | -g2 | 
+src/dnas/dnas2m61_des.c |  |  | 
+src/dnas/dnas2m11_scr_xor1.c |  |  | 
+ref/sslc-2.1.0/crypto/hmac/hmac.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dsa/dsa_set_hooks.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/thread/scesema.c | -g | -g2 | 
+src/app/syscnf.cpp | -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+ref/sslc-2.1.0/crypto/buffer/buffer.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/app/module.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+ref/sslc-2.1.0/crypto/rsa/rsa_obj.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/input/myusbmouse.cpp | -fno-exceptions |  | 
+src/ui/msgbox.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/ui/navimenu.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/xml/xmlparse_ns.cpp | -fno-exceptions |  | 
+src/input/mypad.cpp | -fno-exceptions |  | 
+ref/sslc-2.1.0/crypto/lhash/lhash.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dh/dh_obj.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ah.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/objects/o_names.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/image/imgopzoom.cpp | -g | -g2 | 
+src/dnas/dnas2m11_scramble.c |  |  | 
+ref/rcom-1.1.0/ber_item.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_all.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/rcom/op.c | -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_enc2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/p_sign.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/p_verify.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/fs/bbfile.cpp | -fno-exceptions -DNDEBUG |  | 
+ref/rcom-1.1.0/r_lock.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_mtime.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi_export.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi_import.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitem.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitem_items.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitem_ops.c | -Iref/rcom-1.1.0 -O0 -g | -g2 |
+ref/rcom-1.1.0/pk_unimplemented.c | -O0 -g | -g2 |
+ref/rcom-1.1.0/rsa_pk1.c | -Iref/rcom-1.1.0 -O0 -g | -g2 |
+ref/sslc-2.1.0/crypto/x509/by_dir.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_err2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s2_pkt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/t1_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/t1_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/input/scerm2.c | -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/des/set_key.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | des_check_key
+ref/sslc-2.1.0/crypto/des/des_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g -DDES_PTR | -g2 | 
+ref/sslc-2.1.0/crypto/rc4/rc4_skey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rc4/rc4_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_modmul.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_rand.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+src/cfd/cfd.c | -g | -g2 | 
+src/cfd/cfd2.c | -g | -g2 | 
+src/dnas/dnas2m11_exclusion.c |  |  | 
+src/dnas/dnas2m11_xform_desc.c |  |  | 
+src/audio/scesd.c | -O0 -g | -g2 | 
+src/http/sceurl.c |  |  | 
+src/http/scebase64.c |  |  | 
+ref/rcom-1.1.0/bn_me.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_me_modexp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_genexp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_word2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_modinv_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_dh.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_crt.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_init.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/a_stream.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_clear.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_connect_state.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_sess_hash.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_name_d2i.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/dnas/dnaspwrapmain.c |  |  | 
+src/dnas/dnaspwrap_cleanid.c |  |  | 
+src/rcom/sio_retry.c | -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/rcom/sio_ioctl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/rcom/sio_nbio.c | -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/lib/mymalloc.c | | |
+ref/rcom-1.1.0/alg.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/gfx/tmsettag.c |  |  | 
+src/image/rawimggenerator.cpp | -g | -g2 | 
+src/rcom/desimpl.c |  |  | 
+ref/sslc-2.1.0/crypto/asn1/a_bitstr.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_verify.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_digest.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/d2i_dsap.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/d2i_s_pr.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/d2i_s_pu.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_asn1.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_sess.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/fs/bbfile_dir.cpp | -fno-exceptions |  | clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+ref/sslc-2.1.0/ssl/s3_pkt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s2_enc.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_clnt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s2_clnt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s23_clnt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/t1_clnt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s23_lib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s23_pkt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/f_int.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/i2t_object_ex.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/md5/md5_one.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rc2/rc2_skey_bn.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/des/read_pwd.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/des/fcrypt_full.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g -DDES_PTR | -g2 | 
+src/dnas/dnas2m11_rand.c | -g | -g2 | 
+src/dnas/dnas2m12_rsa.c | -g | -g2 | 
+src/dnas/dnas2m61_rsa.c |  |  | 
+src/dnas/dnas2m11_sha1.c |  |  | 
+src/dnas/dnas2keyload.c |  |  | 
+src/dnas/dnas2m60_verify.c |  |  | 
+src/dnas/dnas2m11_shim.c |  |  | 
+ref/rcom-1.1.0/rc6_init.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/rc6_enc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/rc6_dec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/natives/timeextension.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/app/bntime.cpp | -fno-exceptions |  | 
+src/gfx/bt2ipu.cpp | -fno-exceptions -fno-strength-reduce |  | 
+src/natives/sndextension.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/hisextension.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/shortcutextension.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/natives/xmlextension.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/rcom-1.1.0/cmp_shl.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_addinplace.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bn_modexp_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 | -g2 | 
+ref/rcom-1.1.0/bn_modexp_mont.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 | -g2 | 
+ref/rcom-1.1.0/bn_modexp2_mont.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+src/app/stringutil.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+ref/rcom-1.1.0/a_encdec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/ime/skbcode.c |  |  | 
+# -O3 because the last copy of _M_insert_aux<string> in link order is database's and the original has its -O3 size (1736 B, bfd/elflink.h:1281-1291); ALLOC sections unchanged. That it was database and not a later unit that no longer emits the copy is a guess
+src/app/database.cpp | -fno-exceptions -O3 |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_insert_aux__t6vector2Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Pt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0
+src/scene/scenefacade.cpp | -fno-exceptions -O3 |  | 
+src/script/parseresult.cpp | -fno-exceptions -O3 |  | insert__t6vector2ZfZt9allocator1ZfPfUiRCf,insert__t6vector2ZiZt9allocator1ZiPiUiRCi,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi
+src/lib/pure_virtual.c | | |
+src/lib/libc_stat.c | | |
+src/lib/libgcc_moddi3.c | -Iref/gcc-2.95.2 -g | -g2 | 
+src/lib/libgcc_floatdisf.c | -Iref/gcc-2.95.2 |  | 
+src/lib/fpbit_dptoli.c | -Iref/gcc-2.95.2 |  | 
+src/lib/fpbit_dptoul.c | -Iref/gcc-2.95.2 |  | 
+src/lib/fpbit_litodp.c | -Iref/gcc-2.95.2 |  | 
+src/image/localfileio.cpp | -g | -g2 | 
+ref/rcom-1.1.0/keyinfo_ber.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/scene/animquat.cpp | -fno-exceptions -O3 |  | 
+src/install/tryinsthistory.cpp | -g -pg | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_saos_cb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_sign_cb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/image/imgopavgzoom.cpp | -g | -g2 | 
+ref/sslc-2.1.0/crypto/dsa/dsa_sign_cb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/app/bndownload.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi
+ref/sslc-2.1.0/crypto/dsa/dsa_vrf_cb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/fw/gsbuf.c | -fno-common |  | 
+src/audio/sound.c |  |  | 
+src/app/commandhandler.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+ref/rcom-1.1.0/bsafe_cbc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/http/httpmd5.c | | |
+src/gfx/gmtrig.cpp | -fno-exceptions | |
+src/ime/skbhelp.c |  |  | 
+ref/rcom-1.1.0/alga.c | -Iref/rcom-1.1.0 |  | 
+ref/rcom-1.1.0/a_misc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/rcom/descore.c |  |  | 
+ref/sslc-2.1.0/ssl/ssl_dsaparams_dup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/http/scehttpauth.c |  |  | 
+src/image/quant_opt.cpp | -g | -g2 | 
+src/http/scehttps.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 |  | 
+src/app/bnexec.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/rcom/checksurrender.c | | |
+src/app/bnmisc.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/app/jobinit2.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/image/quant_palette.cpp | -g | -g2 | 
+src/gfx/gifpacket.c | | |
+src/app/gettext.cpp | -fno-exceptions |  | 
+src/script/utf8ucs4.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/http/scehttpio.c | -fno-common |  | 
+src/http/scehttpopt.c |  |  | 
+src/app/bnclass.cpp | -fno-exceptions |  | 
+src/xml/xml_parserfactory.cpp | -fno-exceptions |  | 
+ref/rcom-1.1.0/kit_rsapublic_ber.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_ssl.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+src/app/buffer_tostring.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi
+ref/rcom-1.1.0/bsafe_hwchooser.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/image/imgopquadpointzoom.cpp | -g | -g2 | 
+src/install/trycreatefs.cpp | -g -pg | -g2 | 
+src/app/systemparam.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/http/scehttpcookie.c | -fno-common |  | 
+src/app/bnapp.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/fs/bbfileaccess.cpp | -fno-exceptions |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,__uninitialized_copy_aux__H2ZPC14sceMcTblGetDirZP14sceMcTblGetDir_X01X01X11G12__false_type_X11,__as__t6vector2Z14sceMcTblGetDirZt9allocator1Z14sceMcTblGetDirRCt6vector2Z14sceMcTblGetDirZt9allocator1Z14sceMcTblGetDir,__uninitialized_copy_aux__H2ZPC8DIRENTRYZP8DIRENTRY_X01X01X11G12__false_type_X11,__as__t6vector2Z8DIRENTRYZt9allocator1Z8DIRENTRYRCt6vector2Z8DIRENTRYZt9allocator1Z8DIRENTRY,clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_S_chunk_alloc__t24__default_alloc_template2b1i0UiRi,_S_oom_malloc__t23__malloc_alloc_template1i0Ui,_S_refill__t24__default_alloc_template2b1i0Ui
+src/dnas/dnas1msg.c | -g | -g2 | 
+src/dnas/dnas2read.c |  |  | 
+src/dnas/dnas1core.c | -g | -g2 | 
+src/dnas/dnas2session.c |  |  | 
+ref/sslc-2.1.0/crypto/err/err_tbl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/des/fcrypt_body.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g -DDES_PTR | -g2 | 
+src/dnas/scednas1_state.c | -g | -g2 | 
+src/dnas/dnas2m11_identity.c | -D__NO_STRING_INLINES |  | 
+src/dnas/dnas2m12_identity.c | -D__NO_STRING_INLINES |  | 
+src/dnas/dnas2m12_records.c |  |  | 
+src/dnas/dnas2m11_slots.c | -g | -g2 | 
+src/dnas/dnas2m12_slots.c |  |  | 
+src/dnas/dnas2m11_twopass.c | -g | -g2 | 
+src/dnas/dnas2m12_twopass.c |  |  | 
+src/dnas/dnas2m11_signed_msg.c | -g | -g2 | 
+src/dnas/dnas2m12_blocks.c |  |  | 
+src/dnas/dnas2m11_blocks.c | -g | -g2 | 
+src/dnas/dnas2m12_signed_msg.c |  |  | 
+ref/sslc-2.1.0/crypto/err/err_load.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lu_getsub.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_default_cb.c | -Iref/rcom-1.1.0 -O0 -g |  -g2 | 
+ref/rcom-1.1.0/ber_cmp_tag.c | -Iref/rcom-1.1.0 -O0 -g |  -g2 | 
+ref/rcom-1.1.0/ber_set_all.c | -Iref/rcom-1.1.0 -O0 -g |  -g2 | 
+ref/rcom-1.1.0/asn_stream.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_realloc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/alg_errcode.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cert_setup.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/ssl -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/tiff-3.4beta037/tif_codec.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+src/natives/natives_object.cpp | -Iref/small-fmt6 -fno-exceptions -DSN_TARGET_PS2 -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/amxmath.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_img.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG -fno-builtin |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_err2.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_list.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | 
+src/natives/natives_wnd.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_sysupdate.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic
+src/natives/natives_cdl.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_str.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_file.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+src/natives/natives_model.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_script.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/natives_msg.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/dnas/dnas_pwrap.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -fno-common -g | -g2 | 
+src/natives/iconextension.cpp | -Iref/small-fmt6 -fno-exceptions -DSN_TARGET_PS2 -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,clear__t10_List_base2Z7fmEntryZt9allocator1Z7fmEntry,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/natives/natives_dom.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/natives/natives_dat.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiUic,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0PCcUiUi
+ref/gcc-2.95.2/crtstuff.c |  |  | 
+ref/gcc-2.95.2/crtstuff_end.c |  |  | 
+src/natives/natives_play.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,compare__Ct12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0RCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi
+src/xml/xml_string.cpp | -fno-exceptions -finline-functions |  | 
+src/http/scehttpstr.c |  |  | 
+src/http/scehttpdate.c |  |  | 
+src/http/scehttpuri.c |  |  | 
+src/http/scehttpheader.c |  |  | 
+src/dnas/dnas2cdl.cpp |  |  | clone__Q2t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0_3Rep,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi
+src/script/scriptabort.cpp | -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/libps2dev-1.0/vpufile/vpu_file.c | -Iref/libps2dev-1.0/ps2mem -DDEBUG -fno-common -g | -g2 | 
+src/natives/natives_initterm.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiPCcUi,replace__t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUiRCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0UiUi,_M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/rcom-1.1.0/cert_err.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/proxy_err.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/x509tc_err.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/hmac_err.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/sio_err.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/small-fmt6/amxcons.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/sslc-2.1.0/crypto/stack/sk_set_cmp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/stack/sk_dup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/stack/sk_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/stack/sk_delete.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/stack/sk_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_a2.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bn_numbits_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mont_init.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_ctx.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_cmp2.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_rand_def.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_keyinfo.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bn_bnme.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_time_func.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_dh_cleanup.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_read.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_core.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_pk.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ah_choose.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_notbefore.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_notafter.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_io.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_md.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_utc_check.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_obj_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_name_entry_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_rbuf.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_asn1rd.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_pwd.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_getpub.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_put.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_vals.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_state.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_set_cert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_set_pkey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/dnas/dnaspwrap_area.c | -g | -g2 | 
+src/chloe/chloe_vanilla.c |  |  | 
+src/chloe/chloe_pizza.c |  |  | 
+src/chloe/chloe_melon.c |  |  | 
+src/gfx/tm_mgr.c |  |  | 
+src/http/scehttp_mem.c | -fno-common |  | 
+src/http/scehttp_ver.c |  |  | 
+src/fw/fw_gsdev.c | -fno-common -Iref/libps2dev-1.0/ps2gs -Iref/libps2dev-1.0/ps2vpu |  | 
+src/fw/fw_pk.c | -fno-common -Iref/libps2dev-1.0/ps2gs -Iref/libps2dev-1.0/ps2vpu |  | 
+src/fw/fw_gsenv.c | -fno-common |  | 
+src/install/scetryinstdl.cpp | -g -pg | -g2 | 
+src/dnas/scebnsysup.cpp |  |  | 
+src/xml/xml_attribute.cpp | -fno-exceptions |  | 
+src/xml/xml_inputstreamstackelement.cpp | -fno-exceptions |  | 
+src/xml/xml_nodelistelement.cpp | -fno-exceptions |  | 
+src/xml/xml_nameelement.cpp | -fno-exceptions |  | 
+src/fs/thfileoperation2.cpp | -fno-exceptions -DNDEBUG |  | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_write.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_gets.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_int_ctrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_push.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_pop.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_privenc.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_privdec.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_verify.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_pubdec.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_get.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_enc_ctxnew.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_enc_cleanup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_infend.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_getobj.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_strnew.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lu_retrieve.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lu_lookup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lu_bysubj.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_libinit.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_libcleanup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ctrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ciplist.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ctx.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_cache.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_hshake.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_badmeth.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib_dup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib_getword.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib_maskbits.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+src/image/imgopzoomin.cpp | -g | -g2 | 
+src/image/imgopzoomout.cpp | -g | -g2 | 
+ref/rcom-1.1.0/bsafe_encdec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_algobj.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_resize.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/ah_rsaenc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/ah_rsapub.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/ah_chooseenc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/r_mtime_set.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitems_new.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitems_free.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitems_add.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitems_find.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitem_new.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_eitem_copy.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dh/dh_meth_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dh/dh_meth_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/dh/dh_size.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_lib_reneg.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_lib_partread.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/asn_alloc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/r_mem.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/r_diag.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/names_bynid.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/lib/mymalloc2.c |  |  | 
+ref/sslc-2.1.0/crypto/x509/x509_st_addcert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_st_addcrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/cfd/cfd_rand.c | -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_aes.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_cbc_il.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_cbc_iv8.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_cbc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_cfb_pipe.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_cfb.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_choose_null.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_des_ede.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_des.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_desx.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_ecaccel.c | -Iref/rcom-1.1.0 -fno-common -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_ecb.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_gencrypt.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_ofb_pipe.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_ofb.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_pkcs_rsapub.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_rc2.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_rc5_64.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_rc5.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_rc6.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_reset_iv.c | -Iref/rcom-1.1.0 -fno-common -g | -g2 | 
+ref/rcom-1.1.0/bsafe_ai_rsapub.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bn_me_ctx.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_me_word.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_mont_useit.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_rsa_privdec.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_rsa_pubdec.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_rsa_pubenc.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_initmeth.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_all_funcs.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_read_funcs.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_load.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/dnas/dnas2m11_descramble.c |  |  | 
+src/dnas/dnas2m12_scramble.c |  |  | 
+src/dnas/dnas2m12_descramble.c |  |  | 
+# C TU of the boot 3DES (0x493950-0x494C44), split from src/app/bndownload.cpp: C linkage, frame of the strcpy macro of string.h
+src/app/bndes.c |  |  | 
+# split from s2_lib.c (a separate TU in the original)
+ref/sslc-2.1.0/ssl/s2_lib_keymat.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+# split from s2_lib.c (a separate TU in the original)
+ref/sslc-2.1.0/ssl/s2_lib_buf.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+# split from evp_enc.c (a separate TU in the original)
+ref/sslc-2.1.0/crypto/evp/evp_enc_init.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+# split from evp_enc.c (a separate TU in the original)
+ref/sslc-2.1.0/crypto/evp/evp_enc_dec.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+# split from evp_enc.c (a separate TU in the original)
+ref/sslc-2.1.0/crypto/evp/evp_enc_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+# generated by mkg3states -c const (libtiff 3.4beta037): TIFFFax*Table tables
+ref/tiff-3.4beta037/tif_fax3sm.c | -Iref/tiff-3.4beta037 -O1 -DHOST_BIGENDIAN=0 -g | -g2 | 
+src/natives/natives_msgbox.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | 
+ref/sslc-2.1.0/crypto/pem/pem_lib_readbio.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_data.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/app/resource.cpp | -fno-exceptions |  | 
+src/app/bnhdd.cpp | -fno-exceptions -DNDEBUG |  | 
+src/app/bncdsearch.cpp | -fno-exceptions -DNDEBUG |  | 
+src/app/bnsysconf.cpp | -fno-exceptions -DNDEBUG |  | 
+ref/sslc-2.1.0/crypto/des/ecb_enc_data.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_remove.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_getst.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_nlib.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_adata.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/xml/xml_tokenscanner.cpp | -fno-exceptions |  | 
+src/http/scehttpredirect.c |  |  | 
+src/dnas/dnas2m61_verify.c |  |  | 
+src/xml/xml_scannerstateimpl.cpp | -fno-exceptions |  | 
+src/xml/xml_inputstreamstack.cpp | -fno-exceptions |  | 
+src/xml/xml_parseerrorprocessor.cpp | -fno-exceptions |  | 
+ref/rcom-1.1.0/cert_oid.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/xml/xml_stagscanner.cpp | -fno-exceptions |  | 
+src/xml/xml_cdatascanner.cpp | -fno-exceptions |  | 
+src/xml/xml_chardatascanner.cpp | -fno-exceptions |  | 
+src/xml/xml_commentscanner.cpp | -fno-exceptions |  | 
+src/xml/xml_etagscanner.cpp | -fno-exceptions |  | 
+src/xml/xml_piscanner.cpp | -fno-exceptions |  | 
+src/xml/xml_sscanner.cpp | -fno-exceptions |  | 
+src/install/trycontentinfo.cpp | -g -pg | -g2 | 
+ref/sslc-2.1.0/ssl/s3_both_cert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_both_bufs.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_rw.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ctxctrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_wbio.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_feature.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_exidx.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_version.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_cert_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_cert_type.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_cert_verify.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa_use_pkey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_cert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_pkey_file.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_cert_file.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_rsa_ctx_pkey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_all_pkey.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/pem/pem_all_crl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_get_eitem.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_meth_dh.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_ctx_new.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_priv_enc.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_pub_dec.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_sign.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_pub_enc.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_get_info.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_meth_rsa.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_key.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_md5_digest.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/m_sha1_digest.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/rcom/op_finish.c | -O0 -g | -g2 | 
+src/rcom/op_mark.c | -O0 -g | -g2 | 
+src/rcom/op_asn1_get.c | -O0 -g | -g2 | 
+src/rcom/op_asn1_check.c | -O0 -g | -g2 | 
+src/rcom/op_if.c | -O0 -g | -g2 | 
+src/rcom/op_undef.c | -O0 -g | -g2 | 
+ref/rcom-1.1.0/rc6_pqtable.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_desdec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_desenc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_desededec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_desedeenc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_ecb.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_rc6enc.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_rc6dec.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_am_rsa.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/xml/xml_declhandler.cpp | -fno-exceptions |  | 
+src/xml/xml_lexicalhandler.cpp | -fno-exceptions |  | 
+src/gfx/img.cpp | -fno-exceptions -O3 |  | 
+src/xml/xmltagtable.cpp | -fno-exceptions -DNDEBUG |  | 
+src/dnas/dnas1recv.c | -g | -g2 | 
+src/dnas/dnas2m12_rc6.c | -g | -g2 | 
+src/dnas/dnas2m11_des.c | -g | -g2 | 
+src/dnas/dnas2m11_rsa.c | -g | -g2 | 
+src/natives/amxfloat.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+src/natives/amxlong.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions |  | _M_erase__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtr,_M_copy__t8_Rb_tree5Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt10_Select1st1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrZt4less1Zt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Zt9allocator1Z12FileImagePtrPt13_Rb_tree_node1Zt4pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b1i0Z12FileImagePtrT1
+ref/sslc-2.1.0/crypto/x509/x509_gpp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_object_a2d.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_object_d2i.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_utctm_set.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_obj_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_obj_sign.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_md_set.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi_data.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/xml/xml_domimplimpl.cpp | -fno-exceptions |  | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_adderr.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_read.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_ctrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/bio/bio_lib_retry.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_md_init.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_st_ctx.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/pk_default_dh.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/pk_default_rsacb.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/chloe/chloe_peach.c |  |  | 
+src/chloe/chloe_lemon.c |  |  | 
+src/chloe/chloe_lime.c |  |  | 
+src/chloe/chloe_mandarin.c |  |  | 
+src/chloe/chloe_rolls.c | -D__NO_STRING_INLINES |  | 
+src/chloe/chloe_pineapple.c |  |  | 
+src/chloe/chloe_crisp.c |  |  | 
+src/chloe/chloe_pumpkin.c |  |  | 
+src/chloe/chloe_mango.c |  |  | 
+src/chloe/chloe_freezing.c |  |  | 
+src/chloe/chloe_pie.c |  |  | 
+src/chloe/chloe_cake.c |  |  | 
+src/chloe/chloe_orange.c |  |  | 
+src/chloe/chloe_sherbet.c |  |  | 
+src/chloe/chloe_strawberry.c |  |  | 
+src/chloe/chloe_berry.c |  |  | 
+src/chloe/chloe_milk.c |  |  | 
+src/chloe/chloe_tea.c |  |  | 
+src/chloe/chloe_grape.c |  |  | 
+src/chloe/chloe_candy.c |  |  | 
+src/chloe/chloe_scone.c |  |  | 
+src/chloe/chloe_pudding.c |  |  | 
+src/thread/thposixthread_nocode.cpp | -fno-exceptions |  | 
+ref/rcom-1.1.0/bn_me_data.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_notbefore_buf.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s2_cipher.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s2_mac.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/s3_finish_mac.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_utctm_d2i.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_sess_cmp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_set_word.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_convert.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_compare.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_get.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_bytes_to_key.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_dh_generate.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_dh_compute.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_asn1_private.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_asn1_encode.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/err/err_set_data.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_encrypt_update.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_ssl_check.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_word_arith.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_code.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_decode.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_init.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/op_ctx_init_read.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/lib/libc_lstat.c |  |  | 
+src/script/script_abort_entry.cpp | -fno-exceptions -DNDEBUG |  | 
+ref/rcom-1.1.0/rc6_unsupported.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/kit_integer_items.c | -Iref/rcom-1.1.0 -g | -g2 | 
+src/image/eiclmemory.cpp | -g | -g2 | 
+src/dnas/dnaspwrap_sample_xor.c | -g | -g2 | 
+src/dnas/dnaspwrap_sample_xor2.c | -g | -g2 | 
+src/dnas/dnaspwrap_word_swap1.c | -g | -g2 | 
+src/dnas/dnaspwrap_word_swap2.c | -g | -g2 | 
+src/dnas/dnaspwrap_word_swap3.c | -g | -g2 | 
+src/dnas/dnaspwrap_mix3.c | -g | -g2 | 
+src/dnas/dnaspwrap_descramble.c | -g | -g2 | 
+src/dnas/dnaspwrap_de_sample_xor.c | -g | -g2 | 
+src/dnas/dnaspwrap_de_sample_xor2.c | -g | -g2 | 
+src/dnas/dnaspwrap_de_word_swap1.c | -g | -g2 | 
+src/dnas/dnaspwrap_de_mix3.c | -g | -g2 | 
+ref/rcom-1.1.0/rc2_enc.c | -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/rc2 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_lookup_ctrl.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_time.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/dnas/dnas2m60_des.c |  |  | 
+src/dnas/dnas2m65_des.c |  |  | 
+src/dnas/dnas2m60_rsa.c |  |  | 
+src/dnas/dnas2m65_rsa.c |  |  | 
+src/dnas/dnas2m61_rc6.c |  |  | 
+src/dnas/dnas2m60_rc6.c |  |  | 
+src/dnas/dnas2m65_rc6.c |  |  | 
+src/dnas/dnas2m11_scr_xor2.c |  |  | 
+src/dnas/dnas2m11_scr_rotl13.c |  |  | 
+src/dnas/dnas2m11_scr_rotl8.c |  |  | 
+src/dnas/dnas2m11_scr_perm_mix.c |  |  | 
+src/dnas/dnas2m11_scr_mix3.c |  |  | 
+src/dnas/dnas2m11_unscr_xor1.c |  |  | 
+src/dnas/dnas2m11_unscr_xor2.c |  |  | 
+src/dnas/dnas2m11_unscr_rot_mix.c |  |  | 
+src/dnas/dnas2m12_scr_xor1.c |  |  | 
+src/dnas/dnas2m12_scr_xor2.c |  |  | 
+src/dnas/dnas2m12_scr_rotl13.c |  |  | 
+src/dnas/dnas2m12_scr_rotl8.c |  |  | 
+src/dnas/dnas2m12_scr_perm_mix.c |  |  | 
+src/dnas/dnas2m12_scr_mix3.c |  |  | 
+src/dnas/dnas2m12_unscr_xor1.c |  |  | 
+src/dnas/dnas2m12_unscr_xor2.c |  |  | 
+src/dnas/dnas2m12_unscr_rot_mix.c |  |  | 
+src/dnas/dnas2m12_unscr_mix3.c |  |  | 
+src/dnas/dnas2m11_decode.c | -g | -g2 | 
+src/dnas/dnas2m12_decode.c |  |  | 
+src/dnas/dnas2m12_rand.c |  |  | 
+src/dnas/dnas2m12_shim.c |  |  | 
+src/dnas/dnas2m12_exclusion.c |  |  | 
+src/dnas/dnas2m12_xform_desc.c |  |  | 
+ref/rcom-1.1.0/bsafe_keytype_error.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_item_equal.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_algtype_error.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/bsafe_attributes.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/a_modular_ops.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/rcom-1.1.0/cmp_modular.c | -Iref/rcom-1.1.0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_int_get.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_print_i2d.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_print_d2i.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_prtstr_d2i.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/evp/evp_lib_iv.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/x_name_new.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_objsize.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_octnew.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/asn1_lib_strcmp.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x_all_namedup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x_all_extdup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x_all_crlbio.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x_all_digest.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/asn1/a_object_create.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_pubkey_bits.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_serial_buf.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/x509/x509_sigtype.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_evp_setup.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_getciph.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ciphbyid.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_appvfy.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_setvfy.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_access.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_ok.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_time.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_rsa.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/ssl/ssl_lib_dsa.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_obj_verify.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/sslc-2.1.0/crypto/rsa/rsa_obj_crypt.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi_time.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/time_mi_offset.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_parse.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_sk_grow.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_sk_free.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_set_long.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_get_long.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_prefix_append.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/ber_under.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib_free.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/bn_lib_ctxnew.c | -Iref/sslc-2.1.0/crypto -Iref/sslc-2.1.0/include -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/crypto/bn -O0 -g | -g2 | 
+ref/rcom-1.1.0/pk_rsa_cleanup.c | -Iref/rcom-1.1.0 -Iref/sslc-2.1.0/include -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_pk1_check1.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+ref/rcom-1.1.0/rsa_pk1_type2.c | -Iref/rcom-1.1.0 -O0 -g | -g2 | 
+src/cfd/cfd_kdf.c | -g | -g2 | 
+# fwEv*: TU separate from src/fw/dmem.c (boundary from the .bss: 0x1022B3FC -> 0x1022B400)
+src/fw/fw_ev.c | -fno-common |  | 
+# DOMImplObject: TU of its own after xml_domexception.cpp (its vtable follows DOMException's in the original)
+src/xml/xml_domimplobject.cpp | -fno-exceptions |  | 
+src/app/bn_base64.cpp | -fno-exceptions |  | 

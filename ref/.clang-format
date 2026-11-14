@@ -1,0 +1,3 @@
+# Third-party and reconstructed libraries: kept in their own style, never formatted.
+DisableFormat: true
+SortIncludes: Never

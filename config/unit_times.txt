@@ -1,0 +1,10 @@
+# Build time of the original for the units that write __DATE__/__TIME__ into .rodata. The gate
+# compiles them under tools/fixtime.py, which shows that time (UTC) to the preprocessor. Source:
+# the giflib VersionStr strings in the original .rodata, each in the placed block of its unit.
+# unit | date and time (as __DATE__ __TIME__ write them)
+ref/giflib-4.1.0/egif_lib.c | Aug 28 2002 00:10:29
+ref/giflib-4.1.0/dgif_lib.c | Sep  4 2002 18:37:46
+ref/giflib-4.1.0/gif_err.c | Aug 28 2002 00:10:34
+ref/giflib-4.1.0/quantize.c | Aug 28 2002 00:10:34
+# gif_hash.c is not a unit: its VersionStr ("Gershon Elber") is not in the original and no object
+# of the build references its functions: library code that was never linked.

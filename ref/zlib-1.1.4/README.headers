@@ -1,0 +1,9 @@
+Only the public headers of zlib 1.1.4 (zlib.h, zconf.h), copied UNCHANGED from
+https://zlib.net/fossils/zlib-1.1.4.tar.gz (sha256
+9e3e973174f9910fd51539ef9ce94c86a3943d4f897fab8e9adf4b19e6a8291e).
+
+Why: in the original, libmng-1.0.3 is compiled against the zlib 1.1.4 headers
+(the ZLIB_VERSION that libmng_zlib.c passes to inflateInit_/deflateInit2_ is
+"1.1.4", .rodata 0x948CB0), while the linked zlib is 1.1.3 (ref/zlib-1.1.3,
+strings "deflate 1.1.3"/"inflate 1.1.3"). Between the two zlib.h only the
+version and the copyright change.

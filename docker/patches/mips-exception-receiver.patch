@@ -1,0 +1,62 @@
+Add the `exception_receiver` pattern to the MIPS backend of gcc 2.95.2.
+
+The pattern follows two implementations already present in gcc 2.95.2:
+  - semantics from pa/pa.md ("Load the PIC register from the stack slot
+    (in our caller's frame)", gated on flag_pic);
+  - form from alpha/alpha.md (define_insn + unspec_volatile + literal
+    template; Alpha emits `ldgp $29,0($29)`).
+
+The generic hook is receive_exception_label (gcc/except.c:722-738): it emits
+gen_exception_receiver() at the head of every landing pad if the target defines
+the pattern. pa, i386 and alpha define it; MIPS does not, so the landing pads
+are entered with the $gp of the frame that threw the exception (in PIC code $gp
+is call-clobbered and nothing on the unwinding path restores it).
+
+The offset is current_frame_info.args_size, the same value that mips.c prints
+in the `.cprestore` directive of the prologue.
+
+Apply it after the three Sony patches (docker/Dockerfile.sonygcc does).
+Details: docs/compiler.md. tools/check_toolchain.py pins it by sha256.
+
+--- a/gcc/config/mips/mips.md
++++ b/gcc/config/mips/mips.md
+@@ -82,6 +82,39 @@
+ ;;          (const_string "default"))))
+ 
+ ;; ??? Fix everything that tests this attribute.
++
++;; Reload the PIC register ($28) at the head of an exception landing pad.
++;;
++;; Semantics transposed from pa.md ("Load the PIC register from the stack slot
++;; (in our caller's frame)", gated on flag_pic); form from alpha.md
++;; (define_insn + unspec_volatile + literal template).  The generic hook is
++;; receive_exception_label (except.c:722-738), which emits
++;; gen_exception_receiver() at the head of EVERY landing pad if the target
++;; defines the pattern.  Three targets define it in 2.95.2 (pa, i386, alpha).
++;;
++;; It is needed because the unwinding path enters the pad WITHOUT returning
++;; from the call, so gas has not inserted the reload it attaches after every
++;; `jal' macro, and $gp is still that of the frame that threw.
++;;
++;; The offset is NOT a free parameter: it is current_frame_info.args_size, the
++;; same value that mips.c prints in the .cprestore of the prologue.
++(define_insn "exception_receiver"
++  [(unspec_volatile [(const_int 0)] 19)]
++  "TARGET_ABICALLS && !TARGET_64BIT"
++  "*
++{
++  static char retval[64];
++
++  sprintf (retval, \"lw\\t%s,%ld(%s)\",
++	   reg_names[PIC_OFFSET_TABLE_REGNUM],
++	   current_frame_info.args_size,
++	   reg_names[STACK_POINTER_REGNUM]);
++  return retval;
++}"
++  [(set_attr "type"	"load")
++   (set_attr "mode"	"SI")
++   (set_attr "length"	"1")])
++
+ (define_attr "cpu"
+   "default,r3000,r3900,r6000,r4000,r4100,r4300,r4600,r4650,r5000,r5400,r5900,r8000" ; pattern-sanitize-r5900-1  CYGNUS LOCAL vr5400/raeburn
+   (const (symbol_ref "mips_cpu_attr")))

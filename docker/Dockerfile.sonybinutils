@@ -1,0 +1,66 @@
+# Rebuilds Sony's binutils 2.9EE (PS2 Linux, target mipsEEel-linux) as a cross
+# toolchain for x86: the real assembler of the period, and the linker (make link)
+# with objdump/readelf/objcopy/nm/ar from the same tree.
+# Sources: the binutils-2.9EE SRPM from the PS2 Linux Kit (disc 2).
+#
+#   docker build --platform linux/amd64 -f Dockerfile.sonybinutils \
+#       --output=toolchain/sonybinutils .
+FROM --platform=linux/amd64 ubuntu:focal AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y build-essential gcc gcc-multilib bison flex
+
+WORKDIR /work
+COPY sonybinutils/binutils-2.9EE.tar.gz sonybinutils/binutils-ps2linux-1.0.0.patch ./
+RUN tar xzf binutils-2.9EE.tar.gz && ls
+
+WORKDIR /work/binutils-2.9EE
+RUN patch -p1 < ../binutils-ps2linux-1.0.0.patch
+
+# fixes for modern hosts
+RUN sed -i -- 's/include <varargs.h>/include <stdarg.h>/g' $(grep -rl 'include <varargs.h>' --include='*.c' . || true) 2>/dev/null || true
+RUN find . -name configure -o -name config.in -o -name 'cstamp-h*' | xargs touch
+
+RUN mkdir /work/build && cd /work/build && \
+    /work/binutils-2.9EE/configure \
+        --target=mipsEEel-linux \
+        --prefix=/opt/cross \
+        --disable-nls \
+        --disable-shared \
+        --host=i386-pc-linux \
+        --build=i386-pc-linux
+
+RUN cd /work/build && make -j$(nproc) all-gas CFLAGS="-std=gnu89 -m32 -Wno-error" LDFLAGS="-m32 -static"
+
+RUN mkdir /build && cp /work/build/gas/as-new /build/mipsEEel-linux-as
+RUN /build/mipsEEel-linux-as --version | head -2
+# this as is the one of the gate: ubuntu:focal and its apt packages are not pinned, an
+# update of gcc-9/flex in the archive would change the binary silently
+RUN echo "e07c3a4602f51e75a321f83963ce302d624c0b43  /build/mipsEEel-linux-as" | sha1sum -c
+
+# period flex for ld: ld/ldlex.l uses yy_current_buffer, an internal of flex 2.5.4 gone
+# since flex 2.5.31, and the tarball does not ship the pregenerated scanners (ldlex.c,
+# arlex.c, ...). Ubuntu focal's flex-old = flex 2.5.4a (package 2.5.4a-10ubuntu2).
+# It is installed after gas, not in place of flex at the start: gas links itbl-lex.l
+# (tc-mips) and with flex 2.5.4a as-new would change (sha1 611e15e4... instead of
+# e07c3a46...), while the as in use is the one built with focal's flex.
+RUN apt-get update && apt-get install -y flex-old && flex --version
+
+# linker and binutils, same configure and same flags as gas. configure runs before
+# flex-old, when there is no libfl ("checking for yywrap in -lfl... no"): LEXLIB stays
+# empty and arlex.l, syslex.l, deflex.l, rclex.l define yywrap themselves. If a
+# reordering of the steps made it find the 64-bit libfl (flex-old's), the link of
+# ar/ranlib/dlltool/windres would break: this is checked instead of worked around.
+# ldgram.y goes through focal's bison (3.5.1): checked against an ld built with
+# bison 1.28 + upstream flex 2.5.4, identical outputs.
+# CFLAGS overrides the default "-g -O2": binutils at -O0 (the kit: -g -O2 with the MIPS
+# gcc); no behaviour difference is expected for well-defined code.
+RUN cd /work/build && grep -q '^LEXLIB = *$' binutils/Makefile && \
+    make -j$(nproc) all-ld all-binutils CFLAGS="-std=gnu89 -m32 -Wno-error" LDFLAGS="-m32 -static"
+RUN cp /work/build/ld/ld-new /build/mipsEEel-linux-ld && \
+    for t in objdump readelf objcopy nm-new:nm ar size strings strip-new:strip; do \
+        src=${t%%:*}; dst=${t##*:}; cp /work/build/binutils/$src /build/mipsEEel-linux-$dst; done
+RUN /build/mipsEEel-linux-ld --version | head -2 && /build/mipsEEel-linux-ld -V | tail -5
+RUN echo "e0f4e91764344fce367471084b27371468136d8a  /build/mipsEEel-linux-ld" | sha1sum -c
+
+FROM scratch AS export
+COPY --from=build /build/* .

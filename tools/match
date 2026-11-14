@@ -1,0 +1,12 @@
+#!/bin/sh
+# Host wrapper: runs tools/match.sh inside the open-bn-env container.
+#   tools/match <symbol> <source> [extra flags]     (ASEXTRA=asflags)
+# ASEXTRA must be forwarded into the container (match.sh passes it to the assembler,
+# e.g. -g2 for SQLite): without -e it would be lost and the check would give false mismatches.
+# VERBOSE likewise (informational notes of match.sh and of the tools it calls).
+# LOCAL likewise (match.sh passes it to statics.py --local to force the local to
+# compare): without -e it was silently ignored.
+cd "$(dirname "$0")/.." || exit 2
+exec docker run --rm --platform linux/amd64 --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD:/work" \
+    -e ASEXTRA="${ASEXTRA:-}" -e LOCAL="${LOCAL:-}" -e VERBOSE="${VERBOSE:-}" open-bn-env \
+    sh tools/match.sh "$@"

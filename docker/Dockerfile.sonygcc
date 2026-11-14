@@ -1,0 +1,74 @@
+# Rebuilds Sony's gcc 2.95.2-3a (PS2 Linux, target mipsEEel-linux with the r5900
+# patches) as a cross compiler for x86, from the decompals/old-gcc recipe.
+# Sources: the gcc-2.95.2-3a.src.rpm SRPM from the PS2 Linux Kit (disc 2).
+#
+#   docker build --platform linux/amd64 -f Dockerfile.sonygcc \
+#       --output=toolchain/sony .
+FROM --platform=linux/amd64 ubuntu:focal AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y build-essential gcc gcc-multilib bison flex wget
+
+# period bison 1.28: the Sony patch deletes the pregenerated cp/parse.c, which
+# must be regenerated from parse.y with a compatible bison
+WORKDIR /work
+RUN wget -q https://ftp.gnu.org/gnu/bison/bison-1.28.tar.gz \
+    && tar xzf bison-1.28.tar.gz \
+    && cd bison-1.28 \
+    && ./configure --prefix=/opt/bison128 --disable-nls \
+    && make CFLAGS="-std=gnu89 -O2" \
+    && make install
+ENV PATH="/opt/bison128/bin:${PATH}"
+COPY sonygcc/gcc-2.95.2.tar.gz .
+RUN tar xzf gcc-2.95.2.tar.gz
+
+WORKDIR /work/gcc-2.95.2
+COPY sonygcc/*.patch /work/
+COPY patches/obstack-2.95.2.h.patch /work/
+COPY patches/mips-exception-receiver.patch /work/
+
+# Sony patches in the order of the spec file
+RUN patch -p1 < /work/gcc-2.95.2-frankengcc-patches.patch \
+    && patch -p1 < /work/gcc-2.95.2-single-float-const.patch \
+    && patch -p1 < /work/gcc-ps2linux-1.0.0.patch
+
+# The one exception: the Kit SRPM lacks the `exception_receiver` pattern
+# for MIPS, and without it EH landing pads are entered with another frame's $gp.
+# See the header of the patch and docs/compiler.md. Do not add other patches
+# here: tools/check_toolchain.py fails if this list changes.
+RUN patch -p1 < /work/mips-exception-receiver.patch
+
+# fixes for modern hosts (from decompals/old-gcc)
+RUN sed -i -- 's/include <varargs.h>/include <stdarg.h>/g' **/*.c \
+    && patch -u -p1 include/obstack.h -i /work/obstack-2.95.2.h.patch
+
+# the patches touch configure.in: touch the generated files so autotools is not invoked
+RUN find . -name configure -o -name config.in -o -name 'cstamp-h*' | xargs touch
+
+RUN for dir in libiberty gcc; do \
+    cd /work/gcc-2.95.2/${dir}; \
+    ./configure \
+        --target=mipsEEel-linux \
+        --prefix=/opt/cross \
+        --with-gnu-as \
+        --disable-gprof \
+        --disable-gdb \
+        --disable-werror \
+        --host=i386-pc-linux \
+        --build=i386-pc-linux; \
+    done
+
+# -msse2 -mfpmath=sse: the `double`s that gcc uses in its own computations (e.g. the
+# priority in global.c allocno_compare) must be computed in 53-bit IEEE as in the
+# original compiler. With the 80-bit x87 (the -m32 default) allocno_compare breaks a
+# tie the other way and static_006D8938 differs; nothing else changes. It is not a
+# compiler patch: it is how the host compiles the compiler. tools/check_toolchain.py
+# requires it.
+RUN make -C libiberty/ CFLAGS="-std=gnu89 -m32 -static -msse2 -mfpmath=sse"
+RUN make -C gcc/ --jobs $(nproc) cpp cc1 xgcc CFLAGS="-std=gnu89 -m32 -static -msse2 -mfpmath=sse"
+RUN make -C gcc/ --jobs $(nproc) cc1plus g++ CFLAGS="-std=gnu89 -m32 -static -msse2 -mfpmath=sse"
+
+RUN mv ./gcc/xgcc ./gcc/gcc && mkdir /build \
+    && cp ./gcc/cpp ./gcc/cc1 ./gcc/gcc ./gcc/cc1plus ./gcc/g++ /build/
+
+FROM scratch AS export
+COPY --from=build /build/* .

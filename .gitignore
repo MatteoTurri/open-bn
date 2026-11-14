@@ -1,0 +1,49 @@
+# Original binaries (Sony copyright): never commit them
+orig/
+*.elf
+*.kelf
+*.bin
+
+# Generated output
+asm/
+assets/
+build/
+expected/
+
+# Tooling
+.venv/
+__pycache__/
+.ninja_log
+
+# Downloaded toolchains and kit
+docker/kit/
+docker/toolchain/
+docker/*.tar.gz
+*.iso
+
+# Generated sqlite files (tools/gen_sqlite.sh)
+ref/sqlite-2.7.2/gen/lemon
+ref/sqlite-2.7.2/gen/*.o
+
+# gcc -da RTL dumps
+*.c.rtl
+*.c.jump
+*.c.jump2
+*.c.cse
+*.c.cse2
+*.c.gcse
+*.c.loop
+*.c.flow
+*.c.flow2
+*.c.combine
+*.c.regmove
+*.c.sched
+*.c.sched2
+*.c.lreg
+*.c.greg
+*.c.dbr
+*.c.mach
+*.c.bp
+*.c.addressof
+*.cpp.[a-z]*
+

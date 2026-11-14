@@ -1,0 +1,74 @@
+NAME
+    vpu_file - vpu ファイルを扱う API
+
+SYNOPSIS
+    #include "vpu_file.h"
+
+
+ESCRIPTION
+	vpu_file は リンカスクリプト  vpu.cmd で生成された 
+	vpu の elf ファイルを扱う API を提供します. 
+
+  関数
+
+    VPUFILE * vpuobj_open(char * file, unsigned int opt);
+	file で指定された ファイルの text (セクション名 ".vutext"), 
+	data (セクション名 ".vudata") を mmap(2) する. シンボル情報
+	も読み込まれます. 戻り値は VPUファイルディスクリプタ
+	(VPUFILE *) です. opt に O_TEXT_PS2MEM を指定すると text 領
+	域は, ps2mem(4)を mmap(2)することで確保されます.
+	O_DATA_PS2MEM を同じことを data 領域に対して行うことを意味し
+	ます. これらのフラグは同時に指定することが出来ます. 
+
+	リンカスクリプトとして vpu.cmd を使い, text, data とも 開始
+	番地を 0 として リンクされて, リロケーションが解決済である事
+	を前提にしており, vpu_open() はリロケーションに関してはなに
+	もしません.  
+
+	シンボル情報は, mapされた状態での場所を示すように開始位置の
+	値が加算されます. 
+
+    void vpuobj_close(VPUFILE * f);
+	VPUファイルディスクリプタfで指定された vpu オブジェクトファ
+	イルに関する資源を開放します. 
+
+
+    int vpuobj_text(VPUFILE *f, void **start, int *size);
+	VPUファイルディスクリプタfで指定された ファイルのテキストの
+	領域(開始位置 void *start, サイズint size)を得ます 
+
+    int vpuobj_data(VPUFILE *f, void **start, int *size);
+	VPUファイルディスクリプタfで指定された ファイルのデータの領
+	域(開始位置 void *start, サイズint size)を得ます
+
+
+    int vpuobj_symbol_nr(VPUFILE *f);
+	VPUファイルディスクリプタfで指定された ファイル に含まれるグ
+	ローバル シンボル数を得ます
+
+    int vpuobj_symbol(VPUFILE *f, int index, char **name,
+                        unsigned long *val, int *section);
+	VPUファイルディスクリプタfで指定された ファイル に含まれる
+	n番目のシンボルの名前と値と所属するセクションを得ます
+		section == 0 は text を
+		section == 1 は data を表します
+
+    int vpuobj_symbol_by_name(VPUFILE *f, char *name,
+                        unsigned long *val, int *section);
+	シンボル名から, VPUファイルディスクリプタfで指定された ファ
+	イル に含まれるシンボルの 値と所属するセクションを得ます
+		section == 0 は text を
+		section == 1 は data を表します
+
+  変数宣言
+
+    IMPORT_VPU_SYMBOL(symbol, char *file)
+	変数のインポートを行います. 
+	プログラム 側でこのマクロを使い変数を宣言すると, dvp_open() 
+        した時に, マッチする varの値が初期化されます. 
+	file を 0 にすると dvp_open するフィイル名に関係なく検索
+	されます. var は void * として宣言されます.  
+
+	vpu_file と同じ shared object 内でしか利用できません. 
+
+

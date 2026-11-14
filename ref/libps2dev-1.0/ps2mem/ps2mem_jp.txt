@@ -1,0 +1,28 @@
+NAME
+    ps2mem - Utility functions to allocate DMA buffer via /dev/ps2mem.
+
+SYNOPSIS
+#include "ps2mem.h"
+
+
+ESCRIPTION
+	ps2mem provides the API that handles /dev/ps2mem deivce
+	to allocate DMA buffers.
+
+FUNCTIONS
+
+  ALLOC_DMAMEM(sym, type)
+	Declare symbol as 16byte alinged DMA area. 
+	ps2_mem_alloc_dmamem() is necessary for actual allocation.
+
+  ALLOC_DMAMEM_IN(sym, type)
+	Same as ALLOC_DMAMEM() except for alignment is 128bytes.
+
+  void * ps2mem_alloc_pages(unsigned int size_in_page);
+	Allocate specfied pages for DMA. 
+
+  int ps2_mem_alloc_dmamem(void);
+	Allocate DMA buffers declared by ALLOC_DMAMEM() 
+	and ALLOC_DMAMEM_IN().
+
+

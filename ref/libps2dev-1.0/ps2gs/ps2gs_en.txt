@@ -1,0 +1,1473 @@
+
+			  GS Foundation Library
+			 =======================
+
+
+ 1 Structures
+==============
+
+=========================================================================
+ps2_gs_alphaenv						      [Structure]
+=========================================================================
+						  data for alpha blending
+[Definition]
+	typedef struct {
+		ps2_gsreg_alpha alpha1;
+		ps2_gsreg_addr	alpha1addr;
+		//
+		ps2_gsreg_pabe	pabe;
+		ps2_gsreg_addr	pabeaddr;
+		//
+		ps2_gsreg_texa	texa;
+		ps2_gsreg_addr	texaaddr;
+		//
+		ps2_gsreg_fba	fba1;
+		ps2_gsreg_addr	fba1addr;
+	} ps2_gs_alphaenv __attribute__((aligned(16)));
+
+[Members]
+	alpha1		value of ALPHA_1 register
+	alpha1addr	address of ALPHA_1 register
+	pabe		value of PABE register
+	pabeaddr	address of PABE register
+	texa		value of TEXA register
+	texaaddr	address of TEXA register
+	fba1		value of FBA_1 register
+	fba1addr	address of FBA_1 register
+
+[Description]
+	This is the structure to keep the information of alpha blending
+	(context 1). The values of its members can be set by calling
+	ps2_gs_set_alphaenv().
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed just before it,
+	the memory image of this structure can be sent immediately to
+	GIF.
+	
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+=========================================================================
+ps2_gs_alphaenv2					      [Structure]
+=========================================================================
+						  data for alpha blending
+[Definition]
+	typedef struct {
+		ps2_gsreg_alpha		alpha2;
+		ps2_gsreg_addr		alpha2addr;
+		//
+		ps2_gsreg_pabe		pabe;
+		ps2_gsreg_addr		pabeaddr;
+		//
+		ps2_gsreg_texa		texa;
+		ps2_gsreg_addr		texaaddr;
+		//
+		ps2_gsreg_fba		fba2;
+		ps2_gsreg_addr		fba2addr;
+	} ps2_gs_alphaenv2 __attribute__((aligned(16)));
+
+[Members]
+	alpha2		value of ALPHA_2 register
+	alpha2addr	address of ALPHA_2 register
+	pabe		value of PABE register
+	pabeaddr	address of PABE register
+	texa		value of TEXA register
+	texaaddr	address of TEXA register
+	fba2		value of FBA_2 register
+	fba2addr	address of FBA_2 register
+
+[Description]
+	This is the structure to keep the information of alpha blending
+	(context 2). The values of its members can be set by calling
+	ps2_gs_set_alphaenv2().
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF.
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+	
+	The contexts of PABE and TEXA cannot be changed. So make sure
+	that if you set different values from those of context 1 to them,
+	the previous values are overwritten.
+
+=========================================================================
+ps2_gs_clear						      [Structure]
+=========================================================================
+						 data for buffer clearing
+[Definition]
+	typedef struct {
+		ps2_gsreg_test		testa;
+		ps2_gsreg_addr		testaaddr;
+		//
+		ps2_gsreg_prim		prim;
+		ps2_gsreg_addr		primaddr;
+		//
+		ps2_gsreg_rgbaq		rgbaq;
+		ps2_gsreg_addr		rgbaqaddr;
+		//
+		ps2_gsreg_xyz		xyz2a;
+		ps2_gsreg_addr		xyz2aaddr;
+		//
+		ps2_gsreg_xyz		xyz2b;
+		ps2_gsreg_addr		xyz2baddr;
+		//
+		ps2_gsreg_test		testb;
+		ps2_gsreg_addr		testbaddr;
+	} ps2_gs_clear __attribute__((aligned(16)));
+
+[Members]
+	testa		value of TEST register for clearing
+	testaaddr	address of TEST register
+	prim		value of PRIM register for clearing sprite
+	primaddr	address of PRIM register
+	rgbaq		clearing value of frame buffer
+	rgbaqaddr	address of RGBAQ register
+	xyz2a		left-top position of clearing sprite
+	xyz2aaddr	address of XYZ2 register
+	xyz2b		right-bottom position of clearing sprite
+	testb		value to reset TEST register
+	testbaddr	address of TEST register
+
+[Description]
+	This is the structure to keep the information to clear buffer.
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF.
+
+	The clearing process itself is just to draw a sprite, so the
+	settings for drawing such as the values of XYOFFSET and SCISSOR
+	may affect the result of this process.
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+=========================================================================
+ps2_gs_dbuff						      [Structure]
+=========================================================================
+						data for double buffering
+[Definition]
+	typedef struct {
+		ps2_gs_dispenv		disp[2];
+		ps2_giftag		giftag0;
+		ps2_gs_drawenv1		draw0;
+		ps2_gs_clear		clear0;
+		ps2_giftag		giftag1;
+		ps2_gs_drawenv1		draw1;
+		ps2_gs_clear		clear1;
+	} ps2_gs_dbuff;
+
+[Members]
+	disp[2]		display environments
+	giftag0		GIFtag for drawing env. (buffer 0)
+	draw0		drawing env. (buffer 0)
+	clear0		env. for clearing buffer (buffer 0)
+	giftag1		GIFtag for drawing env. (buffer 1)
+	draw1		drawing env. (buffer 1)
+	clear1		env. for clearing buffer (buffer 1)
+
+[Description]
+	This is the structure to keep the information of double
+	buffering.
+
+	Its values can be set by calling function ps2_gs_set_dbuff().
+	And the values can be sent to GS(GIF) by ps2_gs_swap_dbuff().
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+	
+	This structure only keeps the values of context 1. If you also
+	want to use context 2, use the function ps2_gs_dbuff_dc().
+
+=========================================================================
+ps2_gs_dbuff_dc						      [Structure]
+=========================================================================
+						data for double buffering
+[Definition]
+	typedef struct {
+		ps2_gs_dispenv		disp[2];
+		ps2_giftag		giftag0;
+		ps2_gs_drawenv1		draw01;
+		ps2_gs_drawenv2		draw02;
+		ps2_gs_clear		clear0;
+		ps2_giftag		giftag1;
+		ps2_gs_drawenv1		draw11;
+		ps2_gs_drawenv2		draw12;
+		ps2_gs_clear		clear1;
+	} ps2_gs_dbuffdc;
+
+[Members]
+	disp[2]		display environments
+	giftag0		GIFtag for drawing env. (buffer 0)
+	draw01		drawing env. (context 1, buffer 0)
+	draw02		drawing env. (context 2, buffer 0)
+	clear0		env. for clearing buffer (buffer 0)
+	giftag1		GIFtag for drawing env. (buffer 1)
+	draw11		drawing env. (context 1, buffer 1)
+	draw12		drawing env. (context 2, buffer 1)
+	clear1		env. for clearing buffer (buffer 1)
+
+[Description]
+	This is the structure to keep the information for double
+	buffering using both 2 contexts.
+
+	Its values can be set by calling function ps2_gs_set_dbuff_dc().
+	And the values can be sent to GS(GIF) by ps2_gs_swap_dbuff_dc().
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+=========================================================================
+ps2_gs_dispenv						      [Structure]
+=========================================================================
+					     data for display environment
+[Definition]
+	typedef struct {
+		ps2_gssreg_dispfb	dispfb;
+		ps2_gssreg_bgcolor	bgcolor;
+	} ps2_gs_dispenv;
+
+[Members]
+	dispfb	value of DISPFB2 register (display frame buffer)
+	bgcolor value of BGCOLOR register (background color)
+
+[Description]
+	This is the structure to keep the data for the settings of
+	display and GS's bit block transfer unit.
+	
+	Its values can be set by calling function ps2_gs_set_dispenv().
+	And the values can be sent to GS by calling ps2_gs_put_dispenv().
+
+[Note]
+
+=========================================================================
+ps2_gs_drawenv1						      [Structure]
+=========================================================================
+					     data for drawing environment
+[Definition]
+	typedef struct {
+		ps2_gsreg_frame		frame1;
+		ps2_gsreg_addr		frame1addr;
+		//
+		ps2_gsreg_zbuf		zbuf1;
+		ps2_gsreg_addr		zbuf1addr;
+		//
+		ps2_gsreg_xyoffset	xyoffset1;
+		ps2_gsreg_addr		xyoffset1addr;
+		//
+		ps2_gsreg_scissor	scissor1;
+		ps2_gsreg_addr		scissor1addr;
+		//
+		ps2_gsreg_prmodecont	prmodecont;
+		ps2_gsreg_addr		prmodecontaddr;
+		//
+		ps2_gsreg_colclamp	colclamp;
+		ps2_gsreg_addr		colclampaddr;
+		//
+		ps2_gsreg_dthe		dthe;
+		ps2_gsreg_addr		dtheaddr;
+		//
+		ps2_gsreg_test		test1;
+		ps2_gsreg_addr		test1addr;
+	} ps2_gs_drawenv1 __attribute__((aligned(16)));
+
+[Members]
+	frame1		value of FRAME_1 register
+	frame1addr	address of FRAME_1 register
+	zbuf1		value of ZBUF_1 register
+	zbuf1addr	address of ZBUF_1 register
+	xyoffset1	value of XYOFFSET_1 register
+	xyoffset1addr	address of XYOFFSET_1 register
+	scissor1	value of SCISSOR_1 register
+	scissor1addr	address of SCISSOR_1 register
+	prmodecont	value of PRMODECONT register
+	prmodecontaddr	address of PRMODECONT register
+	colclamp	value of COLCLAMP register
+	colclampaddr	address of COLCLAMP register
+	dthe		value of DTHE register
+	dtheaddr	address of DTHE register
+	test1		value of TEST_1 register
+	test1addr	address of TEST_1 register
+
+[Description]
+	This is the structure to keep the information of drawing
+	environment (context 1).
+
+	Its values can be set by calling ps2_gs_set_drawenv().
+	
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF by
+	calling ps2_gs_put_drawenv().
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+=========================================================================
+ps2_gs_drawenv2						      [Structure]
+=========================================================================
+					     data for drawing environment
+[Definition]
+	typedef struct {
+		ps2_gsreg_frame		frame2;
+		ps2_gsreg_addr		frame2addr;
+		//
+		ps2_gsreg_zbuf		zbuf2;
+		ps2_gsreg_addr		zbuf2addr;
+		//
+		ps2_gsreg_xyoffset	xyoffset2;
+		ps2_gsreg_addr		xyoffset2addr;
+		//
+		ps2_gsreg_scissor	scissor2;
+		ps2_gsreg_addr		scissor2addr;
+		//
+		ps2_gsreg_prmodecont	prmodecont;
+		ps2_gsreg_addr		prmodecontaddr;
+		//
+		ps2_gsreg_colclamp	colclamp;
+		ps2_gsreg_addr		colclampaddr;
+		//
+		ps2_gsreg_dthe		dthe;
+		ps2_gsreg_addr		dtheaddr;
+		//
+		ps2_gsreg_test		test2;
+		ps2_gsreg_addr		test2addr;
+	} ps2_gs_drawenv2 __attribute__((aligned(16)));
+
+[Members]
+	frame2		value of FRAME_2 register
+	frame2addr	address of FRAME_2 register
+	zbuf2		value of ZBUF_2 register
+	zbuf2addr	address of ZBUF_2 register
+	xyoffset2	value of XYOFFSET_2 register
+	xyoffset2addr	address of XYOFFSET_2 register
+	scissor2	value of SCISSOR_2 register
+	scissor2addr	address of SCISSOR_2 register
+	prmodecont	value of PRMODECONT register
+	prmodecontaddr	address of PRMODECONT register
+	colclamp	value of COLCLAMP register
+	colcalmpaddr	address of COLCLAMP register
+	dthe		value of DTHE register
+	dtheaddr	address of DTHE register
+	test2		value of TEST_2 register
+	test2addr	address of TEST_2 register
+
+[Description]
+	This is the structure to keep the information of drawing
+	environment (context 2).
+
+	Its values can be set by calling ps2_gs_SetDefDrawEnv2().
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF by
+	calling ps2_gs_PutDrawEnv().
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+	The contexts of PRMODECONT, COLCLAMP and DTHE cannot be
+	changed. So make sure that if you set different values from those
+	of context 1 to them, the previous values are overwritten.
+
+=========================================================================
+ps2_gs_finish						      [Structure]
+=========================================================================
+				  structure for wait completely draw done
+[Definition]
+	typedef struct {
+		ps2_giftag		giftag;
+		ps2_gsreg_finish	finish;
+		ps2_gsreg_addr		finishaddr;
+	} ps2_gs_finish __attribute__((aligned(16)));
+
+[Members]
+	giftag		GIFtag for transfer this data
+	finish		value of FINISH register
+	finishaddr	address of FINISH register
+
+[Description]
+	This is the structure to wait GS completely draw done.
+	The data is set using ps2_gs_set_finish().  ps2_gs_wait_finish()
+	blocks until all GS commands are processed and all pixels are
+	rasterized.
+
+=========================================================================
+ps2_gs_gparam						      [Structure]
+=========================================================================
+					    system information of library
+[Definition]
+	typedef struct {
+		int fd_gs;
+		int fd_event;
+		int fd_event_open;
+		int version;
+		int interlace_mode;
+		int out_mode;
+		int ff_mode;
+		int interlace_format;
+		int resolution;
+		int refresh_rate;
+		int width;
+		int height;
+		int center_x;
+		int center_y;
+		int offset_x;
+		int offset_y;
+		float pixel_ratio;
+	} ps2_gs_gparam;
+
+[Members]
+	fd_gs			file descriptor of /dev/ps2gs
+	fd_event		file descriptor of /dev/ps2event
+	fd_event_open		ps2_gs_open() has opened /dev/ps2event or not
+	version			GS version
+	interlace_mode		interlace or non-interlace mode
+	out_mode		NTSC or PAL
+	ff_mode			FIELD or FRAME
+	interlace_format	interlace format
+	resolution		resolution
+	refresh_rate		refresh rate
+	width			width
+	height			height
+	center_x		x position of center
+	center_y		y position of center
+	offset_x		x offset
+	offset_y		y offset
+	pixel_ratio		pixel ratio (width/height)
+
+[Description]
+	This is the structure to keep the parameters this library uses.
+
+	The parameters which are in use in the library can be read by
+	calling ps2_gs_get_gparam(). (read-only)
+
+	These parameters are set by ps2_gs_open(), ps2_gs_reset() and
+	ps2_gs_set_center().
+
+=========================================================================
+ps2_gs_texenv						      [Structure]
+=========================================================================
+							data for textures
+[Definition]
+	typedef struct {
+		ps2_gsreg_texflush	texflush;
+		ps2_gsreg_addr		texflushaddr;
+		//
+		ps2_gsreg_tex1		tex11;
+		ps2_gsreg_addr		tex11addr;
+		//
+		ps2_gsreg_tex0		tex01;
+		ps2_gsreg_addr		tex01addr;
+		//
+		ps2_gsreg_clamp		clamp1;
+		ps2_gsreg_addr		clamp1addr;
+	} ps2_gs_texenv __attribute__((aligned(16)));
+
+[Members]
+	texflush	value of TEXFLUSH register
+	texflushaddr	address of TEXFLUSH register
+	tex01		value of TEX0_1 register
+	tex01addr	address of TEX0_1 register
+	tex11		value of TEX1_1 register
+	tex11addr	address of TEX1_1 register
+	clamp1		value of CLAMP_1 register
+	clamp1addr	address of CLAMP_1 register
+
+[Description]
+	This is the structure to keep the texture information (context1).
+
+	These values can be set by calling ps2_gs_set_texenv(). 
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF.
+
+	If you want to use MIPMAP, you must set appropriate values to
+	MIPTBP1_1 and MIPTBP2_1 registers.
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+=========================================================================
+ps2_gs_texenv2						      [Structure]
+=========================================================================
+							data for textures
+[Definition]
+	typedef struct {
+		ps2_gsreg_texflush	texflush;
+		ps2_gsreg_addr		texflushaddr;
+		//
+		ps2_gsreg_tex1		tex12;
+		ps2_gsreg_addr		tex12addr;
+		//
+		ps2_gsreg_tex0		tex02;
+		ps2_gsreg_addr		tex02addr;
+		//
+		ps2_gsreg_clamp		clamp2;
+		ps2_gsreg_addr		clamp2addr;
+	} ps2_gs_texenv2 __attribute__((aligned(16)));
+
+[Members]
+	texflush	value of TEXFLUSH register
+	texflushaddr	address of TEXFLUSH register
+	tex02		value of TEX0_2 register
+	tex02addr	address of TEX0_2 register
+	tex12		value of TEX1_2 register
+	tex12addr	address of TEX1_2 register
+	clamp1		value of CLAMP_2 register
+	clamp1addr	address of CLAMP_2 register
+
+[Description]
+	This is the structure to keep the texture information (context2).
+
+	These values can be set by calling ps2_gs_set_texenv2(). 
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed before it, the
+	memory image of this structure can be sent immediately to GIF.
+
+	If you want to use MIPMAP, you must set appropriate values to
+	MIPTBP1_2 and MIPTBP2_2 registers.
+
+[Note]
+	Since the data of this structure will be sent to GS via DMA, it
+	must be aligned on 16-byte boundaries.
+
+
+
+ 2 Functions
+=============
+
+=========================================================================
+ps2_gs_get_gparam					       [Function]
+=========================================================================
+				     obtain system information of library
+[Synopsis]
+	ps2_gs_gparam *ps2_gs_get_gparam(void)
+
+[Arguments]
+	None
+
+[Return Value]
+	pointer to system information structure
+
+[Description]
+	Returns the pointer to the structure of the system information of
+	this library.
+
+	Do not change the values of the structure via this pointer. The
+	values are changed by calling ps2_gs_open(), ps2_gs_reset() and
+	ps2_gs_set_center().
+
+=========================================================================
+ps2_gs_load_image					       [Function]
+=========================================================================
+							execute LoadImage
+[Synopsis]
+	int ps2_gs_load_image(
+		struct ps2_image *lp
+	)
+
+[Arguments]
+	lp		address of image information structure
+
+[Return Value]
+	The finish state.
+	positive number: success (the number of transferred bytes)
+	-1:		 error
+
+[Description]
+	Transfers the image data on the main memory to GS's local
+	memory. The transfer is performed by ioctl(PS2IOC_LOADIMAGE).
+	(see ps2dev_ioctls_en.txt)
+
+[Note]
+	When a new texture image is transferred to GS, you must set the
+	texture settings again. See the description of
+	ps2_gs_set_texenv().
+
+=========================================================================
+ps2_gs_put_dispenv					       [Function]
+=========================================================================
+				    initialization of display environment
+[Synopsis]
+	void ps2_gs_put_dispenv(
+		ps2_gs_dispenv *disp
+	)
+
+[Arguments]
+	disp		pointer to display environment structure
+
+[Return Value]
+	None
+
+[Description]
+	Sets the display environment given by 'disp' to GS's registers.
+
+=========================================================================
+ps2_gs_put_drawenv					       [Function]
+=========================================================================
+				    initialization of drawing environment
+[Synopsis]
+	int ps2_gs_putdrawenv(
+		ps2_giftag *giftag
+	)
+
+[Arguments]
+	giftag		pointer to drawing environment data
+
+[Return Value]
+	The finish state.
+	0:	success
+	-1:	error
+
+[Description]
+	The data for the settings of drawing environment is transferred
+	to GS and the values are set to the GS's registers concerned.
+	
+	To use this function, prepare a structure ps2_gs_drawenv whose
+	elements are properly set. And place the GIFtag (PACKED mode,
+	REGS=A+D) just before the structure. Set the address of the
+	GIFtag to 'giftag'.
+
+	This function returns immediately after beginning the DMA
+	transfer.
+
+[Note]
+
+	Since the data will be sent to GS via DMA, the GIFtag must be
+	aligned on 16-byte boundaries.
+	
+=========================================================================
+ps2_gs_reset						       [Function]
+=========================================================================
+						     initialization of GS
+[Synopsis]
+	void ps2_gs_reset(
+		int mode,
+		int inter,
+		int omode,
+		int ffmode,
+		int resolution,
+		int refresh_rate
+	)
+
+[Arguments]
+	mode: reset mode
+		0:	all reset
+		1:	reset drawing
+	inter: interlace mode (effective if mode==0)
+		PS2_GS_NOINTERLACE:	non-interlace
+		PS2_GS_INTERLACE:	interlace
+	omode: video format (effective if mode==0)
+		PS2_GS_VESA:	VESA
+		PS2_GS_DTV:	DTV
+		PS2_GS_NTSC:	NTSC
+		PS2_GS_PAL:	PAL
+	ffmode: FRAME/FIELD mode (effective if mode==0 and inter==interlace)
+		PS2_GS_FIELD:	FIELD mode
+				scans every other line
+				(+0,+2,+4,... / +1,+3,+5,...)
+		PS2_GS_FRAME:	FRAME mode
+				scans every line
+				(+0,+1,+2,+3,...)
+	resolution: resolution settings (effective if mode==0)
+		when omode==PS2_GS_VESA
+			PS2_GS_640x480:		640x480
+			PS2_GS_800x600:		800x600
+			PS2_GS_1024x768:	1024x768
+			PS2_GS_1280x1024:	1280x1024
+		when omode==PS2_GS_DTV
+			PS2_GS_480P:	480P
+			PS2_GS_1080I:	1080I
+			PS2_GS_720P:	720P
+	refresh_rate: refresh rate settings (effective if mode==0)
+		when omode==PS2_GS_VESA
+			0		default (approx. 75Hz)
+			PS2_GS_60Hz	approx. 60Hz
+			PS2_GS_75Hz	approx. 75Hz
+
+[Return Value]
+	None.
+
+[Description]
+
+	Resets GS by specified settings.  
+
+	If 'mode' is 0, GS's all settings are reset. 
+
+	If 'mode' is 1, drawing process is canceled and the primitive
+	data in GS's internal buffer is destroyed.
+	(Drawing environment and display environment are not changed)
+
+[Note]
+	If GS is reset with mode 0 (all reset), GS's local memory may be
+	changed.
+
+=========================================================================
+ps2_gs_set_alphaenv					       [Function]
+=========================================================================
+					   preparation for alpha blending
+[Synopsis]
+	int ps2_gs_set_alphaenv(
+		ps2_gs_alphaenv *ap,
+		int pabe
+	)
+
+[Arguments]
+	ap	pointer to a ps2_gs_alphaenv structure 
+	pabe	pixel-by-pixel alpha blending control
+			0:	off
+			1:	on
+				(no alpha blending to a pixel whose MSB
+				 of the alpha value is 0)
+
+[Return Value]
+	The size of the ps2_gs_alphaenv structure. (in qwords(16-byte/128-bit))
+
+[Description]
+	Sets the data for alpha blending (context 1) to a ps2_gs_alphaenv
+	structure.
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed just before it,
+	the memory image of this structure can be sent immediately to GIF.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_alphaenv2					       [Function]
+=========================================================================
+					   preparation for alpha blending
+[Synopsis]
+	int ps2_gs_set_alphaenv2(
+		ps2_gs_alphaenv2 *ap,
+		int pabe
+	)
+
+[Arguments]
+	ap	pointer to a ps2_gs_alphaenv2 structure 
+	pabe	pixel-by-pixel alpha blending control
+			0:	off
+			1:	on
+				(no alpha blending to a pixel whose MSB
+				 of the alpha value is 0)
+
+[Return Value]
+	The size of the ps2_gs_alphaenv2 structure.
+
+[Description]
+	Sets the data for alpha blending (context 2) to a ps2_gs_alphaenv
+	structure.
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed just before it,
+	the memory image of this structure can be sent immediately to GIF.
+
+	The contexts of PABE and TEXA cannot be changed. So make sure
+	that if you set different values from those of context 1 to them,
+	the previous values are overwritten.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_clear					       [Function]
+=========================================================================
+					  preparation for clearing buffer
+[Synopsis]
+	int ps2_gs_set_clear(
+		ps2_gs_clear *cp,
+		int ztest,
+		int x, int y,
+		int w, int h,
+		int r, int g, int b, int a,
+		__u32 z
+	)
+
+[Arguments]
+	cp	pointer to a structure ps2_gs_clear
+	ztest	depth test method
+		PS2_GS_TEST_ZTST_NEVER:
+			no depth test (don't use Z buffer)
+		PS2_GS_TEST_ZTST_ALWAYS:
+			always draw a pixel regardless of its Z value
+		PS2_GS_TEST_ZTST_GEQUAL:
+			draw a pixel if its Z value is greater than or
+			equal to that of Z buffer
+		PS2_GS_TEST_ZTST_GREATER:
+			draw a pixel if its Z value is greater than that
+			of Z buffer
+	x, y	left-top position of clearing region
+	w, h	width and height of  clearing region (in pixels)
+	r, g, b, a	color to clear frame buffer
+	z	value to clear Z buffer
+
+[Return Value]
+	The size of the ps2_gs_clear structure. (in qwords(16-byte/128-bit))
+
+[Description]
+	Sets the data to clear the buffers to the given structure
+	ps2_gs_clear.
+
+	After you place the GIFtag (PACKED mode, REGS=A+D) just before
+	this structure and transfer it to GIF, the frame buffer of
+	context 1 is cleared by the given color by r, g, b and a, and Z
+	buffer of context 1 by the given z value.
+
+	If ztest is set to other than NEVER, this function clears the
+	frame buffer with the ztest value supposed to be ALWAYS, and
+	then sets the ztest value you specified.
+
+	If ztest is set to NEVER, this function does the same work as
+	ztest is set to ALWAYS. So, if you want the real 'NEVER' process,
+	the value of ZMSK of ZBUF should be set to PS2_GS_ZBUF_ZMSK_MSK.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_clear2					       [Function]
+=========================================================================
+					  preparation for clearing buffer
+[Synopsis]
+	int ps2_gs_set_clear2(
+		ps2_gs_clear *cp,
+		int ztest,
+		int x, int y,
+		int w, int h,
+		int r, int g, int b, int a,
+		__u32 z
+	)
+
+[Arguments]
+	See ps2_gs_set_clear().
+
+[Return Value]
+	The size of the ps2_gs_clear structure. (in qwords(16-byte/128-bit))
+
+[Description]
+	Sets the data to clear the buffers to the given structure
+	ps2_gs_clear.
+
+	After you place the GIFtag (PACKED mode, REGS=A+D) just before
+	this structure and transfer it to GIF, the frame buffer of
+	context 2 is cleared by the given color by r, g, b and a, and Z
+	buffer of context 2 by the given z value.
+
+	If ztest is set to other than NEVER, this function clears the
+	frame buffer with the ztest value supposed to be ALWAYS, and
+	then sets the ztest value you specified.
+
+	If ztest is set to NEVER, this function does the same work as
+	ztest is set to ALWAYS. So, if you want the real 'NEVER' process,
+	the value of ZMSK of ZBUF should be set to PS2_GS_ZBUF_ZMSK_MSK.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_dbuff					       [Function]
+=========================================================================
+					 preparation for double buffering
+[Synopsis]
+	void ps2_gs_set_dbuff(
+		ps2_gs_dbuff *db,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+		int clear,
+	)
+
+[Arguments]
+	db	pointer to structure ps2_gs_dbuff
+	psm	pixel format for drawing
+			PS2_GS_PSMCT32
+			PS2_GS_PSMCT24
+			PS2_GS_PSMCT16
+			PS2_GS_PSMCT16S
+	w, h	width and height of display/drawing area (in pixels)
+	ztest	depth test method
+		PS2_GS_TEST_ZTST_NEVER:
+			no depth test (don't use Z buffer)
+		PS2_GS_TEST_ZTST_ALWAYS:
+			always draw a pixel regardless of its Z value
+		PS2_GS_TEST_ZTST_GEQUAL:
+			draw a pixel if its Z value is greater than or
+			equal to that of Z buffer
+		PS2_GS_TEST_ZTST_GREATER:
+			draw a pixel if its Z value is greater than that
+			of Z buffer
+	zpsm	Z value format
+		(effective if ztest!=PS2_GS_TEST_ZTST_NEVER)
+			PS2_GS_PSMZ32
+			PS2_GS_PSMZ24
+			PS2_GS_PSMZ16
+			PS2_GS_PSMZ16S
+	clear	whether to clear drawing area
+			0:	doesn't clear
+			1:	clear
+
+[Return Value]
+	None.
+
+[Description]
+	Sets the data for double buffering to a ps2_gs_dbuff structure.
+
+	If 'clear' is set to 1, the frame buffer and the Z buffer are
+	cleared when ps2_gs_swap_dbuff() is called to swap buffers.
+	
+	This function only sets the values of context 1. If 'ztest' is
+	set to NEVER, 'ztest' will be set to ALWAYS and ZBUF.ZMSK set to
+	PS2_GS_ZBUF_ZMSK_MSK.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_dbuff_dc					       [Function]
+=========================================================================
+					 preparation for double buffering
+[Synopsis]
+	void ps2_gs_set_dbuff_dc(
+		ps2_gs_dbuff_dc *db,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+		int clear,
+	)
+
+[Arguments]
+	See ps2_gs_set_dbuff().
+
+[Return Value]
+	None.
+
+[Description]
+	Sets the data for double buffering to a ps2_gs_dbuff_dc
+	structure.
+
+	If 'clear' is set to 1, the frame buffer and the Z buffer are
+	cleared when ps2_gs_swap_dbuff() is called to swap buffers.
+	
+	This function sets the values of both context 1 and context 2. If
+	'ztest' is set to NEVER, 'ztest' will be set to ALWAYS and
+	ZBUF.ZMSK set to PS2_GS_ZBUF_ZMSK_MSK.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_dispenv					       [Function]
+=========================================================================
+				       preparation of display environment
+[Synopsis]
+	void ps2_gs_set_dispenv(
+		ps2_gs_dispenv *disp,
+		int psm,
+		int w, int h,
+		int dx, int dy,
+	)
+
+[Arguments]
+	disp	pointer to structure ps2_gs_dispenv
+	psm	pixel format
+			PS2_GS_PSMCT32
+			PS2_GS_PSMCT24
+			PS2_GS_PSMCT16
+			PS2_GS_PSMCT16S
+	w, h	width and height of display area (in pixels)
+	dx, dy	left-top position of display area on TV display
+		(in pixels)
+
+[Return Value]
+	None.
+
+[Description]
+	Sets the data for display environment to the given structure.
+
+[Note]
+
+=========================================================================
+ps2_gs_set_drawenv					       [Function]
+=========================================================================
+				       preparation of drawing environment
+[Synopsis]
+	int ps2_gs_set_drawenv(
+		ps2_gs_drawenv1 *draw,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+	)
+
+[Arguments]
+	draw	pointer to structure ps2_gs_drawenv1
+	psm	pixel format for drawing
+			PS2_GS_PSMCT32
+			PS2_GS_PSMCT24
+			PS2_GS_PSMCT16
+			PS2_GS_PSMCT16S
+	w, h	width and height of display/drawing area (in pixels)
+	ztest	depth test method
+		PS2_GS_TEST_ZTST_NEVER:
+			no depth test (don't use Z buffer)
+		PS2_GS_TEST_ZTST_ALWAYS:
+			always draw a pixel regardless of its Z value
+		PS2_GS_TEST_ZTST_GEQUAL:
+			draw a pixel if its Z value is greater than or
+			equal to that of Z buffer
+		PS2_GS_TEST_ZTST_GREATER:
+			draw a pixel if its Z value is greater than that
+			of Z buffer
+	zpsm	Z value format
+		(effective if ztest!=PS2_GS_TEST_ZTST_NEVER)
+			PS2_GS_PSMZ32
+			PS2_GS_PSMZ24
+			PS2_GS_PSMZ16
+			PS2_GS_PSMZ16S
+
+[Return Value]
+	The size of the ps2_gs_drawenv1 structure. (in qwords(16-byte/128-bit))
+
+[Description]
+	Sets the data for drawing environment of context 1.
+
+[Note]
+	If ztest==NEVER, ztest will be set to ALWAYS and ZBUF.ZMSK to
+	MSK.
+
+=========================================================================
+ps2_gs_set_drawenv2					       [Function]
+=========================================================================
+				       preparation of drawing environment
+[Synopsis]
+	int ps2_gs_set_drawenv2(
+		ps2_gs_DrawEnv2 *draw,
+		int psm,
+		int w, int h,
+		int ztest,
+		int zpsm
+	)
+
+[Arguments]
+	See ps2_gs_set_drawenv().
+
+[Return Value]
+	The size of the ps2_gs_drawenv2 structure. (in qwords(16-byte/128-bit))
+
+[Description]
+	Sets the data for drawing environment of context 2.
+
+[Note]
+	The contexts of PRMODECONT, COLCLAMP and DTHE can't be changed.
+	So make sure that new values always overwrite their previous
+	values.
+
+	If ztest==NEVER, ztest will be set to ALWAYS and ZBUF.ZMSK to
+	MSK.
+
+=========================================================================
+ps2_gs_set_finish					       [Function]
+=========================================================================
+						   set data for draw done
+[Synopsis]
+	void ps2_gs_set_finish(
+		ps2_gs_finish *p
+	)
+
+[Arguments]
+	p		address of wait draw done structure
+
+[Return Value]
+	None.
+
+[Description]
+	Set data for wait GS draw done to each member of ps2_gs_finish.
+	When you want to wait GS completely draw done, set data by this
+	function and call ps2_gs_wait_finish().
+
+[Note]
+
+=========================================================================
+ps2_gs_set_half_offset					       [Function]
+=========================================================================
+					       create drawing offset data
+[Synopsis]
+	void ps2_gs_set_half_offset(
+		ps2_gs_drawenv1 *draw,
+		int halfoff
+	)
+
+[Arguments]
+	draw		 pointer to structure ps2_gs_drawenv1
+	halfoff		 whether to add the value of offset
+			 0:	don't add
+			 1:	add
+
+[Return Value]
+	None.
+
+[Description]
+	Calculates the offset coordinate from the center position of the
+	drawing area. The value is set to XYOFFSET1.
+
+	If 'halfoff' is 1, the y-offset is added to 8 which means a half
+	pixel.
+
+[Note]
+	In interlace mode, the resolution looks to be doubled by drawing 
+	a half-pixel shifted images in odd fields and even fields.
+
+	If the buffer mode is set to FRAME, you can get half-pixel
+	shifted images by setting offset values for both two fields.
+
+=========================================================================
+ps2_gs_set_half_offset2					       [Function]
+=========================================================================
+					       create drawing offset data
+[Synopsis]
+	void ps2_gs_set_half_offset2(
+		ps2_gs_DrawEnv2 *draw,
+		int halfoff
+	)
+
+[Arguments]
+	draw		 pointer to structure ps2_gs_drawenv2
+	halfoff		 whether to add the value of offset
+			 0:	don't add
+			 1:	add
+
+[Return Value]
+	None.
+
+[Description]
+	Calculates the offset coordinate from the center position of the
+	drawing area (context 2). The value is set to XYOFFSET2.
+
+	If 'halfoff' is 1, the y-offset is added to 8 which means a half
+	pixel.
+
+[Note]
+	In interlace mode, the resolution looks to be doubled by drawing 
+	a half-pixel shifted images in odd fields and even fields.
+
+	If the buffer mode is set to FRAME, you can get half-pixel
+	shifted images by setting offset values for both two fields.
+
+=========================================================================
+ps2_gs_set_image					       [Function]
+=========================================================================
+							image information
+[Synopsis]
+	int ps2_gs_set_image(
+		ps2_image *lp,
+		int dbp,
+		int dbw,
+		int dpsm,
+		int x, int y,
+		int w, int h
+	)
+
+[Arguments]
+	lp	pointer to image information structure
+	dbp	destination buffer base address
+		(dpb x 64 is the actual address)
+	dbw	destination buffer width
+		(dbw x 64 is the actual width)
+	dpsm	pixel format of transferred data
+			PS2_GS_PSMCT32 (pixel size: 32-bit)
+			PS2_GS_PSMCT24 (pixel size: 24-bit)
+			PS2_GS_PSMCT16 (pixel size: 16-bit)
+			PS2_GS_PSMCT16S (pixel size: 16-bit)
+			PS2_GS_PSMT8 (pixel size: 8-bit)
+			PS2_GS_PSMT4 (pixel size: 4-bit)
+			PS2_GS_PSMT8H (pixel size: 8-bit)
+			PS2_GS_PSMT4HL (pixel size: 4-bit)
+			PS2_GS_PSMT4HH (pixel size: 4-bit)
+			PS2_GS_PSMZ32 (pixel size: 32-bit)
+			PS2_GS_PSMZ24 (pixel size: 24-bit)
+			PS2_GS_PSMZ16 (pixel size: 16-bit)
+			PS2_GS_PSMZ16S (pixel size: 16-bit)
+	x, y	left-top position of destination area
+	w, h	width and height of destination area (in pixels)
+
+[Return Value]
+	None.
+
+[Description]
+
+	Sets the information of images loaded or stored by
+	ps2_gs_load_image() or ps2_gs_store_image(), and the information
+	of texture images used by ps2_gs_set_texenv().
+
+[Note]
+
+=========================================================================
+ps2_gs_set_texenv					       [Function]
+=========================================================================
+				     create the data for texture settings
+							 
+[Synopsis]
+	int ps2_gs_set_texenv(
+		ps2_gs_texenv *tp,
+		int flush,
+		struct ps2_image *image,
+		int w, h,
+		int tfx
+		int cbp,
+		int cpsm,
+		int cld,
+		int filter
+	)
+
+[Arguments]
+	tp	pointer to structure ps2_gs_texenv
+	flush	whether to disable texture page buffer
+		0:	don't disable
+		1:	disable
+	image	texture image information
+	w2, h2  width and height of texture image
+			( 2^w2 x 2^h2 is the actual size )
+	tfx	texture function
+	cbp	base address of CLUT data
+			( cbp x 64 is the actual address )
+	cpsm	format of CLUT entry
+			PS2_GS_PSMCT32
+			PS2_GS_PSMCT24
+			PS2_GS_PSMCT16
+			PS2_GS_PSMCT16S
+	cld	loading method of CLUT buffer
+		PS2_GS_TEX_CLD_NOUPDATE:
+			don't load
+		PS2_GS_TEX_CLD_LOAD:
+			load from cbp
+		PS2_GS_TEX_CLD_LOAD_COPY0:
+			load from cbp, and set the cbp value to GS's CBP0 reg.
+		PS2_GS_TEX_CLD_LOAD_COPY1:
+			load from cbp, and set the cbp value to GS's CBP1 reg.
+		PS2_GS_TEX_CLD_TEST0_LOAD_COPY0:
+			if CBP0!=cbp, then load and set the cbp value to CBP0.
+		PS2_GS_TEX_CLD_TEST0_LOAD_COPY1:
+			if CBP1!=cbp, then load and set the cbp value to CBP1.
+	filter	filtering method
+		PS2_GS_TEX1_MMIN_NEAREST:
+			min:	NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_LINEAR:
+			min:	LINEAR
+			mag:	LINEAR
+		PS2_GS_TEX1_MMIN_NEAREST_MIPMAP_NEAREST:
+			min:	NEAREST_MIPMAP_NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_NEAREST_MIPMAP_LINEAR:
+			min:	NEAREST_MIPMAP_LINEAR
+			mag:	LINEAR
+		PS2_GS_TEX1_MMIN_LINEAR_MIPMAP_NEAREST:
+			min:	LINEAR_MIPMAP_NEAREST
+			mag:	NEAREST
+		PS2_GS_TEX1_MMIN_LINEAR_MIPMAP_LINEAR:
+			min:	LINEAR_MIPMAP_LINEAR
+			mag:	LINEAR
+
+[Return Value]
+	The size of the structure ps2_gs_texenv.
+	(The value is in qwords(= 16-byte or 128-bit).)
+
+[Description]
+	Sets the information of texture settings (context 1) to the given
+	structure ps2_gs_texenv.
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed just before it,
+	the memory image can be sent immediately to GIF.
+
+	If a new texture image is transferred to GS, reset the texture
+	settings by using the ps2_gs_texenv structure created by this
+	function with the 'flush' value set to be 1.
+	
+[Note]
+
+=========================================================================
+ps2_gs_set_texenv2					       [Function]
+=========================================================================
+				     create the data for texture settings
+
+[Synopsis]
+	int ps2_gs_set_texenv2(
+		ps2_gs_texenv2 *tp,
+		int flush,
+		struct ps2_image *image,
+		int w, h,
+		int tfx
+		int cbp,
+		int cpsm,
+		int cld,
+		int filter
+	)
+
+[Arguments]
+	See ps2_gs_set_texenv().
+
+[Return Value]
+	The size of ps2_gs_texenv2 structure.
+	(in qwords (16-byte or 128-bit))
+
+[Description]
+	Sets the information of texture settings (context 2) to the given
+	structure ps2_gs_texenv.
+
+	Once the GIFtag (PACKET mode, REGS=A+D) is placed just before it,
+	the memory image can be sent immediately to GIF.
+
+	If a new texture image is transferred to GS, reset the texture
+	settings by using the ps2_gs_texenv structure created by this
+	function with the 'flush' value set to be 1.
+
+[Note]
+
+=========================================================================
+ps2_gs_start_display					       [Function]
+=========================================================================
+						       start/stop display
+[Synopsis]
+	int ps2_gs_start_display(
+		int start
+	)
+
+[Arguments]
+	start	start/stop display
+		0:	start
+		1:	stop
+
+[Return Value]
+	The finish state.
+	0:	success
+	-1:	error
+
+[Description]
+	Start or stop display.
+	After all-reset using ps2_gs_reset(), the display is stopping.
+	Start display by calling this function.
+
+[Note]
+
+=========================================================================
+ps2_gs_store_image					       [Function]
+=========================================================================
+						       execute StoreImage
+[Synopsis]
+	int ps2_gs_store_image(
+		ps2_image *sp
+	)
+
+[Arguments]
+	sp		address of image information structure
+
+[Return Value]
+	The finish state.
+	0:	success
+	-1:	error
+
+[Description]
+	Transfers the image data on GS's local memory to the main memory.
+	The transfer is performed by ioctl(PS2IOC_STOREIMAGE).
+	(see ps2dev_ioctls_en.txt)
+
+[Note]
+
+=========================================================================
+ps2_gs_swap_dbuff					       [Function]
+=========================================================================
+						       swap double buffer
+[Synopsis]
+	int ps2_gs_swap_dbuff(
+		ps2_gs_dbuff *db,
+		int id,
+	)
+
+[Arguments]
+	db	pointer to structure ps2_gs_dbuff
+	id	buffer number (only its LSB is effective)
+
+[Return Value]
+	The finish state
+	0:	success
+	-1:	error
+
+[Description]
+	Sets the double buffering information for the specified buffer by
+	the value of 'id'.
+
+	This function sets the values of context 1.
+	
+[Note]
+
+=========================================================================
+ps2_gs_swap_dbuff_dc					       [Function]
+=========================================================================
+						       swap double buffer
+[Synopsis]
+	int ps2_gs_swap_dbuff_dc(
+		ps2_gs_dbuffdc *db,
+		int id,
+	)
+
+[Arguments]
+	db	pointer to structure ps2_gs_swap_dbuff_dv
+	id	buffer number (only its LSB is effective)
+
+[Return Value]
+	The finish state.
+	0:	success
+	-1:	error
+
+[Description]
+	Sets the double buffering information for the specified buffer by
+	the value of 'id'.
+
+	This function sets the values of both context 1 and 2.
+
+[Note]
+
+=========================================================================
+ps2_gs_sync_v						       [Function]
+=========================================================================
+					     synchronization with V-Blank
+[Synopsis]
+	int ps2_gs_sync_v(
+		int mode
+	)
+
+[Arguments]
+	mode		reserved (must be 0)
+
+[Return Value]
+	FIELD info. in interlace mode
+		0:	even field
+		1:	odd field
+	In non-interlace mode, always returns 1.
+
+[Description]
+	Blocks the program until the V-Blank period begins.
+
+	'mode' is a reserved argument and must be set to 0 in this
+	version.
+
+=========================================================================
+ps2_gs_wait_finish					       [Function]
+=========================================================================
+						wait completely draw done
+[Synopsis]
+	void ps2_gs_wait_finish(
+		ps2_gs_finish *p
+	)
+
+[Arguments]
+	p		address of wait draw done structure
+
+[Return Value]
+	None.
+
+[Description]
+	This function blocks until completely GS draw done.
+	The finish data has to be set using ps2_gs_set_finish().

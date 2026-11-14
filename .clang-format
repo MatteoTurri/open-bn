@@ -1,0 +1,79 @@
+# Style of src/ (Sony code), applied by `make format`. Pinned: clang-format 23.1.4 (tools/format.py refuses any
+# other version). ref/ has its own .clang-format with DisableFormat: true. Regions between
+# /* clang-format off */ and /* clang-format on */ are deliberate (docs/code-conventions.md, section 7).
+---
+Language: Cpp
+BasedOnStyle: LLVM
+# g++ 2.95 is pre-C++11: keep `> >` in nested template arguments.
+Standard: c++03
+
+# BSD KNF layout: one tab per level (8 columns), continuation lines +4 columns.
+IndentWidth: 8
+TabWidth: 8
+UseTab: ForIndentation
+ContinuationIndentWidth: 4
+ConstructorInitializerIndentWidth: 8
+AccessModifierOffset: -8
+IndentCaseLabels: false
+IndentGotoLabels: NoIndent
+IndentPPDirectives: None
+ColumnLimit: 120
+
+# Braces on their own line only for function bodies; `} else {`.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterEnum: false
+  AfterControlStatement: Never
+  AfterNamespace: false
+  AfterExternBlock: false
+  AfterCaseLabel: false
+  BeforeElse: false
+  BeforeCatch: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+
+PointerAlignment: Right
+DerivePointerAlignment: false
+# Continuation lines are indented, not aligned to the open bracket (KNF). Deliberate: it also turns off
+# the column layout of braced lists, so a multi-line table with a trailing comma gets one element per line;
+# tables whose rows matter are wrapped in clang-format off/on.
+AlignAfterOpenBracket: DontAlign
+AlignOperands: DontAlign
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+BreakBeforeBinaryOperators: NonAssignment
+AlignTrailingComments:
+  Kind: Leave
+AlignEscapedNewlines: DontAlign
+Cpp11BracedListStyle: Block
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+
+# One statement per line; short bodies only inside a class.
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+MaxEmptyLinesToKeep: 2
+InsertNewlineAtEOF: true
+
+# Never change tokens, include order, comments or macro bodies.
+SortIncludes: Never
+SortUsingDeclarations: Never
+IncludeBlocks: Preserve
+BreakStringLiterals: false
+ReflowComments: Never
+SkipMacroDefinitionBody: true
+FixNamespaceComments: false
+InsertBraces: false
+RemoveBracesLLVM: false
+RemoveParentheses: Leave
+RemoveSemicolon: false
+QualifierAlignment: Leave
+...

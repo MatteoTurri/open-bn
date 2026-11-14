@@ -1,0 +1,79 @@
+Patch for -fsingle-precision-constant option based on following mail.
+
+Message-ID: <Pine.SOL.3.91.1000707174040.26664M-100000@emperor.cygnus.com>
+Subject: patch for single precision floating point constant
+From: Chandra Chavva <cchavva@cygnus.com>
+To: gcc-patches@gcc.gnu.org
+Date: Fri, 7 Jul 2000 17:43:41 -0700 (PDT)
+
+===================================================================
+
+* flags.h : Add new variable flag_single_precision_constant.
+* toplev.c (display_help) : Add -fsingle-precision-constant option.
+(flag_single_precision_constant): New.
+* c-lex.c (yylex): Convert floating point constant to single
+precision constant.                                                
+* cp/lex.c: Likewise.
+
+===================================================================
+diff -upr gcc-2.95.2/gcc/c-lex.c gcc-2.95.2.single-fp-const/gcc/c-lex.c
+--- gcc-2.95.2/gcc/c-lex.c	Sun Mar 21 04:21:23 1999
++++ gcc-2.95.2.single-fp-const/gcc/c-lex.c	Fri Jul 27 17:57:12 2001
+@@ -1194,6 +1194,8 @@ parse_float (data)
+   else
+     {
+       errno = 0;
++      if (flag_single_precision_constant)
++        args->type = float_type_node;
+       if (args->base == 16)
+ 	args->value = REAL_VALUE_HTOF (copy, TYPE_MODE (args->type));
+       else
+diff -upr gcc-2.95.2/gcc/cp/lex.c gcc-2.95.2.single-fp-const/gcc/cp/lex.c
+--- gcc-2.95.2/gcc/cp/lex.c	Thu Aug 12 03:36:44 1999
++++ gcc-2.95.2.single-fp-const/gcc/cp/lex.c	Fri Jul 27 18:04:14 2001
+@@ -3227,6 +3227,8 @@ parse_float (data)
+     }
+   else
+     {
++      if (flag_single_precision_constant)
++         args->type = float_type_node;
+       args->value = REAL_VALUE_ATOF (copy, TYPE_MODE (args->type));
+       if (REAL_VALUE_ISINF (args->value) && pedantic)
+ 	warning ("floating point number exceeds range of `double'");
+diff -upr gcc-2.95.2/gcc/flags.h gcc-2.95.2.single-fp-const/gcc/flags.h
+--- gcc-2.95.2/gcc/flags.h	Tue May 18 10:05:04 1999
++++ gcc-2.95.2.single-fp-const/gcc/flags.h	Fri Jul 27 17:50:29 2001
+@@ -366,6 +366,10 @@ extern int flag_schedule_speculative_loa
+    by a cheaper branch, on a count register. */
+ extern int flag_branch_on_count_reg;
+ 
++/* This option is set to 1 on -fsingle-precision-constant option which is 
++   used to convert the floating point constants to single precision constants 
++*/
++extern int flag_single_precision_constant;
+ 
+ /* Nonzero means put things in delayed-branch slots if supported. */
+ 
+diff -upr gcc-2.95.2/gcc/toplev.c gcc-2.95.2.single-fp-const/gcc/toplev.c
+--- gcc-2.95.2/gcc/toplev.c	Thu Oct 21 16:01:37 1999
++++ gcc-2.95.2.single-fp-const/gcc/toplev.c	Fri Jul 27 17:54:32 2001
+@@ -694,6 +694,8 @@ int flag_schedule_speculative_load = 0;
+ int flag_schedule_speculative_load_dangerous = 0;
+ #endif  /* HAIFA */
+ 
++int flag_single_precision_constant;
++
+ /* flag_on_branch_count_reg means try to replace add-1,compare,branch tupple
+    by a cheaper branch, on a count register. */
+ int flag_branch_on_count_reg;
+@@ -978,7 +980,9 @@ lang_independent_options f_options[] =
+   {"leading-underscore", &flag_leading_underscore, 1,
+    "External symbols have a leading underscore" },
+   {"ident", &flag_no_ident, 0,
+-   "Process #ident directives"}
++   "Process #ident directives"},
++  {"single-precision-constant", &flag_single_precision_constant, 1,
++   "Convert floating point constant to single precision constant"}
+ };
+ 
+ #define NUM_ELEM(a)  (sizeof (a) / sizeof ((a)[0]))

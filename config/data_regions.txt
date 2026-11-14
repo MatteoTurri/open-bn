@@ -1,0 +1,34 @@
+# Data regions that no compiler produced from our sources.
+# Only ranges and classes: the bytes never enter the repo (docs/original-bytes.md).
+# Everything not listed here is "compiled": data the compiler emits from a C/C++ source,
+# compared by the data gate. Read by tools/dataregions.py (consistency check).
+#
+# start      | end (excl.)    | class   | name                 | note
+# classes: asset      = media/blobs extracted and re-included (audio, banks)
+#          encrypted  = encrypted code (decompiled and re-encrypted like DNAS)
+#          asset-dnas = high-entropy DNAS tables (like the dnas2_* rows of the local GOT debt)
+#          vu         = VU microcode (assembled by dvp-as, not gcc)
+#          crt        = objects of glibc's crt1.o (like `_start`, outside the function universe)
+#          pad        = linker padding between two objects (input section alignment): zeros of no unit
+0x10002560 | 0x100029e0 | encrypted  | Chloe stage 1        | ChloeDoushite..ChloeUsotsuki, src/chloe/chloe.h
+0x100029f0 | 0x1000d150 | encrypted  | Chloe stage 2        | ChloeKnife..ChloeFork
+# 0x1000d180..0x100a25cc (CSL audio banks) is the initialized .data of src/audio/sound.c, content from
+# config/assets.txt (snd_* rows); the 48 zero bytes 0x1000d150..0x1000d180 are linker padding for the
+# 64-byte alignment of sound.o (pad row below).
+# 0x100a2710..0x100a2e28 (DNAS root CAs, DER): head of the .data of src/dnas/dnas_pwrap.c (six root CAs
+# _sce_dnas2_*_subject_name/_public_key + _sce_dnas2_CA_data), dnas2_ca_* rows of config/assets.txt.
+# 0x100a30f0..0x100a3370 (DNAS2 tables, module 1 tail): initialized .data of src/dnas/dnas2m11_blocks.c
+# (0x100a30f0..0x100a328e, seven tables) and src/dnas/dnas2m11_slots.c (0x100a3290..0x100a3368, nine tables,
+# then 8 bytes of padding), dnas2m11_blocks_*, dnas2m11_slots_* rows of config/assets.txt, twins of dnas2m12_blocks.c/dnas2m12_slots.c.
+# 0x100a3c10..0x100a3ce4 (DNAS2 tables, module 4): head of the .data of src/dnas/dnas2m12_identity.c,
+# dnas2m12_identity_enc_map_off..sig_key_mask rows of config/assets.txt, twins of dnas2m11_identity.c.
+# 0x100a3d30..0x100a8dd0 (DNAS2 tables): initialized .data of src/dnas/dnas2m12_blocks.c (0x100a3d30..0x100a3ece),
+# src/dnas/dnas2m12_slots.c (0x100a3ed0..0x100a3fa8, then 8 bytes of padding) and src/dnas/dnas2keyload.c
+# (dnas2_keyslots, 0x100a3fb0..0x100a8dd0), dnas2m12_blocks_*, dnas2m12_slots_*, dnas2_keyslots rows of config/assets.txt.
+# The compiled tail of dnas2m12_identity.c (0x100a3ce8..0x100a3d30) is ordinary compiled data.
+0x100af090 | 0x100b4a90 | asset      | ATOK IME tables      | atok12n_key/_roma, ps2ime_key/_roma (extern in src/ime/atok.c): serialized binary blobs stored as strings of hex digits, IME conversion data, not hand-written tables
+# 0x100b73f0..0x100bef90 (VU1 microcode, 31,648 bytes): initialized .data of src/gfx/gm_graph.cpp
+# (gmVu1Prog0/1, file-scope statics, content from config/assets.txt), checked by the gate as data of its unit.
+0x0093bf40 | 0x0093bf50 | crt        | _IO_stdin_used       | .dynsym, 0x00020001 + padding: first object of .rodata, from glibc's crt1.o
+0x10000000 | 0x10000010 | crt        | __data_start         | .dynsym (__data_start, _fdata, data_start WEAK): the `.long 0` of glibc's start.S in crt1.o + padding to 16, first object of .data before crtstuff.c (0x10000010)
+0x1000d150 | 0x1000d180 | pad        | sound.o alignment    | 48 zero bytes: the .data of sound.c is 64-byte aligned (SD_DMA_ALIGN), ld pads from the end of chloe2

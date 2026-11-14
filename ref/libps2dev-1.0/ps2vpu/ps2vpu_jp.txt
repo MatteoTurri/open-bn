@@ -1,0 +1,54 @@
+NAME
+    ps2vpu - vpu デバイスを扱う 簡易API
+
+SYNOPSIS
+    #include <ps2vpu.h>
+
+
+ESCRIPTION
+	ps2vpu  は /dev/ps2vu[01] を扱う簡易な API を提供します. 
+
+  関数
+
+    VPUDEV * ps2vpu_open(int vpu);
+	vpu(0か1) で指定された vpu デバイスを open し mmap を行いま 
+	す. 戻り値は vpu デバイスディスクリプタ(VPUDEV *)です. vpu1 
+	を開く前に vpu0 を開いておく必要があります.  
+
+    void ps2vpu_close(VPUDEV *pvpu);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスの資源を
+	開放します. 
+
+    void * ps2vpu_text(VPUDEV *pvpu);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスの umem 
+	(プログラム用)領域がマップされたアドレスを返します. 
+
+    void * ps2vpu_data(VPUDEV *pvpu);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスの vumem 
+	(データ用)領域がマップされたアドレスを返します. 
+
+    int ps2vpu_text_size(VPUDEV *pvpu);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスの umem 
+	(プログラム用)領域のサイズを返します.
+
+    int ps2vpu_data_size(VPUDEV *pvpu);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスの vumem 
+	(データ用)領域のサイズを返します.
+
+    void ps2vpu_reset(VPUDEV *dev);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスを
+	リセットし, T(trace) フラグ,  D(debug)フラグによる割り込みを
+	許可します. 
+
+    void ps2vpu_start(VPUDEV *dev, unsigned int start);
+	vpu デバイスディスクリプタ pvpuで指定されたデバイスのベクタ
+	プロセッサをマクロモードで起動します. umem 内の開始アドレス
+	を start で 指定します. 
+
+    int ps2vpu_busy(VPUDEV *dev);
+	 vpu デバイスディスクリプタ pvpuで指定されたデバイスの 
+	vpu-status レジスタのbusy フラグの状態を返します. 
+	busy なら 1 が返ります. 
+
+
+

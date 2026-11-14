@@ -1,0 +1,17 @@
+FILES
+Makefile
+gs_alpha.c
+gs_clear.c
+gs_dbuff.c
+gs_disp.c
+gs_draw.c
+gs_gparam.c
+gs_image.c
+gs_internal.c
+gs_internal.h
+gs_open.c
+gs_reset.c
+gs_tex.c
+gs_vc.c
+gs_vc.h
+ps2gs.h

@@ -1,0 +1,1135 @@
+
+VU0 Matrix Calculation Library
+==============================
+
+
+ 1 Library Overview
+--------------------
+
+    libvu0 is a library for vector and matrix calculation using the VU0
+    macro instructions.
+
+    This library contains functions for 4D vectors of float elements such as
+    addition, subtraction, scalar multiplication and division, normalization,
+    interpolation, outer and inner product, copy operation, and transformation
+    between floating-point and fixed-point fractional numbers.
+
+    And it contains functions for 4x4 matrices of float elements such as
+    multiplication, vector multiplication, transposing, inversion,
+    translation, and rotation.
+    
+    Functions for 3D graphics processing are also available such as clipping,
+    perspective transformation, obtaining world view matrix, normal light
+    matrix, light color matrix screen view matrix, and drop shadow matrix.
+
+    In addition, the library has functions to initialize VU0 and VIF0.
+
+  1.1 Argument Handling
+
+    While each function in libvu0 may have a different number of
+    arguments or different type of each argument, the type of almost all
+    function is void and the result of calculation is stored to the first
+    argument (a vector or matrix) with some exception.
+
+    Since VU0's calculation unit is basically 128-bit (4 float elements),
+    each argument is basically 128-bit in size. And each argument (a
+    vector or matrix) must be aligned on 128-bit boundaries.
+    
+  1.2 Registers Used By Each Function
+
+    VU0's VF Registers used by each function in libvu0 (Release 1.2 or
+    later) are shown below. In this table, the mark '*' means that the
+    register is used and its value may be changed. So please keep the
+    value if needed. The register marked '-' is not used. So the value
+    doesn't have to be kept.
+
+    +-------------------+----+----+----+----+----+----+----+----+----+
+    |function            VF04 VF05 VF06 VF07 VF08 VF09 VF10 VF11 VF12|
+    +-------------------+----+----+----+----+----+----+----+----+----+
+    |add_vector           *    *    *    -    -    -    -    -    -  |
+    |sub_vector           *    *    *    -    -    -    -    -    -  |
+    |mul_vector           *    *    *    -    -    -    -    -    -  |
+    |scale_vector         *    *    *    -    -    -    -    -    -  |
+    |scale_vector_xyz     *    *    -    -    -    -    -    -    -  |
+    |div_vector           *    *    -    -    -    -    -    -    -  |
+    |div_vector_xyz       *    *    -    -    -    -    -    -    -  |
+    |normalize            *    *    *    -    -    -    -    -    -  |
+    |inter_vector         *    *    *    *    *    *    -    -    -  |
+    |inter_vector_xyz     *    *    *    *    *    *    -    -    -  |
+    |outer_product        *    *    *    -    -    -    -    -    -  |
+    |inner_product        *    *    -    -    -    -    -    -    -  |
+    |copy_vector          -    -    -    -    -    -    -    -    -  |
+    |copy_vector_xyz      -    -    -    -    -    -    -    -    -  |
+    |clamp_vector         *    *    *    -    -    -    -    -    -  |
+    |ftoi4_vector         *    *    -    -    -    -    -    -    -  |
+    |ftoi0_vector         *    *    -    -    -    -    -    -    -  |
+    |itof4_vector         *    *    -    -    -    -    -    -    -  |
+    |itof0_vector         *    *    -    -    -    -    -    -    -  |
+    |apply_matrix         *    *    *    *    *    *    -    -    -  |
+    |mul_matrix           *    *    *    *    *    *    -    -    -  |
+    |transpose_matrix     -    -    -    -    -    -    -    -    -  |
+    |inverse_matrix       *    *    *    *    *    *    -    -    -  |
+    |trans_matrix         *    *    -    -    -    -    -    -    -  |
+    |copy_matrix          -    -    -    -    -    -    -    -    -  |
+    |unit_matrix          *    *    *    *    -    -    -    -    -  |
+    |rot_matrix_z         *    *    *    *    *    *    -    -    -  |
+    |rot_matrix_y         *    *    *    *    *    *    -    -    -  |
+    |rot_matrix_x         *    *    *    *    *    *    -    -    -  |
+    |rot_matrix           *    *    *    *    *    *    -    -    -  |
+    |rot_trans_pers       *    *    *    *    *    *    *    -    -  |
+    |rot_trans_pers_n     *    *    *    *    *    *    *    -    -  |
+    |camera_matrix        *    *    *    *    *    *    -    -    -  |
+    |normal_light_matrix  *    *    *    -    -    -    -    -    -  |
+    |light_color_matrix   -    -    -    -    -    -    -    -    -  |
+    |view_screen_matrix   *    *    *    *    *    *    -    -    -  |
+    |drop_shadow_matrix   *    *    *    *    *    *    -    -    -  |
+    |clip_screen          *    *    *    *    -    -    -    -    -  |
+    |clip_screen3         *    *    *    *    *    *    -    -    -  |
+    |clip_all             *    *    *    *    *    *    *    *    *  |
+    +-------------------+----+----+----+----+----+----+----+----+----+
+
+     [!] 'ps2_vu0_' in the head of each function name is omitted.
+
+     
+ 1 Structures
+==============
+
+=========================================================================
+ps2_vu0_fmatrix                                               [Structure]
+=========================================================================
+                                                               4x4 matrix
+[Synopsis]
+        typedef ps2_vu0_fvector ps2_vu0_fmatrix[4];
+        
+[Description]
+	A 4x4 matrix of float elements. The order of elements is shown
+	below.
+        
+        |m[0][0] m[1][0] m[2][0] m[3][0]|
+        |m[0][1] m[1][1] m[2][1] m[3][1]|
+        |m[0][2] m[1][2] m[2][2] m[3][2]|
+        |m[0][3] m[1][3] m[2][3] m[3][3]|
+
+=========================================================================
+ps2_vu0_fvector                                               [Structure]
+=========================================================================
+					       4D vector (floating-point)
+[Synopsis]
+        typedef float ps2_vu0_fvector[4];
+        
+[Description]
+
+	A 4D vector of float elements. The byte order of EE is
+	little-endian, and the correspondence of each elements of
+	ps2_vu0_fvector to each vector element (field) is shown below.
+        
+        +--------+----------+
+        |array    field     |
+        +--------+----------+
+        |a[0]     x         |
+        |a[1]     y         |
+        |a[2]     z         |
+        |a[3]     w         |
+        +--------+----------+
+
+=========================================================================
+ps2_vu0_ivector                                               [Structure]
+=========================================================================
+						      4D vector (integer)
+[Synopsis]
+        typedef int ps2_vu0_ivector[4];
+        
+[Description]
+	A 4D vector of int elements. The byte order of EE is
+	little-endian, and and the correspondence of each elements of
+	ps2_vu0_ivector to each vector element (field) is shown below.
+        
+        +--------+----------+
+        |array    field     |
+        +--------+----------+
+        |a[0]     x         |
+        |a[1]     y         |
+        |a[2]     z         |
+        |a[3]     w         |
+        +--------+----------+
+        
+        ps2_vu0_ivector can be used in two fixed-point fractional number
+        formats; one uses 32 bits as an integer part and no fraction
+        part, and another uses 24 bits as an integer part and 4 bits as a
+        fraction part.
+        
+        +-----------------+------------------------+
+        |format            specification           |
+        +-----------------+------------------------+
+        |fixed-point(32.0) integer:32bit, frac:0bit|
+        |fixed-point(28.4) integer:24bit, frac:4bit|
+        +-----------------+------------------------+
+
+	
+ 2 Functions
+=============
+
+=========================================================================
+ps2_vu0_add_vector                                             [Function]
+=========================================================================
+					   4-parallel addition (ADD/xyzw)
+[Synopsis]
+        void ps2_vu0_add_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        
+[Return Value]
+        None
+        
+[Description]
+	Adds each element of vector v1 and v2 respectively and stores the
+	result to v0.
+
+=========================================================================
+ps2_vu0_apply_matrix                                           [Function]
+=========================================================================
+					     matrix-vector multiplication
+[Synopsis]
+        void ps2_vu0_apply_matrix(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fvector v1
+        )
+        
+[Arguments]
+        v0	out: vector
+        m0	in:  matrix
+        v1	in:  vector
+        
+[Return Value]
+        None
+        
+[Description]
+	Multiplies vector v1 by matrix m0, and stores the result to
+	vector v0. (v0 = m0 * v1)
+        
+=========================================================================
+ps2_vu0_camera_matrix                                          [Function]
+=========================================================================
+					    creation of world view matrix
+[Synopsis]
+        void ps2_vu0_camera_matrix(
+        	ps2_vu0_fmatrix m,
+        	ps2_vu0_fvector p,
+        	ps2_vu0_fvector zd,
+        	ps2_vu0_fvector yd
+        );
+        
+[Arguments]
+        m	out: matrix (view world coord.)
+        p	in:  vector (point of view)
+        zd	in:  vector (line of vision)
+        yd	in:  vector (vertical direction)
+        
+[Return Value]
+        None
+        
+[Description]
+	Calculates the matrix which translates p (point of view) into (0,
+	0, 0), zd (line of vision) into (0, 0, 1) and yd (vertical
+	direction) into (0, 1, 0). And the matrix is stored to m.
+
+=========================================================================
+ps2_vu0_clamp_vector                                           [Function]
+=========================================================================
+							     clamp vector
+[Synopsis]
+        void ps2_vu0_clamp_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	float min,
+        	float max
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        min	in:  minimum value
+        max	in:  maximum value
+        
+[Return Value]
+        None
+        
+[Description]
+	Clamps each element of vector v1 between the minimum and maximum
+	values, and stores the result to vector v0.
+
+=========================================================================
+ps2_vu0_clip_all                                               [Function]
+=========================================================================
+					   clip testing by displayed area
+[Synopsis]
+        int ps2_vu0_clip_all(
+        	ps2_vu0_fvector minv,
+        	ps2_vu0_fvector maxv,
+        	ps2_vu0_fmatrix ms,
+        	ps2_vu0_fvector *vm,
+        	int n
+        );
+        
+[Arguments]
+        minv	in:  minimum value of displayed area
+        maxv	in:  maximum value of displayed area
+        ms	in:  matrix (model-screen)
+        vm	in:  pointer to vectors of vertices
+        n	in:  number of vertices
+        
+[Return Value]
+	When all the vertices are outside the displayed area, the
+        function returns 1.
+        
+[Description]
+	Tests whether all the vertices specified by 'vm' and 'n' are
+	outside the displayed area.
+
+=========================================================================
+ps2_vu0_clip_screen                                            [Function]
+=========================================================================
+					  clip testing by GS drawing area
+[Synopsis]
+        int ps2_vu0_clip_screen(
+        	ps2_vu0_fvector v0
+        )
+        
+[Argument]
+        v0	in: vector
+        
+[Return Value]
+	When inside the drawing area, the function returns 0.
+        
+[Description]
+	Tests whether the vertex vector v0 is inside the GS drawing area.
+
+=========================================================================
+ps2_vu0_clip_screen3                                           [Function]
+=========================================================================
+					  clip testing by GS drawing area
+[Synopsis]
+        int ps2_vu0_clip_screen3(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2
+        )
+        
+[Argument]
+        v0,v1,v2	in: vector
+        
+[Return Value]
+	When all the vertices are inside the drawing area, the function
+	returns 0.
+        
+[Description]
+	Tests whether all the vertices v0, v1 and v2 are inside the GS
+	drawing area.
+
+=========================================================================
+ps2_vu0_copy_matrix					       [Function]
+=========================================================================
+							      copy matrix
+[Synopsis]
+        void ps2_vu0_copy_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        
+[Return Value]
+        None.
+        
+[Description]
+	Copies matrix m1 to matrix m0.
+
+=========================================================================
+ps2_vu0_copy_vector                                            [Function]
+=========================================================================
+							      copy vector
+[Synopsis]
+        void ps2_vu0_copy_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Copies vector v1 to vector v0.
+
+=========================================================================
+ps2_vu0_copy_vector_xyz                                        [Function]
+=========================================================================
+							      copy vector
+[Synopsis]
+        void ps2_vu0_copy_vector_xyz(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Copies only x, y, z elements of vector v1 to vector v0, and w
+	element of vector v0 is not changed.
+
+=========================================================================
+ps2_vu0_div_vector                                             [Function]
+=========================================================================
+								 division
+[Synopsis]
+        void ps2_vu0_div_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	float q
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        q	in:  scalar
+        
+[Return Value]
+        None.
+        
+[Description]
+	Divides vector v1 by scalar q and stores the result to vector v0.
+
+=========================================================================
+ps2_vu0_div_vector_xyz                                         [Function]
+=========================================================================
+								 division
+[Synopsis]
+        void ps2_vu0_div_vector_xyz(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	float q
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        q	in:  scalar
+        
+[Return Value]
+        None.
+        
+[Description]
+	Divides only x, y, z elements of vector v1 by scalar q, and
+	stores the result to vector v0. w element of v0 is not changed.
+
+=========================================================================
+ps2_vu0_drop_shadow_matrix                                     [Function]
+=========================================================================
+					   creation of drop shadow matrix
+[Synopsis]
+        void ps2_vu0_drop_shadow_matrix(
+        	ps2_vu0_fmatrix m,
+        	ps2_vu0_fvector lp,
+        	float a,
+        	float b,
+        	float c,
+        	int mode
+        );
+        
+[Arguments]
+        m	out: matrix
+        lp	in:  vector (light position)
+        a	in:  surface to project shadow
+        b	in:  surface to project shadow
+        c	in:  surface to project shadow
+        mode	in:  kind of light source
+			0: point light
+			1: linear light
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the matrix that projects shadow by the light source
+	specified by 'lp' and 'mode' onto the surface determined by the
+	equation ax+by+cz=1.
+
+=========================================================================
+ps2_vu0_ftoi0_vector                                           [Function]
+=========================================================================
+					    floating-point to fixed-point
+[Synopsis]
+        void ps2_vu0_ftoi0_vector(
+        	ps2_vu0_ivector v0,
+        	ps2_vu0_fvector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Translates each element of vector v1 into a fixed-point
+	fractional number whose fraction part is 0-bit. The result is
+	stored to vector v0.
+
+=========================================================================
+ps2_vu0_ftoi4_vector                                           [Function]
+=========================================================================
+					    floating-point to fixed-point
+[Synopsis]
+        void ps2_vu0_ftoi4_vector(
+        	ps2_vu0_ivector v0,
+        	ps2_vu0_fvector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Translates each element of vector v1 into a fixed-point
+	fractional number whose fraction part is 4-bit. The result is
+	stored to vector v0.
+
+=========================================================================
+ps2_vu0_inner_product                                          [Function]
+=========================================================================
+						 inner product of vectors
+[Synopsis]
+        float ps2_vu0_inner_product(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1
+        )
+        
+[Arguments]
+        v0,v1	in: vector
+        
+[Return Value]
+        Inner product.
+        
+[Description]
+        Calculates the inner product of vectors v0 and v1.
+
+=========================================================================
+ps2_vu0_inter_vector                                           [Function]
+=========================================================================
+						      interpolated vector
+[Synopsis]
+        void ps2_vu0_inter_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2,
+        	float t
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        t	in:  interpolation parameter
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the interpolated vector of v1 and v2 by parameter t.
+	the result is stored to v0. (v0 = v1*t + v2*(1-t))
+
+=========================================================================
+ps2_vu0_inter_vector_xyz                                       [Function]
+=========================================================================
+						      interpolated vector
+[Synopsis]
+        void ps2_vu0_inter_vector_xyz(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2,
+        	float t
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        t	in:  interpolation parameter
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the interpolated vector of v1 and v2 by parameter t.
+	the result is stored to v0. (v0 = v1*t + v2*(1-t))
+	w element of vector v0 is not changed.
+
+=========================================================================
+ps2_vu0_inverse_matrix                                         [Function]
+=========================================================================
+							   inverse matrix
+[Synopsis]
+        void ps2_vu0_inverse_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix (nonsingular matrix)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the inverse matrix of matrix m1 and stores it to
+	matrix m0.
+
+	Matrix m1 must be a nonsingular matrix (rotation or translation
+	matrix).
+
+=========================================================================
+ps2_vu0_itof0_vector                                           [Function]
+=========================================================================
+					    fixed-point to floating-point
+[Synopsis]
+        void ps2_vu0_itof0_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_ivector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Translates each fixed-point element of vector v1 whose fraction
+	part is 0-bit into a floating-point value. The result is stored
+	to vector v0.
+        
+=========================================================================
+ps2_vu0_itof4_vector                                           [Function]
+=========================================================================
+					    fixed-point to floating-point
+[Synopsis]
+        void ps2_vu0_itof4_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_ivector v1
+        );
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Translates each fixed-point element of vector v1 whose fraction
+	part is 4-bit into a floating-point value. The result is stored
+	to vector v0.
+        
+=========================================================================
+ps2_vu0_light_color_matrix                                     [Function]
+=========================================================================
+					   creation of light color matrix
+[Synopsis]
+        void ps2_vu0_light_color_matrix(
+        	ps2_vu0_fmatrix m,
+        	ps2_vu0_fvector c0,
+        	ps2_vu0_fvector c1,
+        	ps2_vu0_fvector c2,
+        	ps2_vu0_fvector a
+        );
+        
+[Arguments]
+        m	out: matrix
+        c0	in:  vector (light source color 0)
+        c1	in:  vector (light source color 1)
+        c2	in:  vector (light source color 2)
+        a	in:  vector (ambient light color)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Creates a light color matrix from light source colors c0, c1, c2
+	and ambient color a. The result is stored to matrix m.
+
+=========================================================================
+ps2_vu0_mul_matrix                                             [Function]
+=========================================================================
+						    matrix multiplication
+[Synopsis]
+        void ps2_vu0_mul_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	ps2_vu0_fmatrix m2
+        )
+        
+[Arguments]
+        m0	out: matrix
+        m1,m2	in:  matrix
+        
+[Return Value]
+        None.
+        
+[Description]
+	Performs the matrix-matrix multiplication (m1 * m2) and stores the
+	result into matrix m0.
+
+=========================================================================
+ps2_vu0_mul_vector                                             [Function]
+=========================================================================
+					   4-parallel multiply (MUL/xyzw)
+[Synopsis]
+        void ps2_vu0_mul_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Multiplies each element of vector v1 and vector v2 respectively,
+	and stores the result into vector v0.
+
+=========================================================================
+ps2_vu0_normalize                                              [Function]
+=========================================================================
+						  normalization of vector
+[Synopsis]
+        void ps2_vu0_normalize(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Returns the normalized vector of v1 to vector v0.
+
+=========================================================================
+ps2_vu0_normal_light_matrix                                    [Function]
+=========================================================================
+					  creation of normal light matrix
+[Synopsis]
+        void ps2_vu0_normal_light_matrix(
+        	ps2_vu0_fmatrix m,
+        	ps2_vu0_fvector l0,
+        	ps2_vu0_fvector l1,
+        	ps2_vu0_fvector l2
+        );
+        
+[Arguments]
+        m	out: matrix
+        l0	in:  vector (direction of light source 0)
+        l1	in:  vector (direction of light source 1)
+        l2	in:  vector (direction of light source 2)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the normal light matrix by the light sources l0, l1
+	and l2. And the matrix will be stored into m.
+
+=========================================================================
+ps2_vu0_outer_product                                          [Function]
+=========================================================================
+						 outer product of vectors
+[Synopsis]
+        void ps2_vu0_outer_product(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the outer product of vector v1 and v2, and stores the
+	result into vector v0.
+	
+=========================================================================
+ps2_vu0_rot_matrix                                             [Function]
+=========================================================================
+							  matrix rotation
+[Synopsis]
+        void ps2_vu0_rot_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	ps2_vu0_fvector rot
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        rot	in:  rotation angles around x, y and z axes
+		     (the values must be in -PI..PI)
+		     
+[Return Value]
+        None.
+        
+[Description]	
+	Calculates the rotation matrix around z axis by rot[2], and the
+	matrix around x by rot[1], and the matrix around y by rot[0]. And
+	multiply m by them from left in order. The result will be stored
+	into matrix m0.
+
+=========================================================================
+ps2_vu0_rot_matrix_x                                           [Function]
+=========================================================================
+						   rotation around x axis
+[Synopsis]
+        void ps2_vu0_rot_matrix_x(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	float rx
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        rx	in:  rotation angle (-PI..PI)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the rotation matrix around x axis by angle rx, and
+	multiplies m1 by the matrix. And stores the result into m0.
+
+=========================================================================
+ps2_vu0_rot_matrix_y                                           [Function]
+=========================================================================
+						   rotation around y axis
+[Synopsis]
+        void ps2_vu0_rot_matrix_y(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	float ry
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        ry	in:  rotation angle (-PI..PI)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the rotation matrix around y axis by angle ry, and
+	multiplies m1 by the matrix. And stores the result into m0.
+        
+=========================================================================
+ps2_vu0_rot_matrix_z                                           [Function]
+=========================================================================
+						   rotation around z axis
+[Synopsis]
+        void ps2_vu0_rot_matrix_z(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	float rz
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        rz	in:  rotation angle (-PI..PI)
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the rotation matrix around z axis by angle rz, and
+	multiplies m1 by the matrix. And stores the result into m0.
+
+=========================================================================
+ps2_vu0_rot_trans_pers                                         [Function]
+=========================================================================
+					       perspective transformation
+[Synopsis]
+        void ps2_vu0_rot_trans_pers(
+        	ps2_vu0_ivector v0,
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fvector v1,
+        	int mode
+        );
+        
+[Arguments]
+        v0	out: vector (screen coord.)
+        m0	in:  matrix (perspective transformation matrix)
+        v1	in:  vector (vertex)
+        mode	in:  format of the returned vectors v0[2], v0[3]
+			0: fixed-point number with 4-bit fraction part
+			1: fixed-point number with 0-bit fraction part
+        
+[Return Value]
+        None.
+        
+[Description]
+	Perform the perspective transformation by matrix m0 to transform
+	the vertex v1 into screen coordinate. And the transformed vertex
+	is stored into v0.
+
+	The format of v0[0] and v0[1] is signed 32-bit fixed-point
+	fraction number with 4-bit fraction part.
+
+	The format of v0[2] and v0[3] is specified by 'mode'. When mode
+	is 0, the format is unsigned 32-bit fixed-point fraction number
+	with 4-bit fraction part, and when mode is 1, the format is
+	unsigned 32-bit fixed-point fraction number with 0-bit fraction
+	part.
+
+	If you use XYZF2 or XYZF3 in PACKED mode of GIF, mode=0 will be
+	useful because you can get the integer parts of values when
+	PACKed.
+
+=========================================================================
+ps2_vu0_rot_trans_pers_n                                       [Function]
+=========================================================================
+					       perspective transformation
+[Synopsis]
+        void ps2_vu0_rot_trans_pers_n(
+        	ps2_vu0_ivector *v0,
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fvector *v1,
+        	int n,
+        	int mode
+        );
+        
+[Arguments]
+        v0	out: vector (screen coord.)
+        m0	in:  matrix
+        v1	in:  pointer to vectors (vertices)
+        n	in:  number of vectors
+        mode	in:  format of the returned vectors v0[2],v0[3]
+			0: fixed-point number with 4-bit fraction part
+			1: fixed-point number with 0-bit fraction part
+        
+[Return Value]
+        None.
+        
+[Description]
+	Performs the perspective transformation by matrix m0 to transform
+	the vertices specified by v1 and n into screen coordinate. The
+	transformed vertices are stored into the array pointed by v0.
+
+	The format of *v0[0] and *v0[1] is signed 32-bit fixed-point
+	fraction number with 4-bit fraction part.
+
+	The format of *v0[2] and *v0[3] is specified by 'mode'. When mode
+	is 0, the format is unsigned 32-bit fixed-point fraction number
+	with 4-bit fraction part, and when mode is 1, the format is
+	unsigned 32-bit fixed-point fraction number with 0-bit fraction
+	part.
+
+	If you use XYZF2 or XYZF3 in PACKED mode of GIF, mode=0 will be
+	useful because you can get the integer parts of values when
+	PACKed.
+
+=========================================================================
+ps2_vu0_scale_vector                                           [Function]
+=========================================================================
+		     multiplication of vector by scalar value (MULx/xyzw)
+[Synopsis]
+        void ps2_vu0_scale_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	float t
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        t	in:  scalar
+        
+[Return Value]
+        None.
+        
+[Description]
+	Multiplies vector v1 by scalar t and stores the result into v0.
+        
+=========================================================================
+ps2_vu0_scale_vector_xyz                                       [Function]
+=========================================================================
+			    multiplication of vector by scalar (MULx/xyz)
+[Synopsis]
+        void ps2_vu0_scale_vector_xyz(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	float t
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1	in:  vector
+        t	in:  scalar
+        
+[Return Value]
+        None.
+        
+[Description]
+	Multiplies the x, y and z elements of vector v1 by scalar t
+	respectively, and stores the result into vector v0.
+	The w element of vector v0 is not changed.
+	
+=========================================================================
+ps2_vu0_sub_vector                                             [Function]
+=========================================================================
+					4-parallel subtraction (SUB/xyzw)
+[Synopsis]
+        void ps2_vu0_sub_vector(
+        	ps2_vu0_fvector v0,
+        	ps2_vu0_fvector v1,
+        	ps2_vu0_fvector v2
+        )
+        
+[Arguments]
+        v0	out: vector
+        v1,v2	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Subtracts each element of vector v2 from each element of v1
+	respectively, and stores the result into vector v0.
+
+=========================================================================
+ps2_vu0_trans_matrix                                           [Function]
+=========================================================================
+						       matrix translation
+[Synopsis]
+        void ps2_vu0_trans_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1,
+        	ps2_vu0_fvector tv
+        );
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        tv	in:  vector
+        
+[Return Value]
+        None.
+        
+[Description]
+	Translates matrix m1 by given vector tv and stores the result
+	into matrix m0.
+        
+=========================================================================
+ps2_vu0_transpose_matrix                                       [Function]
+=========================================================================
+					    creation of transposed matrix
+[Synopsis]
+        void ps2_vu0_transpose_matrix(
+        	ps2_vu0_fmatrix m0,
+        	ps2_vu0_fmatrix m1
+        )
+        
+[Arguments]
+        m0	out: matrix
+        m1	in:  matrix
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the transposed matrix of m1 and stores it into m0.
+        
+=========================================================================
+ps2_vu0_unit_matrix                                            [Function]
+=========================================================================
+					      creation of identity matrix
+[Synopsis]
+        void ps2_vu0_unit_matrix(
+        	ps2_vu0_fmatrix m0
+        );
+        
+[Arguments]
+        m0	out: matrix
+        
+[Return Value]
+        None.
+        
+[Description]
+	Returns the 4x4 unit matrix to m0.
+
+=========================================================================
+ps2_vu0_view_screen_matrix                                     [Function]
+=========================================================================
+					   creation of view screen matrix
+[Synopsis]
+        void ps2_vu0_view_screen_matrix(
+        	ps2_vu0_fmatrix m,
+        	float scrz,
+        	float ax,
+        	float ay,
+        	float cx,
+        	float cy,
+        	float zmin,
+        	float zmax,
+        	float nearz,
+        	float farz
+        )
+        
+[Arguments]
+        m	out: matrix
+        scrz	in:  distance to screen
+        ax	in:  x aspect ratio
+        ay	in:  y aspect ratio
+        cx	in:  x coordinate of screen center
+        cy	in:  y coordinate of screen center
+        zmin	in:  minimum value of Z buffer
+        zmax	in:  maximum value of Z buffer
+        nearz	in:  z value of near clip plane
+        farz	in:  z value of far clip plane
+        
+[Return Value]
+        None.
+        
+[Description]
+	Calculates the view screen matrix by given parameters, and stores
+	it into m.
