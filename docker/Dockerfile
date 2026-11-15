@@ -18,9 +18,9 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-in
 # of the repo.
 RUN mkdir -p /usr/cross/mipsEEel-linux/include && chmod 1777 /usr/cross/mipsEEel-linux/include
 
-# Source formatter, pinned: tools/format.py accepts only this version (make format, make check).
+# Source formatter, pinned: tools/format.py accepts only this version (make format, make check); keep in sync with it.
 RUN apt-get update && apt-get install -y --no-install-recommends python3-pip \
-    && pip3 install --no-cache-dir --break-system-packages clang-format==23.1.4 \
+    && pip3 install --no-cache-dir --break-system-packages clang-format==23.1.5 \
     && rm -rf /var/lib/apt/lists/*
 
 # The Sony toolchain (rebuilt gcc 2.95.2-3a and binutils 2.9EE) is not baked into

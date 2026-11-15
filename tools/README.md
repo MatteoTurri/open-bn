@@ -90,21 +90,23 @@ or through the Makefile target shown.
 
 ## Formatter (`make format`)
 
-- **`format.py`** [container] `make format`: Format the sources of src/ with clang-format 23.1.4, the only version accepted.
-  - `python3 tools/format.py [--check] [FILE ...]`
+- **`format.py`** [container] `make format`: Format the sources of src/ with clang-format 23.1.5, the only version accepted.
+  - `python3 tools/format.py [--check] [--version] [FILE ...]`
 - **`hooks/pre-commit`**: Optional pre-commit hook: refuses a commit whose staged src/ files are not formatted.
 
-The container has clang-format 23.1.4 (docker/Dockerfile), so `make format` needs nothing else.
-To run it on the host (editor format-on-save, the hook), install exactly that version, outside the system
-Python, and point `CLANG_FORMAT` at it when it is not the first `clang-format` in PATH:
+The container has the pinned clang-format (docker/Dockerfile), so `make format` needs nothing else.
+On the host (editor format-on-save, the hook), `make venv` installs it into `.venv` (gitignored), like a
+lockfile-pinned dev dependency; `tools/format.py` picks the first of `CLANG_FORMAT`, `.venv/bin/clang-format`
+and `clang-format` in PATH that has the pinned version, so the system clang-format does not matter:
 
 ```sh
-pipx install clang-format==23.1.4                     # or:
-python3 -m venv ~/.local/cf23 && ~/.local/cf23/bin/pip install clang-format==23.1.4
-export CLANG_FORMAT=~/.local/cf23/bin/clang-format
+make venv                                             # once, and again after a version bump
 python3 tools/format.py --check                       # what make check does first, on the host
-git config core.hooksPath tools/hooks                 # optional: check staged src/ files at each commit
+.venv/bin/clang-format                                # the binary to give the editor
 ```
+
+To bump the version: `VERSION` in `tools/format.py` and the pin in `docker/Dockerfile`, then `make venv`,
+`make env`, `make format`.
 
 Another version of clang-format formats differently: `tools/format.py` refuses it (exit 2).
 

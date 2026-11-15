@@ -12,7 +12,7 @@ Usage of each tool named here: `tools/README.md`.
 
 | step | tool | what fails it |
 |---|---|---|
-| format | `tools/format.py --check` | a file of `src/` not formatted by clang-format 23.1.4 (`docs/code-conventions.md`, section 7) |
+| format | `tools/format.py --check` | a file of `src/` not formatted by clang-format 23.1.5 (`docs/code-conventions.md`, section 7) |
 | toolchain | `tools/check_toolchain.py` | a compiler patch other than the one allowed, or a gcc build without `-msse2 -mfpmath=sse` (`docs/compiler.md`) |
 | assets | `tools/extract_assets.py` | `orig/bn-jpn.elf` missing, or a hash of `config/assets.txt` that does not match (`docs/original-bytes.md`) |
 | functions | `tools/check.py` | a function that does not match, or a GOT identity outside the debt |

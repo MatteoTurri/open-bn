@@ -1,4 +1,4 @@
-# Style of src/ (Sony code), applied by `make format`. Pinned: clang-format 23.1.4 (tools/format.py refuses any
+# Style of src/ (Sony code), applied by `make format`. Pinned: clang-format 23.1.5 (tools/format.py refuses any
 # other version). ref/ has its own .clang-format with DisableFormat: true. Regions between
 # /* clang-format off */ and /* clang-format on */ are deliberate (docs/code-conventions.md, section 7).
 ---

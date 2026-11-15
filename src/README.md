@@ -80,5 +80,5 @@ Comment markers:
 
 ## Formatting
 
-The sources are formatted with clang-format 23.1.4 and the `.clang-format` at the root: run `make format`
+The sources are formatted with clang-format 23.1.5 and the `.clang-format` at the root: run `make format`
 before committing (`make check` fails on unformatted files). Details in `tools/README.md`.

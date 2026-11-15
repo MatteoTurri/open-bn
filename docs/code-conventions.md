@@ -138,9 +138,9 @@ header > 6 lines. The review question: "does every comment say something the cod
 
 ## 7. Formatter
 
-`src/` is formatted with clang-format **23.1.4** (`.clang-format` at the root): `make format` rewrites, the
+`src/` is formatted with clang-format **23.1.5** (`.clang-format` at the root): `make format` rewrites, the
 first step of `make check` checks. `tools/format.py` refuses any other version (21 and 22
-give a different result on 28-30 files). Host installation and the optional pre-commit hook: `tools/README.md`.
+give a different result on 28-30 files). On the host: `make venv` (`tools/README.md`).
 `ref/` is not formatted (`ref/.clang-format`: `DisableFormat: true`): upstream libraries stay comparable with their
 tarballs, sslc is pinned to its lines (234 `#line`, `__LINE__` in the `XXXerr` macros), rcom is compiled
 with `-g` (section 1).

@@ -14,7 +14,7 @@ DOCKER = docker run --rm --platform linux/amd64 $(DOCKER_USER) $(DOCKER_ENV) -v 
 NEED_SPLIT = $(if $(and $(wildcard expected/asm/*.s),$(wildcard expected/functions.txt),$(wildcard build/dnas/bn-jpn.dec.elf)),,1)
 
 .PHONY: check format link link-in link-cmp \
-        env need-buildx sony-gcc sony-binutils kit headers bootstrap \
+        env venv need-buildx sony-gcc sony-binutils kit headers bootstrap \
         split decrypt got-debt
 
 ## Build and verify
@@ -67,6 +67,13 @@ bootstrap: need-buildx env sony-gcc sony-binutils kit headers
 
 env:
 	cd docker && docker build --platform linux/amd64 -t open-bn-env .
+
+# Host-side tools in .venv (gitignored): the pinned clang-format, used by tools/format.py on the host
+# (pre-commit hook, editor). The version comes from tools/format.py.
+venv:
+	@[ -x .venv/bin/python ] || python3 -m venv .venv
+	@.venv/bin/pip install -q --disable-pip-version-check clang-format==$$(python3 tools/format.py --version)
+	@echo "venv       $$(.venv/bin/clang-format --version)"
 
 # docker build --output (sony-gcc, sony-binutils) needs BuildKit: the buildx plugin.
 need-buildx:
