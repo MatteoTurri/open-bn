@@ -13,11 +13,30 @@ python3 -c 'import elftools' 2>/dev/null || { echo "error: open-bn-env image wit
 # Output: identical SHA1 -> one line; otherwise the differing sections (cmp.py's stderr, at most
 # 20) and a line with the two SHA1s. The full report is always in build/relink/cmp.txt; VERBOSE=1
 # prints it too.
-python3 tools/relink/cmp.py build/relink/bn.elf > build/relink/cmp.txt; st=$?
+# VARIANT=<name>: the expected SHA1 is the variant's (config/variants.txt); bn.elf must come from
+# `make link` with the same VARIANT (build/relink/variant.txt). The section report still compares
+# with the original, so for a variant it lists the sections the variant changes.
+built=$(cat build/relink/variant.txt 2>/dev/null || true)
+if [ "$built" != "${VARIANT:-}" ]; then
+    echo "error: build/relink/bn.elf was linked with VARIANT='$built', not '${VARIANT:-}': rerun make link" >&2
+    exit 2
+fi
+# with a variant cmp.py's stderr (the sections differing from the original) is expected: report only
+rm -f build/relink/cmp.err
+if [ -n "${VARIANT:-}" ]; then
+    python3 tools/relink/cmp.py build/relink/bn.elf > build/relink/cmp.txt 2> build/relink/cmp.err; st=$?
+else
+    python3 tools/relink/cmp.py build/relink/bn.elf > build/relink/cmp.txt; st=$?
+fi
 [ -n "${VERBOSE:-}" ] && cat build/relink/cmp.txt
-if [ $st -gt 1 ]; then echo "error: cmp.py failed (exit $st)" >&2; exit 2; fi
-o=$(sha1sum orig/bn-jpn.elf | cut -d' ' -f1); l=$(sha1sum build/relink/bn.elf | cut -d' ' -f1)
-if [ "$o" = "$l" ]; then echo "SHA1 $l identical"; exit 0; fi
-[ $st -eq 0 ] && echo "all sections identical: the difference is in the ELF/program headers or the file layout" >&2
-echo "SHA1 differs: orig $o, linked $l (report: build/relink/cmp.txt)"
+if [ $st -gt 1 ]; then cat build/relink/cmp.err >&2 2>/dev/null; echo "error: cmp.py failed (exit $st)" >&2; exit 2; fi
+if [ -n "${VARIANT:-}" ]; then
+    o=$(python3 tools/relink/variant.py --sha1 "$VARIANT") || exit 2
+else
+    o=$(sha1sum orig/bn-jpn.elf | cut -d' ' -f1)
+fi
+l=$(sha1sum build/relink/bn.elf | cut -d' ' -f1)
+if [ "$o" = "$l" ]; then echo "SHA1 $l identical${VARIANT:+ (variant $VARIANT)}"; exit 0; fi
+[ $st -eq 0 ] && [ -z "${VARIANT:-}" ] && echo "all sections identical: the difference is in the ELF/program headers or the file layout" >&2
+echo "SHA1 differs: ${VARIANT:-orig} $o, linked $l (report against the original: build/relink/cmp.txt)"
 exit 1

@@ -1,0 +1,10 @@
+# Build variants (tools/relink/variant.py): `make link VARIANT=<name>` recompiles the units of
+# the variant with the extra flags and links them in place of the gate's objects; `make link-cmp
+# VARIANT=<name>` compares the result with the SHA1 below instead of orig/bn-jpn.elf.
+#
+# variant | SHA1 of bn.elf | unit | extra cflags
+#
+# definitive: the bn installed by the PSBBN Definitive Patch, orig/bn-jpn.elf with the soft-key
+# labels "Delete", "Back", "Enter" in English: three 6-byte strings in the 8-byte slots at file
+# offsets 0x53e440, 0x53e448 and 0x53e450.
+definitive | 121f9cbfb36034829f60d9a7b8ac5108258f542b | src/app/gettext.cpp | -DDEFINITIVE_PATCH

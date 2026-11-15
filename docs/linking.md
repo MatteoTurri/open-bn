@@ -137,6 +137,26 @@ a function at 8 mod 16 right after another one is in the same object). All units
 `LAYOUT_OVERLAP=1` it also walks every section in link order and reports overlaps and holes between
 units. It is a measurement and changes no exit code; the link SHA1 is the judge.
 
+## Variants (`VARIANT=<name>`)
+
+`config/variants.txt` lists builds that differ from the original only in some bytes, each with the
+SHA1 of the `bn.elf` it must produce. `make link VARIANT=<name>` recompiles the variant's units with
+their extra flags (`tools/relink/variant.py`, same compile as the gate) and links them in place of the
+gate's objects; `make link-cmp VARIANT=<name>` compares with the variant's SHA1. A variant must not
+change any section size: the steps that take parameters from the original (DNAS protection,
+`.compact_rel`) assume its layout, and `variant.py` rejects a unit whose sizes differ.
+
+```sh
+make link VARIANT=definitive && make link-cmp VARIANT=definitive
+```
+
+`definitive` is the `bn` installed by the PSBBN Definitive Patch: the original with three soft-key
+labels in English (`src/app/gettext.cpp`, `DEFINITIVE_PATCH`).
+
+Variants only make sense while the sources still reproduce the original layout: they pin the
+releases of the matching tree. Once the program changes, its builds are checked on the console,
+not by SHA1.
+
 ## Environment notes
 
 - After a pull that touches `docker/patches/` or the Dockerfiles, rebuild with `make sony-gcc` (or

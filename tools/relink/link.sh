@@ -53,6 +53,15 @@ vlog $H/partial_r.log
 if [ -s $H/partial_r.txt ]; then
     $LD -m elf32lsmip -r -o $H/partial_r.o $(cat $H/partial_r.txt)
 fi
+# VARIANT=<name> (config/variants.txt): the variant's units, recompiled with their extra flags,
+# replace the gate's .o files in objs.txt (tools/relink/variant.py)
+# variant.txt records the variant of bn.elf (empty: the original), checked by link_cmp.sh
+rm -rf $H/variant $H/variant.txt
+printf '%s\n' "${VARIANT:-}" > $H/variant.txt
+if [ -n "${VARIANT:-}" ]; then
+    python3 tools/relink/variant.py "$VARIANT" > $H/variant.log || { cat $H/variant.log >&2; exit 1; }
+    cat $H/variant.log
+fi
 OBJS=$(cat $H/objs.txt)
 # order of the -l options = order of the original's DT_NEEDED (readelf -d): libfreetype,
 # libpthread, libcrypt, libm, libdl, libstdc++, libocm, libc.

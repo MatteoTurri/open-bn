@@ -77,6 +77,8 @@ or through the Makefile target shown.
   - `Usage: python3 tools/relink/missing_syms.py   (repository root, after link_order.py,`
 - **`relink/partial_r.py`**: Final list of objects for ld, with the `ld -r` group checked.
   - `Usage: python3 tools/relink/partial_r.py   (called by tools/relink/link.sh, before ld)`
+- **`relink/variant.py`**: Build variant: recompile some units with extra flags and put them in the link.
+  - `Usage: python3 tools/relink/variant.py <name>    (called by tools/relink/link.sh when VARIANT is`
 - **`relink/link.sh`** [container] `make link`: Link bn with ld 2.9EE, strip, DNAS protection and the post-link .compact_rel step.
 - **`relink/compact_rel.py`**: Post-link .compact_rel step: copy the entries' `relvaddr` and the header's `cpt.offset` from the original.
   - `Usage: python3 tools/relink/compact_rel.py IN.elf OUT.elf [--orig orig/bn-jpn.elf]`

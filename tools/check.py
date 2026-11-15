@@ -547,17 +547,15 @@ def dnas_substitute(path):
     return anom
 
 
-def do_unit(unit, syms, cache):
-    """Compile and compare one unit. Returns (results, failed, log, plan): no
-    direct printing, so the output stays in units.txt order even in parallel."""
-    src, flags, asflags, skip = unit
-    results, failed, log = {}, [], []
-
+def compile_unit(src, flags, asflags, out):
+    """Compile one unit into {out}/out.o as the gate does: Sony gcc with the unit's flags and
+    includes, the original path, the DNAS substitution, gas 2.9EE. Shared with
+    tools/relink/variant.py. Returns (log, implicit): log is empty on success, otherwise the error
+    lines; implicit lists the functions declared implicitly (C only)."""
+    log, implicit = [], []
     is_cxx = src.endswith(('.cpp', '.cc', '.cxx', '.C'))
     cc = f'{TOOL}/g++' if is_cxx else f'{TOOL}/gcc'
     inc, flags = unit_includes_first(INC_CXX if is_cxx else INC_C, flags)
-    base = re.sub(r'[^A-Za-z0-9_]', '_', src)
-    out = f'build/check/{base}'
     os.makedirs(out, exist_ok=True)
 
     # `-Wimplicit-function-declaration` only in C and only to make stderr talk:
@@ -574,13 +572,12 @@ def do_unit(unit, syms, cache):
         if not VERBOSE:
             err = [l for l in err if 'error' in l.lower()][:5] or err[-5:]
         log.extend(f'    {l}' for l in err)
-        return results, [src], log, []
+        return log, implicit
     # Implicit declaration. In C, gcc 2.95 does not treat it as an error: a macro
     # left out of the file after moving code to another TU becomes a call, the .o
     # compiles, and the gate silently loses the function as "out of alignment".
     # The check costs nothing: stderr is already at hand.
-    for m in re.finditer(r"implicit declaration of function [`'\"]?(\w+)", r.stderr):
-        IMPLICIT.append((src, m.group(1)))
+    implicit = [m.group(1) for m in re.finditer(r"implicit declaration of function [`'\"]?(\w+)", r.stderr)]
     # DNAS: the protection scaffolding is substituted into the .s between gcc and
     # gas in place of the calls and markers of src/dnas/dnas_prot.h
     # (tools/dnas_subst.py). gcc's .s stays next to it as out.raw.s. A failed
@@ -589,10 +586,24 @@ def do_unit(unit, syms, cache):
     if anom:
         log.append(f'functions  error: {src}: DNAS substitution failed (tools/dnas_subst.py)')
         log.extend(f'    {a}' for a in anom)
-        return results, [src], log, []
+        return log, implicit
     r = run(f'{AS} -mips2 -m5900 {asflags} -o {out}/out.o {out}/out.s')
     if r.returncode != 0:
         log.append(f'functions  error: {src}: assembly failed')
+    return log, implicit
+
+
+def do_unit(unit, syms, cache):
+    """Compile and compare one unit. Returns (results, failed, log, plan): no
+    direct printing, so the output stays in units.txt order even in parallel."""
+    src, flags, asflags, skip = unit
+    results, failed, log = {}, [], []
+
+    out = 'build/check/' + re.sub(r'[^A-Za-z0-9_]', '_', src)
+    errs, implicit = compile_unit(src, flags, asflags, out)
+    IMPLICIT.extend((src, f) for f in implicit)
+    if errs:
+        log.extend(errs)
         return results, [src], log, []
 
     symtab = run(f'{OBJDUMP} -t {out}/out.o').stdout

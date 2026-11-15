@@ -4,7 +4,9 @@
 #   UNITS=<file>             check only the units listed in <file> (same format as config/units.txt)
 #   VERBOSE=1                print the detailed statistics of each step
 #   RELINK_ALLOW_STALE=1, RELINK_ALLOW_MISSING=1   let `make link` run with stale objects or missing symbols
+#   VARIANT=<name>           `make link` / `make link-cmp` build and check a variant of config/variants.txt
 DOCKER_ENV = $(if $(UNITS),-e UNITS="$(UNITS)") $(if $(VERBOSE),-e VERBOSE="$(VERBOSE)") \
+    $(if $(VARIANT),-e VARIANT="$(VARIANT)") \
     $(if $(RELINK_ALLOW_STALE),-e RELINK_ALLOW_STALE="$(RELINK_ALLOW_STALE)") $(if $(RELINK_ALLOW_MISSING),-e RELINK_ALLOW_MISSING="$(RELINK_ALLOW_MISSING)")
 # Run as the host user so that files written under build/ are not owned by root.
 DOCKER_USER = --user $(shell id -u):$(shell id -g) -e HOME=/tmp
