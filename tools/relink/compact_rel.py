@@ -7,7 +7,8 @@ original's. They mean nothing for a modified `bn`: whoever changes the program d
 (link.sh) and keeps the .compact_rel written by ld.
 
 Usage: python3 tools/relink/compact_rel.py IN.elf OUT.elf [--orig orig/bn-jpn.elf]
-       (called by tools/relink/link.sh after the strip; `make link`)
+       (called by tools/relink/link.sh after the strip, `make link`; for a module by
+       tools/relink/link_module.sh with --orig orig/modules/<name>.so)
 
 Why: ld 2.9EE writes each .compact_rel entry from a local `Elf32_crinfo cptrel` of
 mips_elf_relocate_section (bfd/elf32-mips.c of binutils 2.9EE) whose ctype, rtype, dist2to,

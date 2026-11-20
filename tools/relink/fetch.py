@@ -171,21 +171,28 @@ def fetch_gcc():
 
 # ---- 2. Definitive Patch v4.1.0 --------------------------------------------------------
 
+def download_dp_tar():
+    """The Definitive Patch v4.1.0 tar in DP_TAR, downloaded if missing or with another sha1
+    (also used by tools/fetch_modules.py)."""
+    if ok(DP_TAR, DP_TAR_SHA1):
+        return
+    os.makedirs(DL, exist_ok=True)
+    print(f'fetch: downloading {DP_URL} (143 MB)')
+    with urllib.request.urlopen(DP_URL, timeout=60) as r, open(DP_TAR + '.part', 'wb') as f:
+        for b in iter(lambda: r.read(1 << 20), b''):
+            f.write(b)
+    os.rename(DP_TAR + '.part', DP_TAR)
+    if sha1(DP_TAR) != DP_TAR_SHA1:
+        sys.exit(f'error: unexpected sha1 of {DP_TAR}')
+
+
 def fetch_dp():
     dst = {m: f'{DP}/{os.path.basename(m)}' for m in DP_FILES}
     if all(ok(dst[m], w) for m, w in DP_FILES.items()):
         if VERBOSE:
             print(f'ok  {len(DP_FILES)} Definitive Patch files -> {DP} (cached)')
         return
-    if not ok(DP_TAR, DP_TAR_SHA1):
-        os.makedirs(DL, exist_ok=True)
-        print(f'fetch: downloading {DP_URL} (143 MB)')
-        with urllib.request.urlopen(DP_URL, timeout=60) as r, open(DP_TAR + '.part', 'wb') as f:
-            for b in iter(lambda: r.read(1 << 20), b''):
-                f.write(b)
-        os.rename(DP_TAR + '.part', DP_TAR)
-        if sha1(DP_TAR) != DP_TAR_SHA1:
-            sys.exit(f'error: unexpected sha1 of {DP_TAR}')
+    download_dp_tar()
     os.makedirs(DP, exist_ok=True)
     with tarfile.open(DP_TAR, 'r:gz') as t:
         for m in DP_FILES:

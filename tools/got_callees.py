@@ -36,9 +36,13 @@ import re
 import sys
 import os
 
-ELF = 'orig/bn-jpn.elf'
-SYMBOL_ADDRS = 'config/symbol_addrs.txt'
-GP = 0x100D9910
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import target  # noqa: E402
+
+_T = target.get()          # BN_TARGET: bn or a module (tools/target.py)
+ELF = _T.elf
+SYMBOL_ADDRS = _T.symtab
+GP = 0x100D9910 if _T.is_main else (_T.gp() if os.path.exists(_T.path(_T.elf)) else 0)
 
 # .dynamic tags relevant to the MIPS o32 layout of the global (dynamic) GOT
 DT_MIPS_LOCAL_GOTNO = 0x7000000a

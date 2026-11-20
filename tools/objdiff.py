@@ -10,8 +10,8 @@ symbols (set, order, attributes) and local symbols, ignoring `.mdebug` and the n
 local symbols (`$L123`, `$LC4`, `buf.3`). Appearing/disappearing vtables (`_vt$`), typeinfo (`__tf`,
 `__ti`) and `.gnu.linkonce.*` copies are named. One line per differing unit, exit 1 if any;
 VERBOSE=1 prints the details. Pure Python ELF32 reader, runs on the host.
-A unit whose object the last gate did not rebuild (failed compile: the gate leaves the old out.o) is
-reported as stale. OBJDIFF_SNAP=<dir> uses another snapshot directory. `snapshot` without
+A unit whose object the last gate did not rebuild is reported as stale; one whose compile failed
+has no object (the gate deletes out.o before compiling). OBJDIFF_SNAP=<dir> uses another snapshot directory. `snapshot` without
 UNITS_FILE starts a new snapshot; with it, only those units are replaced.
 """
 import hashlib

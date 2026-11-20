@@ -1,0 +1,18 @@
+# The modules bn loads with dlopen (/opt0/bn/modules/<name>.so), each a decompilation target
+# of its own: `BN_TARGET=<name> make ...` (tools/target.py, docs/modules.md).
+#
+# name | member of psbbn-definitive-patch-v4.1.0.tar.gz | sha1 | size
+#
+# The archive is the one `make link` already downloads (tools/relink/fetch.py); `make modules`
+# extracts the files below into orig/modules/<name>.so and checks the sha1. No language pack of
+# the archive carries any of these files: they are the same for every language.
+dbconvert | ./__linux.4/bn/modules/dbconvert.so | ff9afe5e10a9c60e42bdf5c155ea9247540337b5 | 550024
+download  | ./__linux.4/bn/modules/download.so  | bc732d747b3a9789e81814cfeb5de8ef020767db | 150696
+edclient  | ./__linux.4/bn/modules/edclient.so  | 120ae9a4f0703d23c3fc3402715ad42319c2aa93 | 160408
+ispconf   | ./__linux.4/bn/modules/ispconf.so   | c820529de3858916b15df4ff2615e92e7e3144a5 | 153884
+mailer    | ./__linux.4/bn/modules/mailer.so    | fa1eca45af09808124b56be16c9c56b9cab55b04 | 771440
+movie     | ./__linux.4/bn/modules/movie.so     | 14166dd499a3986515a00341a9ba1830e007a3f1 | 246712
+moviedata | ./__linux.4/bn/modules/moviedata.so | 9159c5f12c22b9dc55b6437a9a345366af0059f2 | 58736
+netconf   | ./__linux.4/bn/modules/netconf.so   | 70e158bf3bc5ec0d701d82b3d917332f2741eb98 | 83396
+photo     | ./__linux.4/bn/modules/photo.so     | cde8eecff46d8d9a133e7bdf47a91a12402ff80b | 23380
+top       | ./__linux.4/bn/modules/top.so       | f3ffc51f320652ea666ecc34e5b45285401c2fff | 66892

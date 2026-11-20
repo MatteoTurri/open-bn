@@ -8,6 +8,21 @@
 # pyelftools before cmp.py: an ImportError at load time exits 1 (outside cmp.py's try) and would
 # pass for the "SHA1 differs" verdict instead of a broken comparison (old image: `make env`)
 python3 -c 'import elftools' 2>/dev/null || { echo "error: open-bn-env image without pyelftools: rerun make env" >&2; exit 2; }
+# A module (BN_TARGET=<name>, tools/relink/link_module.sh): build/modules/<name>/<name>.so against
+# orig/modules/<name>.so, same output and exit codes.
+if [ -n "${BN_TARGET:-}" ] && [ "$BN_TARGET" != bn ]; then
+    eval "$(python3 tools/target.py --sh)"
+    L=$T_BUILD/$T_NAME.so
+    [ -f "$T_ELF" ] || { echo "error: $T_ELF missing: run make modules" >&2; exit 2; }
+    [ -f "$L" ] || { echo "error: $L missing: run BN_TARGET=$T_NAME make link" >&2; exit 2; }
+    python3 tools/relink/cmp.py "$T_ELF" "$L" > $T_BUILD/link/cmp.txt; st=$?
+    [ -n "${VERBOSE:-}" ] && cat $T_BUILD/link/cmp.txt
+    if [ $st -gt 1 ]; then echo "error: cmp.py failed (exit $st)" >&2; exit 2; fi
+    o=$(sha1sum "$T_ELF" | cut -d' ' -f1); l=$(sha1sum "$L" | cut -d' ' -f1)
+    if [ "$o" = "$l" ]; then echo "SHA1 $l identical"; exit 0; fi
+    echo "SHA1 differs: orig $o, linked $l (report: $T_BUILD/link/cmp.txt)"
+    exit 1
+fi
 [ -f orig/bn-jpn.elf ] || { echo "error: orig/bn-jpn.elf missing" >&2; exit 2; }
 [ -f build/relink/bn.elf ] || { echo "error: build/relink/bn.elf missing: run make link" >&2; exit 2; }
 # Output: identical SHA1 -> one line; otherwise the differing sections (cmp.py's stderr, at most

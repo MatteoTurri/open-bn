@@ -40,6 +40,8 @@ unit (`orphan_fdes`), not judged.
 
     python3 tools/ehcheck.py [--verbose] [--unit SRC]     (UNITS=file for the scoped gate)
 Writes build/ehcheck.json (scoped: build/ehcheck-<base>.json; --unit: build/ehcheck-unit.json).
+With BN_TARGET=<module> the paths are the module's (tools/target.py): orig/modules/<name>.so,
+config/modules/<name>/units.txt, build/modules/<name>/ehcheck.json.
 """
 import json
 import os
@@ -51,8 +53,11 @@ from bisect import bisect_right
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datacheck import Elf, R_MIPS_32, STT_FUNC, STT_SECTION, read_units  # noqa: E402
 import universe                                                           # noqa: E402
+import target                                                             # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py, docs/modules.md)
+B = TARGET.build
 SECS = ('.eh_frame', '.gcc_except_table')
 VERBOSE = '--verbose' in sys.argv
 # statistics that need no action: only with VERBOSE=1 (environment) or -v/--verbose
@@ -85,7 +90,7 @@ def parse_frames(b):
 
 class Orig:
     def __init__(self):
-        self.elf = Elf(os.path.join(ROOT, 'orig/bn-jpn.elf'))
+        self.elf = Elf(os.path.join(ROOT, TARGET.elf))
         self.sec = {n: self.elf.by_name[n] for n in SECS}
         self.raw = {n: self.elf.bytes_of(self.sec[n]) for n in SECS}
         self.frames = parse_frames(self.raw['.eh_frame'])
@@ -178,7 +183,7 @@ def compare(ours, theirs, rel, resolve):
 def do_unit(unit, orig, check_json):
     src, flags, asflags, skip = unit
     base = re.sub(r'[^A-Za-z0-9_]', '_', src)
-    obj = os.path.join(ROOT, f'build/check/{base}/out.o')
+    obj = os.path.join(ROOT, f'{TARGET.objdir}/{base}/out.o')
     if not os.path.exists(obj):
         return None
     o = Elf(obj)
@@ -295,14 +300,14 @@ def union(iv):
 def main():
     os.chdir(ROOT)          # universe.symbols() reads config/ with relative paths
     orig = Orig()
-    check_json = json.load(open(os.path.join(ROOT, 'build/check.json')))
+    check_json = json.load(open(os.path.join(ROOT, TARGET.check_json)))
     # scoped gate (UNITS=file): as in datacheck, the freshly matched functions are in
     # the scoped check build/check-<base>.json, and the full gate's JSON is not touched
-    units_file = os.environ.get('UNITS', 'config/units.txt')
-    scoped = units_file != 'config/units.txt'
+    units_file = os.environ.get('UNITS', TARGET.units)
+    scoped = units_file != TARGET.units
     if scoped:
         sbase = re.sub(r'[^A-Za-z0-9_.-]', '_', os.path.basename(units_file).rsplit('.', 1)[0])
-        sj = os.path.join(ROOT, f'build/check-{sbase}.json')
+        sj = os.path.join(ROOT, f'{B}/check-{sbase}.json')
         if os.path.exists(sj):
             check_json.update(json.load(open(sj)))
     units = read_units()
@@ -362,8 +367,8 @@ def main():
                   f'that none of our FDEs translates')
         for u, v in sorted(orph_units.items(), key=lambda kv: -len(kv[1]))[:20]:
             print(f'     {len(v):3d}  {u}')
-    dest = ('build/ehcheck-unit.json' if only else
-            f'build/ehcheck-{sbase}.json' if scoped else 'build/ehcheck.json')
+    dest = (f'{B}/ehcheck-unit.json' if only else
+            f'{B}/ehcheck-{sbase}.json' if scoped else TARGET.ehcheck_json)
     json.dump(out, open(os.path.join(ROOT, dest), 'w'), indent=1)
     if len(failed) > 20 and not STATS:
         print(f'... and {len(failed) - 20} more, see {dest}')
