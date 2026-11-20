@@ -18,6 +18,7 @@
 #                                      .compact_rel copied from the original (compact_rel.py)
 # Comparison: `BN_TARGET=<name> make link-cmp`.
 set -e
+[ -z "${VARIANT:-}" ] || { echo "error: VARIANT is for bn, not for a module" >&2; exit 2; }
 eval "$(python3 tools/relink/paths.py --sh)"
 eval "$(python3 tools/target.py --sh)"
 GCCLIB=$(dirname "$LIBGCC")

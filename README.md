@@ -15,8 +15,9 @@ no compiler produced are extracted from it at build time.
 ## The target
 
 - `bn` is a dynamically linked C++ executable for PS2 Linux (MIPS R5900), not a
-  native PS2 program. It loads further modules from `bn/modules/` (music,
-  movies, photos, mail, ...), which are not part of this repository.
+  native PS2 program. It loads further modules from `bn/modules/` (the Top
+  Menu, movies, photos, mail, network settings, ...); each module is a target
+  of its own, `top.so` the first one (see [`docs/modules.md`](docs/modules.md)).
 - Compiler: Sony gcc 2.95.2 (`mipsEEel-linux`, 2.95.2-3a); assembler and linker:
   Sony binutils 2.9EE. Both are rebuilt from the PS2 Linux Kit sources.
 - Linked libraries (SSLeay, SQLite, zlib, libpng, libjpeg, libtiff, libmng,

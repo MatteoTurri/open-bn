@@ -350,7 +350,8 @@ def cmd_compare(argv):
             continue
         asm = os.path.join(os.path.dirname(cur), 'out.s')
         if not os.path.exists(asm) or os.stat(asm).st_mtime_ns > os.stat(cur).st_mtime_ns:
-            # the gate does not delete out.o: a failed compile/DNAS/as step leaves the old object
+            # no .s, or an object older than its .s: the object does not come from the last gate
+            # (which deletes both before compiling), e.g. it was copied or built by hand
             lines.append([f'{u}  stale object (the last make check did not build it)'])
             bad += 1
             continue

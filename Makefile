@@ -45,6 +45,7 @@ check-bn:
 	@$(if $(NEED_SPLIT),$(MAKE) --no-print-directory split)
 	@$(DOCKER) python3 tools/format.py --check
 	@python3 tools/check_toolchain.py
+	@python3 tools/statics.py --verify-list
 	@python3 tools/extract_assets.py
 	@$(DOCKER) python3 tools/check.py
 	@$(DOCKER) python3 tools/datacheck.py

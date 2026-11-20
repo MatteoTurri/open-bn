@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard for the compiler patches: the compiler is not patched.
+"""Guard for the compiler patches: the compiler carries only the allowed ones.
 
 A mismatch is always source or flags, never the compiler, with two
 exceptions: the MIPS `exception_receiver` pattern, which the Sony SRPM lacks,
@@ -63,14 +63,14 @@ def main():
     if extra:
         bad = 1
         for f in sorted(extra):
-            print(f'toolchain  error: unratified compiler patch docker/patches/{f}'
+            print(f'toolchain  error: compiler patch not allowed: docker/patches/{f}'
                   ' (see docs/compiler.md for the allowed ones)')
 
     for f, want in ALLOWED.items():
         p = os.path.join(d, f)
         if not os.path.exists(p):
             bad = 1
-            print(f'toolchain  error: ratified patch {f} is missing')
+            print(f'toolchain  error: allowed patch {f} is missing')
             continue
         got = hashlib.sha256(open(p, 'rb').read()).hexdigest()
         if got != want:

@@ -11,6 +11,7 @@ python3 -c 'import elftools' 2>/dev/null || { echo "error: open-bn-env image wit
 # A module (BN_TARGET=<name>, tools/relink/link_module.sh): build/modules/<name>/<name>.so against
 # orig/modules/<name>.so, same output and exit codes.
 if [ -n "${BN_TARGET:-}" ] && [ "$BN_TARGET" != bn ]; then
+    [ -z "${VARIANT:-}" ] || { echo "error: VARIANT is for bn, not for a module" >&2; exit 2; }
     eval "$(python3 tools/target.py --sh)"
     L=$T_BUILD/$T_NAME.so
     [ -f "$T_ELF" ] || { echo "error: $T_ELF missing: run make modules" >&2; exit 2; }

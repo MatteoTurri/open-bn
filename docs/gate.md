@@ -14,6 +14,7 @@ Usage of each tool named here: `tools/README.md`.
 |---|---|---|
 | format | `tools/format.py --check` | a file of `src/` not formatted by clang-format 23.1.5 (`docs/code-conventions.md`, section 7) |
 | toolchain | `tools/check_toolchain.py` | a compiler patch other than the two allowed, or a gcc build without `-msse2 -mfpmath=sse` (`docs/compiler.md`) |
+| unnamed functions | `tools/statics.py --verify-list` | `config/static_funcs.txt` differs from the functions the detector finds in the original |
 | assets | `tools/extract_assets.py` | `orig/bn-jpn.elf` missing, or a hash of `config/assets.txt` that does not match (`docs/original-bytes.md`) |
 | functions | `tools/check.py` | a function that does not match, or a GOT identity outside the debt |
 | data | `tools/datacheck.py` | a placed data block that differs |
@@ -22,6 +23,10 @@ Usage of each tool named here: `tools/README.md`.
 The format check, `check.py`, `datacheck.py` and `ehcheck.py` run in the `open-bn-env` container,
 the other steps on the host. Before comparing, `tools/check.py` checks the SHA1 of `orig/bn-jpn.elf` against
 `config/bn.yaml`.
+
+`BN_TARGET=<module> make check` runs the same steps on a module (`docs/modules.md`), with its paths
+(`config/modules/<name>/`, `build/modules/<name>/`), and without the assets step: a module has none.
+The non-compiled data regions of `config/data_regions.txt` are bn's only.
 
 ## Units
 
