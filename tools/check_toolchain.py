@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Guard for the only compiler patch: the compiler is not patched.
+"""Guard for the compiler patches: the compiler is not patched.
 
-A mismatch is always source or flags, never the compiler, with one
-exception: the MIPS `exception_receiver` pattern, which the Sony SRPM lacks.
-Rationale and requirements: docs/compiler.md (the patch header repeats them).
+A mismatch is always source or flags, never the compiler, with two
+exceptions: the MIPS `exception_receiver` pattern, which the Sony SRPM lacks,
+and the upstream fix that initializes `nonnull` in cp/rtti.c build_x_typeid.
+Rationale and requirements: docs/compiler.md (the patch headers repeat them).
 
-This makes the rule executable: the
-allowed patches are pinned by list and by HASH, so adding a second compiler
-patch, or changing the existing one, fails the check. A second patch would
-need the same full justification as the first, not just a new entry here.
+This makes the rule executable: the allowed patches are pinned by list and by
+hash, so adding a compiler patch, or changing an existing one, fails the check.
+A new patch would need the same full justification as these, not just a new
+entry here.
 
-It also checks that every Dockerfile that rebuilds gcc applies the patch and
+It also checks that every Dockerfile that rebuilds gcc applies the patches and
 builds cc1/cc1plus with -msse2 -mfpmath=sse, and pins by sha256 the binaries
 the gate and the link were verified with (docker/toolchain/, gitignored, built
 by `make sony-gcc` and `make sony-binutils`): a rebuild that does not produce
@@ -24,10 +25,12 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# our allowed compiler patches: name -> sha256. A single entry.
+# our allowed compiler patches: name -> sha256.
 ALLOWED = {
     'mips-exception-receiver.patch':
         '15c47ced1ea21129ce1b8a1304380f5487d7fe56428377bda43dabe88f26168d',
+    'cp-rtti-nonnull.patch':
+        '178298da8cf1e9ddba38523cd3c393cf5adfc83f26341a7207b90ac10aaf4ebe',
 }
 # the toolchain binaries the gate and the link (SHA1 identical to the original)
 # were verified with: path -> sha256. cc1/cc1plus built with -msse2 -mfpmath=sse.
@@ -35,7 +38,7 @@ BINARIES = {
     'docker/toolchain/sony/cc1':
         '8310e8b8d260f49a2f724bc311ce488a2c85012557dd85277a635ee51e02989e',
     'docker/toolchain/sony/cc1plus':
-        'c23826fcee3f8ca058a4d6fd14f612ab4dedab0e1cee5ce3669004ca164f930a',
+        '1a3a778c0237af58ce06d98a8c693ac29f8059fb6acdc92dc560d1fc5f110b67',
     'docker/toolchain/sony/cpp':
         '976864341074cd443f84f0b8d74b37e6860feef4a73b1f430d18cac6b2a0b8a5',
     'docker/toolchain/sony/gcc':
@@ -61,7 +64,7 @@ def main():
         bad = 1
         for f in sorted(extra):
             print(f'toolchain  error: unratified compiler patch docker/patches/{f}'
-                  ' (exception_receiver is the only allowed one, see docs/compiler.md)')
+                  ' (see docs/compiler.md for the allowed ones)')
 
     for f, want in ALLOWED.items():
         p = os.path.join(d, f)
@@ -112,8 +115,8 @@ def main():
                   f' sha256 {got}, expected {want}')
     if bad:
         return 1
-    print(f'toolchain  ok (1 allowed compiler patch: exception_receiver;'
-          f' {len(BINARIES)} binaries pinned)')
+    print(f'toolchain  ok ({len(ALLOWED)} allowed compiler patches:'
+          f' exception_receiver, rtti nonnull; {len(BINARIES)} binaries pinned)')
     return 0
 
 
