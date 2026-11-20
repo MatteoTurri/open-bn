@@ -82,6 +82,7 @@ After a pull that changes `docker/patches/`, rebuild the compiler with
 | `ref/` | third-party libraries, as upstream sources plus the changes the binary requires |
 | `config/units.txt` | the list of compilation units with their compiler flags |
 | `config/` | other inputs of the build and of the checks (symbols, asset list, data regions) |
+| `config/modules.txt`, `*/modules/<name>/` | the modules `bn` loads with `dlopen` (`top.so`, ...), each a target of its own with the same layout under `modules/<name>` (see [`docs/modules.md`](docs/modules.md)) |
 | `docker/` | Dockerfiles and patches that rebuild the Sony toolchain |
 | `tools/` | the checks (`tools/check.py`, `tools/datacheck.py`), the linker pipeline (`tools/relink/`), `tools/match` and a few diagnostics |
 | `docs/` | how the gate, the link, DNAS and the compiler work, open questions, code conventions |
