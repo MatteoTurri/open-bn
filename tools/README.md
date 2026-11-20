@@ -24,7 +24,7 @@ or through the Makefile target shown.
   - `python3 tools/fixtime.py EPOCH -- command ...     (EPOCH in seconds, read as UTC: TZ=UTC)`
 - **`extract_assets.py`**: Extract the assets from the user's original ELF (never committed: docs/original-bytes.md).
   - `python3 tools/extract_assets.py           # extract (rewrites only the changed files)`
-- **`check_toolchain.py`**: Guard for the only compiler patch: the compiler is not patched.
+- **`check_toolchain.py`**: Guard for the compiler patches: the compiler is not patched.
   - `Usage: python3 tools/check_toolchain.py`
 - **`objdiff.py`**: Diff of the gate objects against a snapshot: what `make check` does not see but the link does.
   - `python3 tools/objdiff.py snapshot [UNITS_FILE]   # copy build/check/<unit>/out.o into build/objdiff/snapshot/`
@@ -57,8 +57,8 @@ or through the Makefile target shown.
 - **`compare_asm.py`**: Compare two normalized listings: orig (linked) vs ours (.o with RELOC).
 - **`datacmp.py`**: datacmp.py UNIT SEC [--ctx N] [--words] [--all] [--addr HEX]
 - **`split.py`** [container] `make check`: Per-function split of the original binary (replaces splat for this target).
-  - `Runs in the container: python3 tools/split.py`
-- **`unitedit.py`**: Targeted edit of one row of config/units.txt, without rewriting the file.
+  - `Runs in the container: python3 tools/split.py (BN_TARGET=<module> for a module)`
+- **`unitedit.py`**: Targeted edit of one row of config/units.txt (BN_TARGET=<module>: the module's units.txt), without rewriting the file.
   - `python3 tools/unitedit.py src/foo.cpp --skip-del SYM1,SYM2      # matched: remove them`
 
 ## Link (`make link`, `make link-cmp`; docs/linking.md)
@@ -87,6 +87,7 @@ or through the Makefile target shown.
 - **`relink/cmp.py`**: Section-by-section comparison between the original and a linked ELF.
   - `Usage: python3 tools/relink/cmp.py [ORIG] LINKED [--funcs N] [--json OUT] [--mask-gp]`
 - **`relink/link_cmp.sh`** [container] `make link-cmp`: Body of `make link-cmp` (docs/linking.md): per-section comparison (tools/relink/cmp.py,
+- **`relink/link_module.sh`** [container] `BN_TARGET=<module> make link`: Link a module with ld 2.9EE: the shared object build/modules/<name>/<name>.so.
 - **`relink/paths.py`**: Paths and constants shared by the link pipeline (docs/linking.md).
   - `them with `eval "$(python3 tools/relink/paths.py --sh)"` (quoted shell assignments).`
 
@@ -123,3 +124,9 @@ Another version of clang-format formats differently: `tools/format.py` refuses i
 - **`fetch_kit.py`**: Fetches the pieces of the PS2 Linux Kit (disc 2) the decomp needs and builds
   - `Usage: python3 tools/fetch_kit.py [--rpm-glob GLOB ...] [--purge-iso]`
 - **`setup_cxx_headers.sh`**: Prepares docker/toolchain/include/ to compile C++ with the Sony g++:
+
+## Modules (`BN_TARGET=<module>`; docs/modules.md)
+
+- **`fetch_modules.py`** `make modules`: Extract the original modules of bn (config/modules.txt) into orig/modules/<name>.so.
+- **`symtab.py`** `make symtab`: Generate the symbol_addrs.txt of a target from the .dynsym of its original.
+- **`target.py`**: The targets: the main executable `bn` and the modules it loads with dlopen.

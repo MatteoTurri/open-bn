@@ -36,6 +36,7 @@ decoding) run as worker threads built on `thread/`.
 | `audio/` | sound driver, sound library, MIDI input |
 | `chloe/`, `cfd/`, `rcom/` | Sony crypto and security libraries |
 | `lib/` | statically linked runtime pieces: libgcc and glibc fragments, allocators, character set conversion, PFS client |
+| `modules/` | the modules `bn` loads at run time (`modules/<name>/`, one shared object each), and in `modules/libgcc/` the libgcc members linked into them |
 
 `chloe/` is the code that leaves Linux and restarts the console as a native PS2
 (reached only from `bn_do_reboot()` in `app/bnexec.cpp`, before `/sbin/reboot`): it

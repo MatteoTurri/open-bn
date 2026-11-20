@@ -25,17 +25,22 @@ WORKDIR /work/gcc-2.95.2
 COPY sonygcc/*.patch /work/
 COPY patches/obstack-2.95.2.h.patch /work/
 COPY patches/mips-exception-receiver.patch /work/
+COPY patches/cp-rtti-nonnull.patch /work/
 
 # Sony patches in the order of the spec file
 RUN patch -p1 < /work/gcc-2.95.2-frankengcc-patches.patch \
     && patch -p1 < /work/gcc-2.95.2-single-float-const.patch \
     && patch -p1 < /work/gcc-ps2linux-1.0.0.patch
 
-# The one exception: the Kit SRPM lacks the `exception_receiver` pattern
-# for MIPS, and without it EH landing pads are entered with another frame's $gp.
-# See the header of the patch and docs/compiler.md. Do not add other patches
-# here: tools/check_toolchain.py fails if this list changes.
-RUN patch -p1 < /work/mips-exception-receiver.patch
+# The two exceptions (docs/compiler.md):
+# - the Kit SRPM lacks the `exception_receiver` pattern for MIPS, and without it
+#   EH landing pads are entered with another frame's $gp;
+# - build_x_typeid reads an uninitialized `nonnull`: the upstream fix of
+#   2000-01-17, backported.
+# See the headers of the patches. Do not add other patches here:
+# tools/check_toolchain.py fails if this list changes.
+RUN patch -p1 < /work/mips-exception-receiver.patch \
+    && patch -p1 < /work/cp-rtti-nonnull.patch
 
 # fixes for modern hosts (from decompals/old-gcc)
 RUN sed -i -- 's/include <varargs.h>/include <stdarg.h>/g' **/*.c \

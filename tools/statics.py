@@ -57,12 +57,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import target  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LIST = 'config/static_funcs.txt'
-ELF = 'orig/bn-jpn.elf'
-TEXT_START = 0x47C1D0
-TEXT_SIZE = 0x4BFCE8
-TEXT_OFF = 0x7C1D0            # file offset of .text (readelf -S)
+TARGET = target.get()          # BN_TARGET: bn or a module (tools/target.py)
+LIST = TARGET.statics
+ELF = TARGET.elf
+if TARGET.is_main:
+    TEXT_START = 0x47C1D0
+    TEXT_SIZE = 0x4BFCE8
+    TEXT_OFF = 0x7C1D0         # file offset of .text (readelf -S)
+elif os.path.exists(TARGET.path(ELF)):
+    TEXT_START, TEXT_OFF, TEXT_SIZE = TARGET.text()
+else:                          # module not extracted yet: load() still works, detect() does not
+    TEXT_START = TEXT_OFF = TEXT_SIZE = 0
 NAME_RE = re.compile(r'^static_([0-9A-F]{8})$')
 LINE_RE = re.compile(r'^(static_[0-9A-F]{8}) = (0x[0-9A-Fa-f]+); // type:func size:(0x[0-9A-Fa-f]+)')
 
@@ -103,7 +111,13 @@ def load(path=LIST):
 # detection on the bytes
 # --------------------------------------------------------------------------- #
 def text_image(path=None):
-    """The .text bytes of the image (decrypted if available)."""
+    """The .text bytes of the image: for bn the DNAS-decrypted one, for a module the .so
+    itself. That is right for a module without encrypted code (top.so has no DNAS
+    reference at all); edclient.so and ispconf.so mention DNAS and need checking before
+    they become targets (docs/modules.md)."""
+    if path is None and not TARGET.is_main:
+        TARGET.check_original()
+        path = TARGET.path(ELF)
     if path is None:
         import dnas_ref
         path = dnas_ref.ensure_image()
@@ -373,7 +387,7 @@ def main():
         # anchors); LOCAL= wins over everything.
         if want_addr is not None:
             try:
-                gate = json.load(open(os.path.join(ROOT, 'build/check_statics.json')))
+                gate = json.load(open(os.path.join(ROOT, TARGET.check_statics_json)))
             except (OSError, ValueError):
                 gate = {}
             hit = [(u, e) for u, rows in gate.items() for e in rows
@@ -457,7 +471,7 @@ def main():
         # gate turns green again. A bulk operation; normally the skip column
         # is edited by hand with unitedit.
         import subprocess
-        ck = json.load(open(os.path.join(ROOT, 'build/check.json')))
+        ck = json.load(open(os.path.join(ROOT, TARGET.check_json)))
         by_unit = {}
         for sym, r in ck.items():
             if is_static(sym) and not r['ok'] and not r.get('skip'):

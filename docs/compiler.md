@@ -31,14 +31,18 @@ of the period (libstdc++, libio, `ginclude`, from the patched gcc tree: `make he
 original build the libstdc++ headers were under `/usr/cross/mipsEEel-linux/include/g++-3/` (the path of
 `bastring.cc` is in `.rodata`).
 
-### The one compiler patch: `exception_receiver`
+### The compiler patches
+
+Two patches are applied after the Sony patches, both pinned by `tools/check_toolchain.py`.
+
+#### `exception_receiver`
 
 `docker/patches/mips-exception-receiver.patch` adds the `exception_receiver` pattern to the MIPS
 backend; it is applied after the Sony patches. Without it every exception landing pad is entered with
 the `$gp` of the frame that threw (in PIC code `$gp` is call-clobbered, and nothing on the unwinding
 path restores it); with it the pad reloads `$gp` from its stack slot, as the original does.
 
-Why this is the only admissible patch, and the requirements any other would have to meet:
+Why this patch is admissible, and the requirements any other would have to meet:
 
 1. the mechanism exists in vanilla gcc 2.95.2 and three targets implement it: the semantics are those
    of `pa/pa.md` ("load the PIC register from the stack slot", gated on `flag_pic`), the form that of
@@ -54,8 +58,31 @@ Why this is the only admissible patch, and the requirements any other would have
 The patch is necessary, not sufficient: how many landing pads a function has is decided by the source
 (the exception regions of its objects with destructors), so "four pads where the original has one"
 means the body builds too many such objects. `tools/check_toolchain.py` pins the list of patches and
-their SHA-256, and checks the SSE flags of the Dockerfile; a second patch would need the same five
-points proved again, not a new line in the list.
+their SHA-256, and checks the SSE flags of the Dockerfile; another patch would need the same points
+proved again, not a new line in the list.
+
+#### `nonnull` in `build_x_typeid`
+
+`docker/patches/cp-rtti-nonnull.patch` changes one line of `gcc/cp/rtti.c`: `int nonnull;` becomes
+`int nonnull = 0;`. In gcc 2.95.2 `build_x_typeid` passes `&nonnull` to `resolves_to_fixed_type_p`
+and then reads it, but `fixed_type_or_null` returns without setting it when it cannot prove the
+pointer non-null, so whether `typeid (*p)` keeps its null check (the call to `__throw_bad_typeid`)
+depends on what the stack slot holds. It is the same in the Sony compiler (its `build_x_typeid` reads
+`48(sp)` without storing to it), but what that slot holds is a property of how the compiler binary
+was built: the native R5900 `cc1plus` finds 0 there and keeps the check, ours, built for i386, where
+the stack is full of return addresses and saved frame pointers, finds a pointer and drops it.
+
+Why it is admissible:
+
+1. it is the upstream fix, backported: gcc's `cp/ChangeLog` has "`class.c (fixed_type_or_null)`:
+   Always set `*nonnull`" (1999-10-11) and "`rtti.c (build_x_typeid)`: Initialize NONNULL"
+   (2000-01-17); the patch is the second one, the line of gcc 3.0;
+2. the value it fixes is the one the original compiler has: both objects built by it that use
+   `typeid (*p)`, `what__C9exception` in `top.so` and in the kit's `libgcc.a`, keep the check;
+3. it changes nothing else: bn never uses `typeid`, and the whole gate and the link are unchanged.
+
+Its limit: had the Sony compiler found a non-zero value in some other context, the original would
+lack the check there and ours would have it. The function gate would show it.
 
 ## 2. Inline asm
 

@@ -41,12 +41,21 @@ Skips: as for functions, in the skip column of config/units.txt, in the form
 `data:<section>` (e.g. `data:.rodata`, `data:.gnu.linkonce.d.__vt_11SceneWindow`).
 A placed block that does not match and is not in skip makes it exit 1.
 
+Shared objects (the modules, BN_TARGET=<name>): a word of the original with a
+dynamic R_MIPS_REL32 against a symbol of the global GOT holds only the addend in
+the file (the loader adds the symbol's value); it is compared as the value of the
+.dynsym symbol + the addend, or, for an undefined symbol, by name and addend.
+Executables have such relocations only against imports (bn: 11 libc pointers).
+
 Runs in the container (uses mipsel-linux-gnu-objdump on the .o files in
 build/check/ produced by check.py, which must have just run); it is the second
 step of `make check`:
     python3 tools/datacheck.py [--verbose] [--unit SRC]   (--unit writes build/datacheck-unit-<SRC>.json)
     python3 tools/datacheck.py --populate-skips   (host) differing blocks -> skip column
-Writes build/datacheck.json.
+Writes build/datacheck.json. With BN_TARGET=<module>
+the paths are the module's (tools/target.py: orig/modules/<name>.so,
+config/modules/<name>/units.txt, build/modules/<name>/datacheck.json); the
+non-compiled regions of config/data_regions.txt are bn's only.
 """
 import json
 import os
@@ -59,18 +68,19 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import normalize_asm                                              # noqa: E402
 import universe                                                   # noqa: E402
 import statics                                                    # noqa: E402
+import target                                                     # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ELF = 'orig/bn-jpn.elf'
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py, docs/modules.md)
+ELF = TARGET.elf
 # With a reduced UNITS file (scoped gate) the name carries the basename of the
 # units file, exactly as `tools/check.py` does for build/check.json, so a scoped
 # run never overwrites build/datacheck.json.
-_UNITS = os.environ.get('UNITS', 'config/units.txt')
-OUT = ('build/datacheck.json' if _UNITS == 'config/units.txt'
-       else 'build/datacheck-%s.json' % re.sub(
-           r'[^A-Za-z0-9_.-]', '_', os.path.basename(_UNITS).rsplit('.', 1)[0]))
+_UNITS = os.environ.get('UNITS', TARGET.units)
+SCOPED = _UNITS != TARGET.units
+_SCOPE = re.sub(r'[^A-Za-z0-9_.-]', '_', os.path.basename(_UNITS).rsplit('.', 1)[0])
+OUT = TARGET.datacheck_json if not SCOPED else f'{TARGET.build}/datacheck-{_SCOPE}.json'
 OBJDUMP = 'mipsel-linux-gnu-objdump'
-GP = 0x100D9910
 VERBOSE = '--verbose' in sys.argv     # one line per block, too
 # statistics that need no action: only with VERBOSE=1 (environment) or -v/--verbose
 STATS = VERBOSE or '-v' in sys.argv or os.environ.get('VERBOSE', '') not in ('', '0')
@@ -104,6 +114,7 @@ SHT_NOBITS, SHT_REL, SHT_SYMTAB, SHT_DYNSYM = 8, 9, 2, 11
 SHF_ALLOC, SHF_EXECINSTR = 0x2, 0x4
 STT_OBJECT, STT_FUNC, STT_SECTION = 1, 2, 3
 R_MIPS_32, R_MIPS_GOT16, R_MIPS_LO16, R_MIPS_HI16, R_MIPS_GPREL32 = 2, 9, 6, 5, 12
+R_MIPS_REL32, DT_MIPS_GOTSYM = 3, 0x70000013
 
 
 class Elf:
@@ -180,10 +191,41 @@ class Orig:
                 self.objects[name] = (value, size)
         self.funcs = universe.symbols()     # name -> (addr, size), statics included
         # every .dynsym name (UND too: the libc functions it imports)
-        self.dynnames = {name for name, *_ in self.elf.symbols(SHT_DYNSYM)}
+        dyn = self.elf.symbols(SHT_DYNSYM)
+        self.dynnames = {name for name, *_ in dyn}
+        self.gp = TARGET.gp()
+        self.dynrel = self.global_rel32(dyn)
+
+    def global_rel32(self, dyn):
+        """{address: (name, value, shndx)} of the dynamic R_MIPS_REL32 against a
+        symbol of the global GOT (index >= DT_MIPS_GOTSYM). The loader adds that
+        symbol's value to the word, so the file holds only the addend. Against a
+        local symbol (index < gotsym: the section symbols) ld writes the whole
+        link-time value, which is compared as any other word."""
+        d = self.elf.data
+        dsec = self.elf.by_name.get('.dynamic')
+        rsec = self.elf.by_name.get('.rel.dyn')
+        if not dsec or not rsec:
+            return {}
+        gotsym = None
+        for k in range(0, dsec['size'] - 7, 8):
+            tag, val = struct.unpack_from('<II', d, dsec['off'] + k)
+            if tag == DT_MIPS_GOTSYM:
+                gotsym = val
+            elif tag == 0:
+                break
+        if gotsym is None:
+            return {}
+        out = {}
+        for k in range(rsec['size'] // 8):
+            off, info = struct.unpack_from('<II', d, rsec['off'] + k * 8)
+            if info & 0xff == R_MIPS_REL32 and gotsym <= info >> 8 < len(dyn):
+                name, value, size, typ, bind, shndx = dyn[info >> 8]
+                out[off] = (name, value, shndx)
+        return out
 
     def got(self, off):
-        return self.elf.word_at_addr(GP + off)
+        return self.elf.word_at_addr(self.gp + off)
 
     def bytes(self, addr, size):
         for s in self.elf.secs:
@@ -209,7 +251,7 @@ def build_asm_index():
     """Must be called before the thread pool: building it lazily inside the
     threads let the others see a half-filled dictionary."""
     global _ASM_INDEX
-    d = os.path.join(ROOT, 'expected/asm')
+    d = os.path.join(ROOT, TARGET.asm)
     idx = {}
     if os.path.isdir(d):
         for f in os.listdir(d):
@@ -223,7 +265,7 @@ def build_asm_index():
 
 
 def orig_rows(addr):
-    d = os.path.join(ROOT, 'expected/asm')
+    d = os.path.join(ROOT, TARGET.asm)
     if _ASM_INDEX is None:
         build_asm_index()
     f = _ASM_INDEX.get(addr)
@@ -289,7 +331,7 @@ def read_units():
 def do_unit(unit, orig, check_json, hints=None):
     src, flags, asflags, skip = unit
     base = re.sub(r'[^A-Za-z0-9_]', '_', src)
-    obj = os.path.join(ROOT, f'build/check/{base}/out.o')
+    obj = os.path.join(ROOT, f'{TARGET.objdir}/{base}/out.o')
     if not os.path.exists(obj):
         return None, [f'[X] {src}: {obj} is missing (run tools/check.py first)']
     o = Elf(obj)
@@ -567,9 +609,21 @@ def do_unit(unit, orig, check_json, hints=None):
                 elif name in orig.objects:
                     base_addr = orig.objects[name][0]
                 exp = struct.unpack_from('<I', theirs, off)[0]
+                dyn = orig.dynrel.get(delta + off)
+                if dyn and dyn[2]:
+                    # the file holds the addend, the loader adds the symbol
+                    exp = (exp + dyn[1]) & 0xffffffff
                 if base_addr is not None and rtype == R_MIPS_GPREL32:
-                    base_addr -= GP
-                if base_addr is None and typ != STT_SECTION and shndx == 0 \
+                    base_addr -= orig.gp
+                if dyn and not dyn[2]:
+                    # an undefined symbol of the original: its value is not known
+                    # here, the same symbol and the same addend are
+                    if typ != STT_SECTION and name == dyn[0] and word == exp:
+                        eq += 4
+                    else:
+                        bad += 4
+                        first_bad = first_bad if first_bad is not None else off
+                elif base_addr is None and typ != STT_SECTION and shndx == 0 \
                         and name and name not in orig.dynnames:
                     # an external symbol the original does not have at all
                     # (neither defined nor imported): the word cannot be masked,
@@ -584,6 +638,14 @@ def do_unit(unit, orig, check_json, hints=None):
                 else:
                     bad += 4
                     first_bad = first_bad if first_bad is not None else off
+                off += 4
+                continue
+            if delta + off in orig.dynrel and off + 4 <= n:
+                # the original relocates this word against a global symbol and the file
+                # holds only the addend: ours, with no relocation, is a plain value (e.g.
+                # 0 for &pthread_create), equal to the addend by accident only
+                bad += 4
+                first_bad = first_bad if first_bad is not None else off
                 off += 4
                 continue
             if ours[off] == theirs[off]:
@@ -701,6 +763,15 @@ def summary(d):
     return tot, agg
 
 
+def data_regions():
+    """The non-compiled data regions (tools/dataregions.py, config/data_regions.txt):
+    bn's only, a module has none so far."""
+    if not TARGET.is_main:
+        return []
+    import dataregions
+    return dataregions.regions()
+
+
 def link_order_hints(units, results, orig, check_json):
     """Step 2: place blocks without anchors by link order. ld concatenates the
     same input section (`.rodata`, `.data`, `.ctors`, `.dtors`) of the .o files
@@ -731,8 +802,7 @@ def link_order_hints(units, results, orig, check_json):
     first = {u: min(v) for u, v in addrs.items()}
     order_first = sorted((u for u in first if u in results), key=first.get)
     hints = {}
-    import dataregions
-    region_ends = sorted(b for a, b, _, _ in dataregions.regions())
+    region_ends = sorted(b for a, b, _, _ in data_regions())
     # .ctors/.dtors: one 4-byte entry per unit with static constructors/
     # destructors, from the start to the end of the section (crtstuff first,
     # crtstuff_end last): the whole chain is inferred, and valid only if it
@@ -807,11 +877,10 @@ def content_hints(units, results, orig):
     no other unit claims that place. Same rule as the attribution by content of
     the statics (tools/check.py): the bytes are verified, the address is
     inferred, and the block says so (`by_content: true`)."""
-    import dataregions
     cov = [(r['addr'], r['addr'] + r['size']) for res in results.values() for r in res.values()
            if r.get('addr') is not None and r.get('state') in ('ok', 'fail', 'conflict')
            and r.get('host') in ('.rodata', '.data')]
-    cov += [(a, b) for a, b, _, _ in dataregions.regions()]
+    cov += [(a, b) for a, b, _, _ in data_regions()]
     secbytes = {h: orig.bytes(orig.sections[h]['addr'], orig.sections[h]['size'])
                 for h in ('.rodata', '.data')}
     cands = []
@@ -824,7 +893,7 @@ def content_hints(units, results, orig):
             continue
         base = re.sub(r'[^A-Za-z0-9_]', '_', src)
         try:
-            o = Elf(os.path.join(ROOT, 'build', 'check', base, 'out.o'))
+            o = Elf(os.path.join(ROOT, TARGET.objdir, base, 'out.o'))
         except Exception:
             continue
         for sec in cand:
@@ -863,17 +932,16 @@ def main():
         return populate_skips()
     orig = Orig()
     try:
-        check_json = json.load(open(os.path.join(ROOT, 'build/check.json')))
+        check_json = json.load(open(os.path.join(ROOT, TARGET.check_json)))
     except FileNotFoundError:
-        sys.exit('data       error: build/check.json is missing: run tools/check.py first')
+        sys.exit(f'data       error: {TARGET.check_json} is missing: run tools/check.py first')
     # Scoped gate: the anchors come from the functions matched in this run,
     # which are in the scoped check (build/check-<base>.json, same name as
     # check.py), not in the global check.json, which may be stale. Without the
     # overlay a data block anchored only by a freshly matched function would be
     # unanchored in the scoped run and DIFF in the full gate.
-    if _UNITS != 'config/units.txt':
-        scoped = os.path.join(ROOT, 'build/check-%s.json' % re.sub(
-            r'[^A-Za-z0-9_.-]', '_', os.path.basename(_UNITS).rsplit('.', 1)[0]))
+    if SCOPED:
+        scoped = os.path.join(ROOT, f'{TARGET.build}/check-{_SCOPE}.json')
         if os.path.exists(scoped):
             check_json.update(json.load(open(scoped)))
         else:
@@ -881,7 +949,7 @@ def main():
     units = read_units()
     n_asm = build_asm_index()
     if not n_asm:
-        print('warning: expected/asm/ is empty: without `make split` there are no anchors from the code')
+        print(f'warning: {TARGET.asm}/ is empty: without `make split` there are no anchors from the code')
     only = sys.argv[sys.argv.index('--unit') + 1] if '--unit' in sys.argv else None
     if only:
         units = [u for u in units if u[0] == only]
@@ -903,7 +971,7 @@ def main():
                 continue
             out['units'][unit[0]] = res
     # step 2: link order (full gate only: it needs the blocks of the neighbouring units)
-    if not only and _UNITS == 'config/units.txt':
+    if not only and not SCOPED:
         hints = link_order_hints(units, out['units'], orig, check_json)
         redo = [u for u in units if u[0] in hints]
         with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
@@ -929,7 +997,7 @@ def main():
         for sec, r in res.items():
             if r['state'] == 'fail' and not r['skip']:
                 failed.append((u, sec))
-    os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
+    os.makedirs(os.path.join(ROOT, TARGET.build), exist_ok=True)
     # --unit measures one unit: it writes next to the gate JSON, never over it
     dest = OUT if not only else OUT[:-len('.json')] + '-unit-%s.json' % re.sub(
         r'[^A-Za-z0-9_.-]', '_', only)
@@ -945,7 +1013,7 @@ def main():
     eq_b = sum(agg[hs]['eq'] for hs in secs)
     line = (f'data       {nstates.get("ok", 0)} blocks match ({" ".join(secs)}, {eq_b:,} B equal)'
             + (f', {len(failed)} differ' if failed else ''))
-    if _UNITS != 'config/units.txt' or only:
+    if SCOPED or only:
         line += f' (scoped: {dest})'
     print(line)
     info('blocks by state: ' + ', '.join(f'{"DIFF" if k == "fail" else k} {v}'

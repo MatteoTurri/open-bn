@@ -12,7 +12,8 @@ tools/universe.py: unnamed functions included). Output:
     expected/asm/<addr>_<name>.s     (one file per function)
     expected/functions.txt           (index: addr size name file)
 
-Runs in the container: python3 tools/split.py
+Runs in the container: python3 tools/split.py (BN_TARGET=<module> for a module of
+config/modules.txt: expected/modules/<module>/asm/, tools/target.py)
 """
 import hashlib
 import os
@@ -20,10 +21,14 @@ import re
 import subprocess
 import sys
 
-ELF = 'orig/bn-jpn.elf'
-SYMTAB = 'config/symbol_addrs.txt'
-OUTDIR = 'expected/asm'
-INDEX = 'expected/functions.txt'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import target  # noqa: E402
+
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py)
+ELF = TARGET.elf
+SYMTAB = TARGET.symtab
+OUTDIR = TARGET.asm
+INDEX = TARGET.index
 OBJDUMP = 'mipsel-linux-gnu-objdump'
 
 SYM_RE = re.compile(r'^(\S+) = (0x[0-9A-Fa-f]+); // type:func size:(0x[0-9A-Fa-f]+)')
@@ -89,7 +94,7 @@ def main():
     import normalize_asm
     import dnas_ref
     import dnas_subst
-    prot = dnas_ref.protected(allsyms)     # by name (.dynsym) and by address (statics)
+    prot = universe.protected(allsyms)     # by name (.dynsym) and by address (statics); none in a module
     pfuncs = [(a, s, n) for a, s, n in funcs if n in prot]
     if pfuncs:
         img = dnas_ref.ensure_image()

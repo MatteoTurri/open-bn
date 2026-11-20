@@ -37,11 +37,13 @@ EXTRA="$*"
 # NB: never `gsub` on $1 inside the test: changing a field rebuilds $0 with
 # OFS (a space) and the `|` separators disappear, so the cflags extraction
 # below would always be empty. Normalize into a temporary variable instead.
-UROW=$(awk -F'|' -v s="$SRC" '{t=$1; gsub(/^[ \t]+|[ \t]+$/,"",t); if (t==s) {print; exit}}' config/units.txt)
+# the target (BN_TARGET, tools/target.py): bn or a module, each with its own paths
+eval "$(python3 tools/target.py --sh)" || exit 2
+UROW=$(awk -F'|' -v s="$SRC" '{t=$1; gsub(/^[ \t]+|[ \t]+$/,"",t); if (t==s) {print; exit}}' "$T_UNITS")
 UCFLAGS=$(printf '%s' "$UROW" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}')
 UASFLAGS=$(printf '%s' "$UROW" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/,"",$3); print $3}')
 if [ -z "$UROW" ]; then
-    echo "warning: $SRC has no row in config/units.txt, compiling with -O2${EXTRA:+ $EXTRA} only"
+    echo "warning: $SRC has no row in $T_UNITS, compiling with -O2${EXTRA:+ $EXTRA} only"
 elif [ -n "$EXTRA" ]; then
     note "command-line flags $EXTRA replace the units.txt flags (${UCFLAGS:-<none>})"
 else
@@ -53,8 +55,8 @@ fi
 
 TOOL=${TOOL:-docker/toolchain/sony}
 I=docker/toolchain/include
-SYMTAB=config/symbol_addrs.txt
-ELF=orig/bn-jpn.elf
+SYMTAB=$T_SYMTAB
+ELF=$T_ELF
 
 # --- symbol lookup by exact name (grep -F alone matches substrings: 47 symbols
 # of the table are suffixes of others, e.g. Color__8gm_graphRC4vec4 would
@@ -62,7 +64,7 @@ ELF=orig/bn-jpn.elf
 # Nameless functions (static_<ADDR>, tools/statics.py) are in
 # config/static_funcs.txt, same format: their identity is the address.
 STATIC=""
-case "$SYM" in static_[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]) STATIC=1; SYMTAB=config/static_funcs.txt ;; esac
+case "$SYM" in static_[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]) STATIC=1; SYMTAB=$T_STATICS ;; esac
 LINE=$(grep -F "$SYM = 0x" "$SYMTAB" | awk -F' = 0x| = ' -v s="$SYM" '{n=$1; if(n==s) print}' | head -1) || true
 [ -n "$LINE" ] || { echo "error: symbol '$SYM' not in $SYMTAB"; exit 2; }
 ADDR=$(printf '%s' "$LINE" | sed 's/.* = \(0x[0-9A-Fa-f]*\);.*/\1/')
@@ -72,10 +74,13 @@ STOP=$(printf '0x%X' $(( ADDR + SIZE )))
 # per-symbol directory name: template symbols (e.g. _Rb_tree keyed on basic_string)
 # exceed the 255-byte file name limit -> truncate + hash of the full name
 # (collision-safe) when too long.
+# `$` (e.g. `_$_` destructors) is replaced: the output path goes through `sh -c` below
+# (tools/srcpath.py), where it would be expanded
+DIRSYM=$(printf '%s' "$SYM" | tr '$' '_')
 if [ "${#SYM}" -gt 200 ]; then
-    OUT="build/match/$(printf '%s' "$SYM" | cut -c1-160)__$(printf '%s' "$SYM" | md5sum | cut -c1-12)"
+    OUT="$T_BUILD/match/$(printf '%s' "$DIRSYM" | cut -c1-160)__$(printf '%s' "$SYM" | md5sum | cut -c1-12)"
 else
-    OUT="build/match/$SYM"
+    OUT="$T_BUILD/match/$DIRSYM"
 fi
 mkdir -p "$OUT"
 rm -f "$OUT/orig.txt" "$OUT/ours.txt"   # never leave stale listings behind if the compilation fails
@@ -132,7 +137,7 @@ docker/toolchain/sonybinutils/mipsEEel-linux-as -mips2 -m5900 ${ASEXTRA:-} -o "$
 # by tools/split.py: keep the two in sync) and the descriptor words written with the
 # text of the build's placeholder. It is the same reference as the gate's
 # (tools/check.py via tools/dnas_ref.py).
-REF="expected/asm/$(printf '%08X' "$ADDR")_$SYM.s"
+REF="$T_ASM/$(printf '%08X' "$ADDR")_$SYM.s"
 if [ -f "$REF" ] && head -2 "$REF" | grep -q 'DNAS REFERENCE'; then
     note "DNAS reference (decrypted image, scaffolding included, descriptors masked): $REF"
     python3 tools/normalize_asm.py < "$REF" > "$OUT/orig.txt"

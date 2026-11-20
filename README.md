@@ -15,8 +15,9 @@ no compiler produced are extracted from it at build time.
 ## The target
 
 - `bn` is a dynamically linked C++ executable for PS2 Linux (MIPS R5900), not a
-  native PS2 program. It loads further modules from `bn/modules/` (music,
-  movies, photos, mail, ...), which are not part of this repository.
+  native PS2 program. It loads further modules from `bn/modules/` (the Top
+  Menu, movies, photos, mail, network settings, ...); each module is a target
+  of its own, `top.so` the first one (see [`docs/modules.md`](docs/modules.md)).
 - Compiler: Sony gcc 2.95.2 (`mipsEEel-linux`, 2.95.2-3a); assembler and linker:
   Sony binutils 2.9EE. Both are rebuilt from the PS2 Linux Kit sources.
 - Linked libraries (SSLeay, SQLite, zlib, libpng, libjpeg, libtiff, libmng,
@@ -82,6 +83,7 @@ After a pull that changes `docker/patches/`, rebuild the compiler with
 | `ref/` | third-party libraries, as upstream sources plus the changes the binary requires |
 | `config/units.txt` | the list of compilation units with their compiler flags |
 | `config/` | other inputs of the build and of the checks (symbols, asset list, data regions) |
+| `config/modules.txt`, `*/modules/<name>/` | the modules `bn` loads with `dlopen` (`top.so`, ...), each a target of its own with the same layout under `modules/<name>` (see [`docs/modules.md`](docs/modules.md)) |
 | `docker/` | Dockerfiles and patches that rebuild the Sony toolchain |
 | `tools/` | the checks (`tools/check.py`, `tools/datacheck.py`), the linker pipeline (`tools/relink/`), `tools/match` and a few diagnostics |
 | `docs/` | how the gate, the link, DNAS and the compiler work, open questions, code conventions |

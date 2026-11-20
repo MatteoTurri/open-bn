@@ -1,0 +1,14 @@
+# Compilation units of the module top.so (BN_TARGET=top), same format as config/units.txt:
+#   source | cflags | asflags | skip
+# Sources shared with bn (ref/) are listed by their path; module code goes in src/modules/top/,
+# the libgcc members shared by the modules in src/modules/libgcc/.
+# Order: the order of the units in the module's .text.
+ref/gcc-2.95.2/crtstuff.c |  |  |
+src/modules/top/top.cpp | -Iref/small-fmt6 -DSN_TARGET_PS2 -fno-exceptions -DNDEBUG |  | 
+src/modules/libgcc/rt_opdel.cc | -G 0 -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED -g | -g2 | 
+src/modules/libgcc/libgcc_eh.c | -Iref/gcc-2.95.2 -g -G 0 -g1 -DHAVE_GTHR_DEFAULT -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED -fexceptions | -g -g1 | 
+ref/gcc-2.95.2/cp/exception.cc | -Iref/gcc-2.95.2 -G 0 -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED -g -fexceptions | -g2 | 
+ref/gcc-2.95.2/frame.c | -Iref/gcc-2.95.2 -g -G 0 -g1 -DHAVE_GTHR_DEFAULT -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED | -g -g1 | 
+ref/gcc-2.95.2/cp/tinfo.cc | -G 0 -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED -g | -g2 | 
+ref/gcc-2.95.2/cp/tinfo2.cc | -G 0 -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED -g | -g2 | 
+ref/gcc-2.95.2/crtstuff_end.c |  |  |

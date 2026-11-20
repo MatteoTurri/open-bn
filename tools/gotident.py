@@ -104,10 +104,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import got_callees as gc  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBT = 'config/got_debt.txt'
-LDEBT = 'config/gotlocal_debt.txt'
-TDEBT = 'config/gotlo16_debt.txt'
-COPIES = 'build/got_copies.json'
+import target  # noqa: E402
+
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py)
+DEBT = TARGET.got_debt
+LDEBT = TARGET.gotlocal_debt
+TDEBT = TARGET.gotlo16_debt
+COPIES = TARGET.got_copies
 OBJDUMP = 'mipsel-linux-gnu-objdump'
 GOT_RTYPES = ('R_MIPS_CALL16', 'R_MIPS_GOT16')
 
@@ -583,7 +586,7 @@ class Orig:
         if not hasattr(self, '_byaddr'):
             import universe
             self._byaddr = {a: s for s, (a, sz) in universe.symbols(
-                os.path.join(ROOT, 'config/symbol_addrs.txt')).items() if sz}
+                os.path.join(ROOT, TARGET.symtab)).items() if sz}
         data, a2o = self._image() if sym in self.protected else (self.data, self.a2o)
         off = a2o(addr)
         out = []
@@ -690,7 +693,7 @@ class Orig:
         if not hasattr(self, '_fidx'):
             import universe
             self._fidx = sorted((v[0], v[1], s) for s, v in universe.symbols(
-                os.path.join(ROOT, 'config/symbol_addrs.txt')).items() if v[1])
+                os.path.join(ROOT, TARGET.symtab)).items() if v[1])
             self._fstarts = [x[0] for x in self._fidx]
         i = bisect.bisect_right(self._fstarts, a) - 1
         if i >= 0 and self._fidx[i][0] <= a < self._fidx[i][0] + self._fidx[i][1]:
@@ -1116,7 +1119,7 @@ def _lo16_single(O, syms, unit, sym, lname):
         return None
     ad = {n: syms[n][0] for n in F if n in syms}
     amb_loc = set()
-    st_p = os.path.join(ROOT, 'build/check_statics.json')
+    st_p = os.path.join(ROOT, TARGET.check_statics_json)
     st_rows = json.load(open(st_p)).get(unit, []) if unit and os.path.exists(st_p) else []
     for r in st_rows:
         if r.get('state') == 'misaligned':
@@ -1130,7 +1133,7 @@ def _lo16_single(O, syms, unit, sym, lname):
     if sym in syms:
         ad[lname] = syms[sym][0]
     voters = []
-    chk_p = os.path.join(ROOT, 'build/check.json')
+    chk_p = os.path.join(ROOT, TARGET.check_json)
     if unit and os.path.exists(chk_p):
         for s, r in json.load(open(chk_p)).items():
             if r.get('unit') != unit or not r.get('ok') or s == sym or s not in syms:
@@ -1152,7 +1155,7 @@ def _lo16_single(O, syms, unit, sym, lname):
 def _env():
     import universe
     import dnas_ref
-    syms = {s: v for s, v in universe.symbols('config/symbol_addrs.txt').items() if v[1]}
+    syms = {s: v for s, v in universe.symbols(TARGET.symtab).items() if v[1]}
     return syms, dnas_ref.protected(syms) & set(syms)
 
 
@@ -1177,7 +1180,7 @@ def _copies_of(sym):
     out = {}
     full = os.path.join(ROOT, COPIES)
     t_full = os.path.getmtime(full) if os.path.exists(full) else 0
-    chk = os.path.join(ROOT, 'build/check.json')
+    chk = os.path.join(ROOT, TARGET.check_json)
     loc = {}
     if os.path.exists(chk):
         r = json.load(open(chk)).get(sym) or {}
@@ -1189,7 +1192,7 @@ def _copies_of(sym):
             s, _, u = c['key'].partition('@')
             if s == sym:
                 out[u] = loc.get(u, sym)
-    for jp in sorted(glob.glob(os.path.join(ROOT, 'build/check-*.json')),
+    for jp in sorted(glob.glob(os.path.join(ROOT, TARGET.build, 'check-*.json')),
                      key=os.path.getmtime):
         if os.path.getmtime(jp) <= t_full:
             continue
@@ -1258,8 +1261,8 @@ def main():
         p = os.path.join(ROOT, COPIES)
         if not os.path.exists(p):
             sys.exit(f'error: {COPIES} missing: run a full make check first')
-        chk = json.load(open(os.path.join(ROOT, 'build/check.json')))
-        obj = os.path.join(ROOT, 'build/check', re.sub(r'[^A-Za-z0-9_]', '_', unit), 'out.o')
+        chk = json.load(open(os.path.join(ROOT, TARGET.check_json)))
+        obj = os.path.join(ROOT, TARGET.objdir, re.sub(r'[^A-Za-z0-9_]', '_', unit), 'out.o')
         if not os.path.exists(obj):
             sys.exit(f'error: {obj} missing: run the gate on that unit')
         if subprocess.run(['which', OBJDUMP], capture_output=True).returncode != 0:
@@ -1376,7 +1379,7 @@ def main():
             continue
         for unit, lname in copies:
             print(f'== {s}  [{unit}]')
-            obj = os.path.join(ROOT, 'build/check', re.sub(r'[^A-Za-z0-9_]', '_', unit), 'out.o')
+            obj = os.path.join(ROOT, TARGET.objdir, re.sub(r'[^A-Za-z0-9_]', '_', unit), 'out.o')
             if not os.path.exists(obj):
                 print('    orig:', ' '.join(orig_names) or '(none)')
                 print(f'    ours: ({obj} missing: run the gate on that unit)')

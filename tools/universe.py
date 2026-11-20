@@ -28,9 +28,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import selfmod
 import statics
 
-SYMTAB = 'config/symbol_addrs.txt'
-UNITS = 'config/units.txt'
-CHECK = 'build/check.json'
+import target  # noqa: E402
+
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py)
+SYMTAB = TARGET.symtab
+UNITS = TARGET.units
+CHECK = TARGET.check_json
 
 SYM_RE = re.compile(
     r'^(\S+) = (0x[0-9A-Fa-f]+); // type:func size:(0x[0-9A-Fa-f]+)')
@@ -79,6 +82,8 @@ def protected(syms=None):
     gate compares them whole with the decrypted image, scaffold included
     (tools/dnas_ref.py, docs/dnas.md)."""
     syms = symbols() if syms is None else syms
+    if not TARGET.is_main:     # the DNAS tools know only bn's image (docs/modules.md)
+        return set()
     import dnas_ref
     return dnas_ref.protected(syms) & set(syms)
 

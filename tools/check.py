@@ -51,14 +51,18 @@ import gotident
 import dnas_subst
 import srcpath
 
-ELF = 'orig/bn-jpn.elf'
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import universe
 import statics
+import target
 
-SYMTAB = 'config/symbol_addrs.txt'
-UNITS = os.environ.get('UNITS', 'config/units.txt')
-YAML = 'config/bn.yaml'
+TARGET = target.get()      # BN_TARGET: bn or a module (tools/target.py, docs/modules.md)
+ELF = TARGET.elf
+SYMTAB = TARGET.symtab
+UNITS_ALL = TARGET.units   # the full unit list of the target
+UNITS = os.environ.get('UNITS', UNITS_ALL)
+YAML = 'config/bn.yaml'    # sha1 of bn; a module's is in config/modules.txt
+B = TARGET.build           # build/ for bn, build/modules/<name>/ for a module
 TOOL = os.environ.get('TOOL', 'docker/toolchain/sony')
 INCROOT = 'docker/toolchain/include'
 OBJDUMP = 'mipsel-linux-gnu-objdump'
@@ -82,7 +86,8 @@ BY_SIZE = {}             # size -> [statics of the universe]: identity by conten
 NROWS = {}               # number of normalized original rows -> [statics]: see content_hits
 # Orphan linkonce copies: on by default; CHECK_ORPHAN_LINKONCE=0 turns it off
 # (see orphan_linkonce).
-ORPHAN_LINKONCE = os.environ.get('CHECK_ORPHAN_LINKONCE', '1') != '0'
+# Modules: off, the linkonce region of a module is not modelled yet (docs/modules.md).
+ORPHAN_LINKONCE = os.environ.get('CHECK_ORPHAN_LINKONCE', '1') != '0' and TARGET.is_main
 # last function before the original's `.gnu.linkonce.t.*` region: `init_dummy` of
 # ref/gcc-2.95.2/crtstuff_end.c (the `crtend` of tools/layoutcheck.py); the region
 # starts where it ends. Checked at run time in linkonce_lo().
@@ -151,6 +156,10 @@ def run(cmd, **kw):
 
 
 def verify_sha1():
+    if not TARGET.is_main:
+        TARGET.check_original()
+        info(f'{ELF} sha1 {TARGET.sha1[:12]} ok')
+        return TARGET.sha1
     want = re.search(r'sha1: ([0-9a-f]{40})', open(YAML).read())
     if not want:
         sys.exit('functions  error: sha1 missing in config/bn.yaml')
@@ -342,7 +351,7 @@ def orig_cache(sha1, syms):
     off and a skipped static could get the measurement of another local."""
     cache = _orig_rows(sha1, syms)
     PROTECTED.clear()
-    PROTECTED.update(dnas_ref_mod().protected(syms) & set(syms))
+    PROTECTED.update(universe.protected(syms))
     BY_SIZE.clear()
     for n, (_, sz) in syms.items():
         if sz and statics.is_static(n):
@@ -508,8 +517,8 @@ def read_units():
     silently keep treating those functions as skipped). A line whose source is
     not in config/units.txt is taken as is (a new unit not yet wired)."""
     current = {}
-    if UNITS != 'config/units.txt' and os.path.exists('config/units.txt'):
-        for raw in open('config/units.txt'):
+    if UNITS != UNITS_ALL and os.path.exists(UNITS_ALL):
+        for raw in open(UNITS_ALL):
             raw = raw.strip()
             if raw and not raw.startswith('#'):
                 u = _parse_unit_line(raw)
@@ -557,6 +566,10 @@ def compile_unit(src, flags, asflags, out):
     cc = f'{TOOL}/g++' if is_cxx else f'{TOOL}/gcc'
     inc, flags = unit_includes_first(INC_CXX if is_cxx else INC_C, flags)
     os.makedirs(out, exist_ok=True)
+    # a failed compile must leave no object of an earlier run for the link to pick up
+    for f in ('out.s', 'out.o'):
+        if os.path.exists(f'{out}/{f}'):
+            os.unlink(f'{out}/{f}')
 
     # `-Wimplicit-function-declaration` only in C and only to make stderr talk:
     # gcc 2.95 does not warn by default, so without this flag the check below
@@ -599,7 +612,7 @@ def do_unit(unit, syms, cache):
     src, flags, asflags, skip = unit
     results, failed, log = {}, [], []
 
-    out = 'build/check/' + re.sub(r'[^A-Za-z0-9_]', '_', src)
+    out = f'{TARGET.objdir}/' + re.sub(r'[^A-Za-z0-9_]', '_', src)
     errs, implicit = compile_unit(src, flags, asflags, out)
     IMPLICIT.extend((src, f) for f in implicit)
     if errs:
@@ -1248,18 +1261,18 @@ def main():
             else:
                 results[s] = r
 
-    os.makedirs('build', exist_ok=True)
+    os.makedirs(B, exist_ok=True)
     # With a reduced UNITS (gate on a few units) do not write build/check.json:
     # it is the "how much is matched" state read by progress and the link, and
     # overwriting it with a subset would silently corrupt that state.
     # The scoped file name carries the basename of the units file, so that
     # concurrent scoped runs on the same checkout do not read each other's results.
-    out_json = ('build/check.json' if UNITS == 'config/units.txt'
-                else 'build/check-%s.json' % re.sub(
+    out_json = (TARGET.check_json if UNITS == UNITS_ALL
+                else f'{B}/check-%s.json' % re.sub(
                     r'[^A-Za-z0-9_.-]', '_', os.path.basename(UNITS).rsplit('.', 1)[0]))
     # GOT symbol identity: verdict on the green copies (tools/gotident.py). The
     # accepted debt is in config/got_debt.txt; only what is outside it fails.
-    full_got = (UNITS == 'config/units.txt')
+    full_got = (UNITS == UNITS_ALL)
     got = gotident.judge(got_copies, {s: v for s, v in syms.items() if v[1]}, PROTECTED,
                          gotident.load_debt(), results=results, scoped=not full_got,
                          ldebt=gotident.load_debt(gotident.LDEBT),
@@ -1281,9 +1294,9 @@ def main():
     # state (ok/fail/skip/misaligned): read by tools/match.sh
     static_json = out_json.replace('check', 'check_statics')
     json.dump(STATIC_LOG, open(static_json, 'w'), indent=1)
-    if skipres and out_json == 'build/check.json':
-        json.dump(skipres, open('build/skip_distance.json', 'w'), indent=1)
-        info(f'{len(skipres)} skipped symbols measured -> build/skip_distance.json')
+    if skipres and out_json == TARGET.check_json:
+        json.dump(skipres, open(TARGET.skip_distance, 'w'), indent=1)
+        info(f'{len(skipres)} skipped symbols measured -> {TARGET.skip_distance}')
 
     ok_n = sum(1 for r in results.values() if r['ok'])
     st = [s for s in results if statics.is_static(s)]
@@ -1297,7 +1310,7 @@ def main():
                  else f', {len(got_bad)} identity problems')
     if failed:
         head += f', {len(failed)} failed'
-    if out_json != 'build/check.json':
+    if out_json != TARGET.check_json:
         head += f' (scoped: {out_json}, build/check.json untouched)'
     print(head)
 
@@ -1374,8 +1387,8 @@ def main():
         # sees a handful of units and would overwrite the baseline with its
         # subset: the next full run would report as "new" calls that were
         # always there.
-        full_run = (UNITS == 'config/units.txt')
-        pj = 'build/implicit.json'
+        full_run = (UNITS == UNITS_ALL)
+        pj = TARGET.implicit_json
         have_baseline = full_run and os.path.exists(pj)
         if have_baseline:
             try:
@@ -1436,8 +1449,15 @@ def main():
     # that lose their C linkage still match as statics by content, while their
     # named symbols silently vanish).
     lost = []
-    if out_json == 'build/check.json':
+    if out_json == TARGET.check_json:
         lost = sorted(set(universe.achievable()) - set(results) - universe.skips())
+        if lost and not TARGET.is_main:
+            # a module being decompiled: the functions without a unit yet are the work
+            # left, not a loss (bn's universe is complete, there they fail the gate)
+            ach = universe.achievable()
+            print(f'functions  {TARGET.name}: {len(lost)} of {len(ach)} functions without a unit yet '
+                  f'({sum(ach[n][1] for n in lost)} of {sum(v[1] for v in ach.values())} B)')
+            lost = []
         if lost:
             print(f'functions  error: {len(lost)} functions of the universe have no result (not green, '
                   f'not red, not skipped): ' + ', '.join(lost[:10]) + (' ...' if len(lost) > 10 else ''))

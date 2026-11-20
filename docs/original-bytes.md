@@ -30,8 +30,8 @@ information that the strip removed.
 
 | what | where | why it is copied | when developing `bn` |
 |---|---|---|---|
-| `relvaddr` of the 6,583 `.compact_rel` entries (19 bits each) | `tools/relink/compact_rel.py`, called by `tools/relink/link.sh` | ld 2.9EE never assigns it: the file gets whatever was on the stack of Sony's linker | remove `compact_rel.py` from `link.sh`: the `.compact_rel` written by ld is valid |
-| `cpt.offset` of the `.compact_rel` header (4 B) | `tools/relink/compact_rel.py` | it is the file position of `.compact_rel` before the strip, so it depends on the size of the `.mdebug` (7,529,808 B in the original), which the strip removed and the binary does not keep | as above |
+| `relvaddr` of the 6,583 `.compact_rel` entries (19 bits each; `top.so`: 261) | `tools/relink/compact_rel.py`, called by `tools/relink/link.sh` (a module: `tools/relink/link_module.sh`) | ld 2.9EE never assigns it: the file gets whatever was on the stack of Sony's linker | remove `compact_rel.py` from `link.sh` / `link_module.sh`: the `.compact_rel` written by ld is valid |
+| `cpt.offset` of the `.compact_rel` header (4 B) | `tools/relink/compact_rel.py` | it is the file position of `.compact_rel` before the strip, so it depends on the size of the `.mdebug` (7,529,808 B in bn, 0x2cfc4 B before `.compact_rel` in `top.so`), which the strip removed and the binary does not keep | as above |
 
 ## 2. DNAS protection: data of Sony's protection tool
 

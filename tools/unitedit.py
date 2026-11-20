@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Targeted edit of one row of config/units.txt, without rewriting the file.
+"""Targeted edit of one row of config/units.txt (BN_TARGET=<module>: the module's units.txt),
+without rewriting the file.
 
 Rewriting units.txt whole risks losing other rows, and a blind append
 for a source that already has a row produces a duplicate that makes the whole
@@ -38,7 +39,10 @@ import argparse
 import os
 import sys
 
-UNITS = 'config/units.txt'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import target  # noqa: E402
+
+UNITS = target.get().units     # BN_TARGET: bn or a module (tools/target.py)
 
 
 def parse(line):
