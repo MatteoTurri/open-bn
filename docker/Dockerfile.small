@@ -1,0 +1,22 @@
+# Builds the Small 2.1.0 compiler, the compiler of the bn scripts (docker/small/README.md),
+# as a static 32-bit x86 program (the compiler assumes 32-bit cells and pointers).
+#
+#   docker build --platform linux/amd64 -f Dockerfile.small --output=toolchain/small .
+FROM --platform=linux/amd64 ubuntu:focal AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends gcc gcc-multilib libc6-dev-i386 patch
+
+WORKDIR /work
+COPY small/small-2.1.0 small-2.1.0
+COPY small/small-2.1.0-operatoradjust.patch .
+RUN cd small-2.1.0 && patch -p1 < ../small-2.1.0-operatoradjust.patch
+
+RUN mkdir /build && cd small-2.1.0 && \
+    gcc -m32 -std=gnu89 -O1 -w -fcommon -DLINUX -Dstricmp=strcasecmp -D_MAX_PATH=4096 \
+        -Icompiler -Ilinux -static -o /build/sc \
+        compiler/sc1.c compiler/sc2.c compiler/sc3.c compiler/sc4.c compiler/sc5.c compiler/sc6.c \
+        compiler/sc7.c compiler/scvars.c compiler/sclist.c compiler/scexpand.c linux/getch.c -lm
+RUN cd /tmp && printf 'main() { }\n' > t.sma && PWD=/tmp /build/sc -d0 t.sma -ot.amx && test -s t.amx
+
+FROM scratch AS export
+COPY --from=build /build/sc .

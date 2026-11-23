@@ -21,12 +21,13 @@ MODULE = $(filter-out bn,$(BN_TARGET))
 NEED_SPLIT = $(if $(and $(wildcard expected/asm/*.s),$(wildcard expected/functions.txt),$(wildcard build/dnas/bn-jpn.dec.elf)),,1)
 
 .PHONY: check check-bn check-module format link link-bn link-module link-in link-cmp \
-        env venv need-buildx sony-gcc sony-binutils kit headers bootstrap \
-        split decrypt got-debt modules symtab
+        env venv need-buildx sony-gcc sony-binutils small kit headers bootstrap \
+        split decrypt got-debt modules symtab scripts
 
 ## Build and verify
 
-# Check the formatting of src/, compile every unit and compare functions, data and exception tables with the original.
+# Check the formatting of src/, compile every unit and compare functions, data and exception tables with the original;
+# for bn also the scripts (docs/scripts.md).
 check: $(if $(MODULE),check-module,check-bn)
 
 # A module (BN_TARGET=<name>): functions, data and exception tables (docs/modules.md).
@@ -50,6 +51,11 @@ check-bn:
 	@$(DOCKER) python3 tools/check.py
 	@$(DOCKER) python3 tools/datacheck.py
 	@$(DOCKER) python3 tools/ehcheck.py
+	@$(if $(UNITS),true,$(DOCKER) python3 tools/scriptcheck.py)
+
+# The scripts alone (src/bnx/, config/scripts.txt): ARGS=<path> for some, ARGS=-v for one line each.
+scripts:
+	@$(DOCKER) python3 tools/scriptcheck.py $(ARGS)
 
 # Format src/ with the pinned clang-format (tools/format.py); check verifies it first.
 format:
@@ -92,8 +98,8 @@ link-cmp:
 
 ## Toolchain setup
 
-# Everything a new machine needs: the Docker image, Sony gcc and binutils, the PS2 Linux Kit headers.
-bootstrap: need-buildx env sony-gcc sony-binutils kit headers
+# Everything a new machine needs: the Docker image, Sony gcc and binutils, the Small compiler, the PS2 Linux Kit headers.
+bootstrap: need-buildx env sony-gcc sony-binutils small kit headers
 	@echo "bootstrap  done; test it with: tools/match adler32 ref/zlib-1.1.3/adler32.c"
 
 env:
@@ -106,7 +112,7 @@ venv:
 	@.venv/bin/pip install -q --disable-pip-version-check clang-format==$$(python3 tools/format.py --version)
 	@echo "venv       $$(.venv/bin/clang-format --version)"
 
-# docker build --output (sony-gcc, sony-binutils) needs BuildKit: the buildx plugin.
+# docker build --output (sony-gcc, sony-binutils, small) needs BuildKit: the buildx plugin.
 need-buildx:
 	@docker buildx version >/dev/null 2>&1 || { echo "error: docker buildx not found; install it (Ubuntu/Mint: sudo apt install docker-buildx)" >&2; exit 2; }
 
@@ -115,6 +121,10 @@ sony-gcc: need-buildx
 
 sony-binutils: need-buildx
 	cd docker && docker build --platform linux/amd64 -f Dockerfile.sonybinutils --output=toolchain/sonybinutils .
+
+# The Small 2.1.0 compiler of the scripts (docker/small/README.md) into docker/toolchain/small/sc.
+small: need-buildx
+	cd docker && docker build --platform linux/amd64 -f Dockerfile.small --output=toolchain/small .
 
 # glibc and kernel headers from the PS2 Linux Kit disc 2 (archive.org) into docker/kit/rootfs.
 kit:

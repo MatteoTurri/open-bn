@@ -26,6 +26,8 @@ or through the Makefile target shown.
   - `python3 tools/extract_assets.py           # extract (rewrites only the changed files)`
 - **`check_toolchain.py`**: Guard for the compiler patches: the compiler is not patched.
   - `Usage: python3 tools/check_toolchain.py`
+- **`scriptcheck.py`**: Gate of the scripts: every src/bnx/<path>.sma rebuilds its original module byte for byte.
+  - `Usage: python3 tools/scriptcheck.py [-v] [PATH ...]`
 - **`objdiff.py`**: Diff of the gate objects against a snapshot: what `make check` does not see but the link does.
   - `python3 tools/objdiff.py snapshot [UNITS_FILE]   # copy build/check/<unit>/out.o into build/objdiff/snapshot/`
 

@@ -18,6 +18,7 @@ decoding) run as worker threads built on `thread/`.
 |---|---|
 | `app/` | main loop, the `BN` and `Desktop` classes, commands, modules, system configuration, resources, database, time, downloads, mail notification |
 | `script/` | the script host: `Script`, `SceneWindow` (a page), the page loader thread, error handling |
+| `bnx/` | the scripts themselves, `bnx/<path>.sma` for `/opt0/bn/script/<path>.bnx`: Small sources that rebuild the original modules, with the include files they share in `bnx/include/` (`../docs/scripts.md`) |
 | `natives/` | the native functions the scripts call, grouped by area (files, images, models, strings, XML, ...) |
 | `xml/` | XML DOM and SAX parser |
 | `scene/` | scene graph: objects, hooks, animations, camera and lights, 3D widgets (icons, models, particles, clouds, ...) |

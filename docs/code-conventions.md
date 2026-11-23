@@ -163,3 +163,104 @@ Rules:
   `gfx/bt2ipu.cpp` (its instruction strings would be realigned), the three K&R definitions
   (`_sce_dnas_pwrap_main`, `pwrap_info_lookup`, `ssl_rcv`: clang-format misparses them).
 - Every formatting run is a source change: `make check` and `make link && make link-cmp` as always.
+
+## 8. The scripts (`src/bnx/`)
+
+The Small sources of the scripts follow the same model: code a person can read, with the names and comments a
+programmer of the time would have given it. Sections 2-4 apply (comments in English and ASCII, no process, the
+markers of section 4); this section adds what is specific to Small. `include/core.inc` and `include/float.inc` are
+the files of the Small toolkit and stay as they are.
+
+### What the module fixes
+
+- the names that are in the module: public functions and variables, `main`, the natives, the `#pragma library`
+  names, the operators of `float.inc`; and `TAG`;
+- the prototypes of the natives except the names of their parameters: tags, `&`, `[]`, `const`, default values,
+  `...`;
+- string literals, `#pragma` lines, the order of includes, of functions and of global and local declarations.
+
+The shape of the code (the `{ new ...; }` blocks, `for (; ; )`, `goto`) is the code too: it changes only with the
+module identical and the result still plausible, and never in the same commit as renames. `-d0` emits no line
+numbers: adding or removing comment lines changes nothing in a module.
+
+### Layout
+
+No formatter knows Small (clang-format splits `Float:x` and `public x;`), so the layout is kept by hand: blocks with
+the brace on its own line, 4 spaces per level, at most 120 columns. A longer statement continues on lines indented
+8 more, filled up to 120 and broken after a comma or before a binary operator (`&&`, `||`, `|`, `+`), outer brackets
+first; a string literal is never split (Small 2.1 does not join adjacent literals) and goes on a line of its own.
+
+### Identifiers
+
+Every other name is ours and is chosen for what the thing is or does, after reading the code that uses it:
+
+- functions, parameters, locals, labels: `lower_snake_case`, functions with a verb (`wait_frames`, `set_focus`,
+  `load_thumbnail`); a label names its target (`next_frame`, `done`, `retry`);
+- non-public globals: always `g_` followed by `lower_snake_case`, also where the public names have no prefix (those
+  are fixed by the pages and the other scripts); a local `static`: like a local;
+- constants: `UPPER_SNAKE_CASE`, declared with `const` or an anonymous `enum` (a named enum is a tag);
+- the scripts of the mailer (`mailer/`) are written in Hungarian notation, as their public names show (`g_iFontSize`,
+  `g_txBg`, `g_flSpeed`, and `g_manager` where the other scripts have `manager`): there our globals are `g_` + type
+  prefix + CamelCase (`i` cell, `fl` Float, `b` flag, `sz` string, `tx` texture, `obj` object; the prefix agrees with
+  the tag and the use) and our functions are CamelCase like the public ones (`CreateTerminate`); a copy of a shared
+  helper keeps the helper's name, and locals and parameters stay `lower_snake_case`. Another script whose public
+  names are Hungarian follows the same rule;
+- at most 31 characters (the significant length of a name in sc), and no name that hides another one (a local named
+  like a global, a native or a helper of `include/`): the compiler warnings of a script stay the same. The names of
+  the parameters of the natives count as global names here: sc warns when a script declares a global or a function
+  with one of them;
+- two helpers with the same code that cannot share a name (same file, or files a script includes together) take a
+  suffix that says the difference, or a number where there is none (`get_screen_size2`), with a `/* Same as ... */`
+  line. A script's own copy of a helper whose file it does not include takes the helper's name, the base name when
+  the helper exists in numbered variants with the same code (`get_screen_size`). Every copy of a helper has the
+  comment `/* Same as <helper> of <file>.inc. */` and nothing else unless it differs (`, with globals of its own`);
+  the copies of a function of the scripts share one comment.
+
+- the arguments of the messages: where a loop dispatches messages whose arguments mean different things, they are
+  `a`, `b`, `c`, `d`, as in the prototypes of `RecvMessage` and `SendMessage`, and a comment at the dispatch says
+  what they are for each message; a name that says what the argument is (`alpha`, `duration`) only where it means
+  the same for every message the loop handles.
+
+Names in `include/` are shared by all the scripts: a helper is renamed together with all its uses in the same
+commit, and so is a script function that a helper calls back. The include files of the helpers are named after what
+they contain (`wait.inc`, `dom.inc`, ...), not numbered; they keep their place and their content, since the grouping
+of the helpers into files decides what the modules count for each library (`docs/scripts.md`).
+
+### Constants
+
+A number with a meaning gets a name when the name says more than the number: the bits of `PadState` (`PAD_LEFT`,
+`PAD_CIRCLE`, ...), the indexes of `imgGetResource`, the states of a state machine. Constants shared by several
+scripts are declared in `include/`; the ones of one script at its top. Sizes of buffers used once, colors,
+coordinates and times stay as numbers. A character is written as a character literal (`';'`, `'0'`, not `59`, `48`);
+a bit mask, a packed color and any value built from bytes in hexadecimal (`0x300`, `0x5F000000`); a measure in
+1/64 pixel (the options named with 64: the 26.6 fixed point of FreeType) as pixels times 64 (`396 * 64`, folded
+by the compiler). The ids of the sound effects, the states of `ScriptState`, the columns of a database and the
+fields of an answer are constants.
+A FourCC stays a `TAG("FOCS")` call: `TAG` is a function, and a constant in
+its place changes the code. A constant never has a value or a tag other than the number it replaces.
+
+### Comments
+
+- File header: the module path and the options of sc stay, as the first line of the header; below it, 1-3 lines on
+  what the script is (the page or part it drives, who loads it):
+  ```
+  /*
+   * /opt0/bn/script/parts/button.bnx: Small 2.1.0, sc -d0 -t0 -\ -C+ -P+ -;+ -iinclude
+   * A push button: a text label on a texture, which tells its manager when it is pressed.
+   */
+  ```
+  The include files have the header of section 3.
+- The interface of a script: the messages it receives and sends (`RecvMessage`/`SendMessage` with their FourCC and
+  arguments) get a short comment at the loop that dispatches them where the arguments are not obvious; a public
+  variable that the page or another script reads or writes gets a trailing comment with its meaning.
+- A function comment where the name and the parameters are not enough, on the line above the definition.
+- Natives: the parameters in `include/*.inc` are named after bn's implementation (`src/natives/`, `src/modules/`)
+  where it is known, after the calls otherwise; a native whose behaviour is not obvious from its name gets one line.
+- A Japanese string the code depends on (compared, used as a key) may get a one-line English gloss.
+
+### Verification
+
+`make scripts` (every module identical), the same compiler warnings, and no placeholder left in what was renamed: a
+script renamed as a whole has none left (`func_<hex>`, `g_<hex>`, `static_<hex>`, `label_<hex>`, `var<n>`,
+`arg<n>`, `p<n>`, and the numbered helper names `<file>_<k>`, `<file>_g<k>`, `<file>_sub<k>`); renaming a shared
+helper changes only its name in the files that use it. Renames go in their own commits (section 5).
