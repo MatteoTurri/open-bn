@@ -33,7 +33,8 @@ original build the libstdc++ headers were under `/usr/cross/mipsEEel-linux/inclu
 
 ### The compiler patches
 
-Two patches are applied after the Sony patches, both pinned by `tools/check_toolchain.py`.
+Two patches are applied after the Sony patches, both pinned by `tools/check_toolchain.py`. The Small
+compiler of the scripts has one patch of its own, pinned there too (`docker/small/README.md`).
 
 #### `exception_receiver`
 

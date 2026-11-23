@@ -26,6 +26,9 @@ no compiler produced are extracted from it at build time.
 - Reference executable: `orig/bn-jpn.elf`, SHA1
   `0bb9908a1d423edc77d116514003866898e5cf6b`. A few fields of the linked file are
   still copied from it; see [`docs/original-bytes.md`](docs/original-bytes.md).
+- The pages of the interface run Small scripts (`/opt0/bn/script/*.bnx`): their
+  sources in `src/bnx/`, built with the Small 2.1.0 compiler, rebuild the 227
+  original modules byte for byte (see [`docs/scripts.md`](docs/scripts.md)).
 
 ## Building
 
@@ -62,8 +65,8 @@ cd ..
 Set up the toolchain and build:
 
 ```sh
-make bootstrap      # Docker image, Sony gcc and binutils, PS2 Linux Kit headers
-make check          # compile every unit and compare it with the original
+make bootstrap      # Docker image, Sony gcc and binutils, Small compiler, PS2 Linux Kit headers
+make check          # compile every unit and every script and compare them with the original
 make link           # link the executable: build/relink/bn.elf
 make link-cmp       # compare it with the original (prints the SHA1)
 ```
@@ -73,7 +76,7 @@ make link-cmp       # compare it with the original (prints the SHA1)
 archive.org. The first `make check` also writes the reference disassembly
 (`expected/asm/`); after that a full check takes under a minute on 16 cores.
 After a pull that changes `docker/patches/`, rebuild the compiler with
-`make sony-gcc`.
+`make sony-gcc` (`make small` after one that changes `docker/small/`).
 
 ## Repository layout
 
@@ -83,8 +86,9 @@ After a pull that changes `docker/patches/`, rebuild the compiler with
 | `ref/` | third-party libraries, as upstream sources plus the changes the binary requires |
 | `config/units.txt` | the list of compilation units with their compiler flags |
 | `config/` | other inputs of the build and of the checks (symbols, asset list, data regions) |
+| `src/bnx/`, `config/scripts.txt` | the Small scripts of the interface (`/opt0/bn/script/*.bnx`), as sources that rebuild the original modules (see [`docs/scripts.md`](docs/scripts.md)) |
 | `config/modules.txt`, `*/modules/<name>/` | the modules `bn` loads with `dlopen` (`top.so`, ...), each a target of its own with the same layout under `modules/<name>` (see [`docs/modules.md`](docs/modules.md)) |
-| `docker/` | Dockerfiles and patches that rebuild the Sony toolchain |
+| `docker/` | Dockerfiles and patches that rebuild the Sony toolchain and the Small compiler |
 | `tools/` | the checks (`tools/check.py`, `tools/datacheck.py`), the linker pipeline (`tools/relink/`), `tools/match` and a few diagnostics |
 | `docs/` | how the gate, the link, DNAS and the compiler work, open questions, code conventions |
 | `orig/`, `assets/`, `expected/`, `build/` | your executable, extracted data, reference disassembly, build output (all gitignored) |
@@ -110,5 +114,6 @@ How the checks, the link and the compiler work: [`docs/`](docs/).
 
 The tools, build files and documentation written for this project, and the changes and additions
 made to `src/` here, are under the MIT license ([`LICENSE`](LICENSE)). The sources in `src/` reconstruct a
-program by Sony Computer Entertainment, over which no rights are claimed or granted; the libraries in `ref/`
-and the toolchain sources in `docker/` keep their own licenses.
+program by Sony Computer Entertainment, over which no rights are claimed or granted; the libraries in `ref/`,
+the toolchain sources in `docker/` and the Small toolkit's `core.inc` and `float.inc` in `src/bnx/include/`
+(`smallkit-license.txt`) keep their own licenses.

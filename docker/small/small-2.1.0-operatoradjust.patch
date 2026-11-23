@@ -1,0 +1,22 @@
+--- a/compiler/sc1.c
++++ b/compiler/sc1.c
+@@ -1871,8 +1871,17 @@
+       error(21,errname);        /* symbol already defined */
+     } /* if */
+     sym->usage|=oldsym->usage;  /* copy flags from the previous definition */
+-    sym->numrefers=oldsym->numrefers;
+-    for (i=0; i<sym->numrefers; i++)
++    /* grow the referrer list to the size of the old one before copying it */
++    if (oldsym->numrefers>sym->numrefers) {
++      symbol **refer=(symbol**)realloc(sym->refer,oldsym->numrefers*sizeof(symbol*));
++      if (refer!=NULL) {
++        for (i=sym->numrefers; i<oldsym->numrefers; i++)
++          refer[i]=NULL;
++        sym->refer=refer;
++        sym->numrefers=oldsym->numrefers;
++      } /* if */
++    } /* if */
++    for (i=0; i<oldsym->numrefers; i++)
+       if (oldsym->refer[i]!=NULL)
+         refer_symbol(sym,oldsym->refer[i]);
+     delete_symbol(&glbtab,oldsym);

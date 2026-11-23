@@ -5,3 +5,8 @@ root = true
 indent_style = tab
 tab_width = 8
 insert_final_newline = true
+
+# the scripts (docs/scripts.md)
+[src/bnx/**.{sma,inc}]
+indent_style = space
+indent_size = 4

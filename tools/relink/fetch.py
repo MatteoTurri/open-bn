@@ -38,10 +38,13 @@ GCC_FILES = {  # files extracted from the RPM -> sha1
     'usr/lib/gcc-lib/mipsEEel-linux/2.95.2/libgcc.a': 'd39ec0cb438e5cca7244c3799afedf0ec884086d',
 }
 
-DP_URL = ('https://archive.org/download/psbbn-definitive-patch-v4.1/'
-          'psbbn-definitive-patch-v4.1.0.tar.gz')
+DP_ITEM = 'https://archive.org/download/psbbn-definitive-patch-v4.1/'
+DP_URL = DP_ITEM + 'psbbn-definitive-patch-v4.1.0.tar.gz'
 DP_TAR = f'{DL}/psbbn-definitive-patch-v4.1.0.tar.gz'
 DP_TAR_SHA1 = '21501ac7e2b77807dddfecb83dd98e3f9eceb2cb'
+DP_ARCHIVES = {  # other files of the same item -> sha1 (tools/fetch_modules.py)
+    'language-pak-jpn-v1.1.0.tar.gz': '5fa7508940ae16ad9aae27848cd95882a5a274c2',
+}
 DP_FILES = {  # tar member (the real file, not the symlink) -> sha1
     './__linux.1/lib/libc-2.2.2.so': '744284e54196c4a97948c7498689d0525ec4232b',
     './__linux.1/lib/ld-2.2.2.so': 'e2827e1661db147f3024cf80213ab17adf5fe390',
@@ -184,6 +187,23 @@ def download_dp_tar():
     os.rename(DP_TAR + '.part', DP_TAR)
     if sha1(DP_TAR) != DP_TAR_SHA1:
         sys.exit(f'error: unexpected sha1 of {DP_TAR}')
+
+
+def download_dp_archive(name):
+    """The file name of the Definitive Patch item (DP_ARCHIVES) in DL, downloaded if missing or
+    with another sha1; returns its path."""
+    path = f'{DL}/{name}'
+    if ok(path, DP_ARCHIVES[name]):
+        return path
+    os.makedirs(DL, exist_ok=True)
+    print(f'fetch: downloading {DP_ITEM}{name}')
+    with urllib.request.urlopen(DP_ITEM + name, timeout=60) as r, open(path + '.part', 'wb') as f:
+        for b in iter(lambda: r.read(1 << 20), b''):
+            f.write(b)
+    os.rename(path + '.part', path)
+    if sha1(path) != DP_ARCHIVES[name]:
+        sys.exit(f'error: unexpected sha1 of {path}')
+    return path
 
 
 def fetch_dp():

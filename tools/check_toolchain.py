@@ -17,6 +17,10 @@ the gate and the link were verified with (docker/toolchain/, gitignored, built
 by `make sony-gcc` and `make sony-binutils`): a rebuild that does not produce
 the same compiler and assembler/linker fails here instead of in the gate.
 
+The same for the Small 2.1.0 compiler of the scripts (docker/small/README.md,
+`make small`): one patch, a fix of a write past a buffer, pinned with the
+binary.
+
 Usage: python3 tools/check_toolchain.py
 """
 import hashlib
@@ -50,6 +54,12 @@ BINARIES = {
     'docker/toolchain/sonybinutils/mipsEEel-linux-ld':
         '3c0c4b2baa63bd385e25a2385752913ecc92ea003abf93a995d60203fa87df42',
 }
+# the Small compiler of the scripts: its one patch and the binary the scripts were verified with
+SMALL_PATCH = ('docker/small/small-2.1.0-operatoradjust.patch',
+               'a4c4e67eb053e9ed91e0001371e74003639515631bda573f4909164559029577')
+SMALL_DOCKERFILE = 'docker/Dockerfile.small'
+BINARIES['docker/toolchain/small/sc'] = \
+    '2f1a4b0d47b905c6590f8b84b2f90deca1076dd9077145502ca0d4b6c686e7a4'
 # compatibility patches for modern hosts; they do not touch codegen
 NEUTRAL = {'obstack-2.95.2.h.patch'}
 
@@ -101,12 +111,29 @@ def main():
                 bad = 1
                 print(f'toolchain  error: {dockerfile} builds without'
                       f' -msse2 -mfpmath=sse: {line.strip()}')
+    # the Small compiler: no patch other than the pinned one, and its Dockerfile applies it
+    small = sorted(f for f in os.listdir(os.path.join(ROOT, 'docker/small'))
+                   if f.endswith('.patch'))
+    rel, want = SMALL_PATCH
+    if small != [os.path.basename(rel)]:
+        bad = 1
+        print(f'toolchain  error: docker/small has patches {small},'
+              f' expected only {os.path.basename(rel)}')
+    if os.path.exists(os.path.join(ROOT, rel)):
+        got = hashlib.sha256(open(os.path.join(ROOT, rel), 'rb').read()).hexdigest()
+        if got != want:
+            bad = 1
+            print(f'toolchain  error: {rel} modified: sha256 {got}, expected {want}')
+    if os.path.basename(rel) not in open(os.path.join(ROOT, SMALL_DOCKERFILE)).read():
+        bad = 1
+        print(f'toolchain  error: {os.path.basename(rel)} is not applied by {SMALL_DOCKERFILE}')
     # the built binaries: the ones the gate and the link were verified with
     for rel, want in BINARIES.items():
         p = os.path.join(ROOT, rel)
         if not os.path.exists(p):
             bad = 1
-            print(f'toolchain  error: {rel} missing (make sony-gcc / make sony-binutils)')
+            print(f'toolchain  error: {rel} missing'
+                  ' (make sony-gcc / make sony-binutils / make small)')
             continue
         got = hashlib.sha256(open(p, 'rb').read()).hexdigest()
         if got != want:
@@ -116,7 +143,8 @@ def main():
     if bad:
         return 1
     print(f'toolchain  ok ({len(ALLOWED)} allowed compiler patches:'
-          f' exception_receiver, rtti nonnull; {len(BINARIES)} binaries pinned)')
+          f' exception_receiver, rtti nonnull; the Small operatoradjust fix;'
+          f' {len(BINARIES)} binaries pinned)')
     return 0
 
 
