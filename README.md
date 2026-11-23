@@ -76,7 +76,7 @@ make link-cmp       # compare it with the original (prints the SHA1)
 archive.org. The first `make check` also writes the reference disassembly
 (`expected/asm/`); after that a full check takes under a minute on 16 cores.
 After a pull that changes `docker/patches/`, rebuild the compiler with
-`make sony-gcc`.
+`make sony-gcc` (`make small` after one that changes `docker/small/`).
 
 ## Repository layout
 

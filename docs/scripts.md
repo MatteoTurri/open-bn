@@ -40,12 +40,12 @@ runs it alone (`ARGS=game/game` for one script, `ARGS=-v` for one line each).
 
 ## The sources
 
-They were recovered from the modules (`tools/amxcorpus.py` of the bnx-decrypt tools), so only
-what a module keeps has its original name: the public functions and variables, the natives and
-the operators of `float.inc`. Every other name (functions, globals, parameters, locals, labels,
-constants, the parameters of the natives and the include files of the helpers) was chosen
-after reading the code, following section 8 of `docs/code-conventions.md`; renaming one leaves
-the module unchanged, since `-d0` keeps no symbol that is not public.
+They were recovered from the modules, so only what a module keeps has its original name: the
+public functions and variables, the natives and the operators of `float.inc`. Every other name
+(functions, globals, parameters, locals, labels, constants, the parameters of the natives and
+the include files of the helpers) was chosen after reading the code, following section 8 of
+`docs/code-conventions.md`; renaming one leaves the module unchanged, since `-d0` keeps no
+symbol that is not public.
 
 `TAG` keeps the name the scripts of a Hudson channel give to the same function.
 
@@ -69,14 +69,15 @@ relative to `src/bnx/` (the gate passes the full path). The scripts share includ
   `docs/modules.md`). The mailer's natives are all variadic; `mailer.inc` also has the
   constants its scripts share (folders, message states, the screens and modes the pages pass to
   each other), `player.inc` the numbers of the player commands.
-- `stdmenu.inc`, `infomenu.inc`, `scroll.inc`, `devimage.inc`, `moviedb.inc`, `musicdb.inc`,
-  `gamedb.inc`, `photodb.inc`, `topmenu.inc`, `edpage.inc`, `browser.inc`: only constants, the
-  interface between the scripts that include them (the results of the option and information
-  menus, the scroll modes of the items on a curve and the messages they follow, the images of
-  `device_image`, the movie database, the albums of the music pages, the game database, the
-  album modes and the photo database, the scripts of the top menu, the pages of the edclient
-  and the fields and requests they send to its server, the file browser). A declaration
-  compiles to no code, so these files can go anywhere before the first use.
+- `stdmenu.inc`, `infomenu.inc`, `genmenu.inc`, `scroll.inc`, `devimage.inc`, `moviedb.inc`,
+  `musicdb.inc`, `gamedb.inc`, `photodb.inc`, `topmenu.inc`, `edpage.inc`, `browser.inc`: only
+  constants, the interface between the scripts that include them (the results of the option and
+  information menus, the modes of `parts/general_menu`, the scroll modes of the items on a curve
+  and the messages they follow, the images of `device_image`, the movie database, the albums of
+  the music pages, the game database, the album modes and the photo database, the scripts of the
+  top menu, the pages of the edclient and the fields and requests they send to its server, the
+  file browser). A declaration compiles to no code, so these files can go anywhere before the
+  first use.
 - `wait.inc`, `tag.inc`, `imgsync.inc`, `button.inc`, `text.inc`, `wndvar.inc`, `sound.inc`,
   `dialog.inc`, `xmlsync.inc`, `imgdec.inc`, `sysconf.inc`, `misc.inc`, `dom.inc`,
   `string.inc`, `disc.inc`, `focus.inc`, `pfs.inc`, `layout.inc`, `background.inc`,
@@ -89,26 +90,27 @@ relative to `src/bnx/` (the gate passes the full path). The scripts share includ
   `edsid2.inc`, `photodate.inc`, `photousb.inc`: helpers that call the natives of a library.
 
 A global that two include files use, or that a script uses before the file that has it, is
-declared under `#if !defined` wherever it is needed first. The scripts include `<core>`, `<bn>` and `<float>` in the same order,
-and the files whose functions they only need declared (not compiled) at their end.
+declared under `#if !defined` wherever it is needed first. The scripts include `<core>`, `<bn>`
+and `<float>` in the same order, and the files whose functions they only need declared (not
+compiled) at their end.
 
-The library files are what the tables of the modules ask for. A module keeps, for each
-library, how many calls the compiler read to its natives, also in the functions it then leaves
-out: the helpers of a library file a script includes and does not use. Every script that loads
-the mailer library, for instance, includes `mailsync.inc` (six helpers that wait for the
-mailer, twelve calls) and misses exactly the calls of the helpers it does not compile. A script
-whose last `#pragma library` stays open (`utility/dbconvert`, `system/download`,
-`photo/photo_grid` and three of `movie/`) declares that library itself (`download`,
-`moviedata` and `dbconvert` have no file of their own in `include/` for this reason) and counts under it
-every native call of its source, read again in the second pass: these include whole helper
-files they do not use (at their end) until the count is reached. That grouping of the helpers
-into files is the one reconstruction the bytes do not settle alone.
+The library files are what the tables of the modules ask for. A module keeps, for each library,
+how many calls the compiler read to its natives, also in the functions it then leaves out: the
+helpers of a library file a script includes and does not use. Every script that loads the mailer
+library, for instance, includes `mailsync.inc` (six helpers that wait for the mailer, twelve
+calls) and misses exactly the calls of the helpers it does not compile. A script whose last
+`#pragma library` stays open (`utility/dbconvert`, `system/download`, `photo/photo_grid` and
+three of `movie/`) declares that library itself (`download`, `moviedata` and `dbconvert` have no
+file of their own in `include/` for this reason) and counts under it every native call of its
+source, read again in the second pass: these include whole helper files they do not use (at
+their end) until the count is reached. That grouping of the helpers into files is the one
+reconstruction the bytes do not settle alone.
 
 Eight scripts (the focus and browser parts, `utility/menu/clock`) declare their natives
-themselves and include nothing: with the shared prototypes their calls would not compile to
-the same code. Three more (`edclient/agreement`, `photo/photo`, `photo/usb_process`) include
-the natives but keep their own copies of the helpers, which the shared files give with other
-code.
+themselves and include none of the shared files but the constants of `browser.inc`: with the
+shared prototypes their calls would not compile to the same code. Three more
+(`edclient/agreement`, `photo/photo`, `photo/usb_process`) include the natives but keep their
+own copies of the helpers, which the shared files give with other code.
 
 The strings keep the bytes of the original; the Japanese text is UTF-8. The floats are written
 as decimals that the compiler turns back into the same bits.
