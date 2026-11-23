@@ -2,19 +2,21 @@
 
 `bn` loads part of its features at run time from shared objects in `/opt0/bn/modules/`:
 it `dlopen`s `<name>.so`, calls its `Init` and registers its `FuncTable`, a table of
-Small (Pawn) natives that the XML pages of the interface call. Each module is a
+Small (Pawn) natives that the XML pages of the interface call. Its input method also
+`dlopen`s the two libraries of the ATOK engine (`src/ime/atok.c`). Each module is a
 decompilation target of its own, built with the same toolchain as `bn` (g++ 2.95.2 Sony,
 MIPS r5900, `-mabicalls`: the ELF flags are `0x20920003` for `bn` and for every module).
 
 ## Where the originals come from
 
-The modules are not in the language pack that `orig/bn-jpn.elf` comes from. They are in
-the full archive of the PSBBN Definitive Patch v4.1.0 (archive.org, item
+The modules are in the full archive of the PSBBN Definitive Patch v4.1.0 (archive.org, item
 `psbbn-definitive-patch-v4.1`), the same archive `make link` downloads for the shared
-libraries. `make modules` (`tools/fetch_modules.py`) extracts them into
-`orig/modules/<name>.so` and checks each sha1 against `config/modules.txt`, the registry
-of the modules. No language pack of that archive (v1 or v2, any language) carries a
-module: they are the same for every language. They are Sony's files, as shipped.
+libraries, except `player.so`: the language packs of the same item carry it, each translated
+(the English one differs in 85 bytes of text), and the Japanese one, the same in every version
+of the Japanese pack, is the original; it comes from the pack `orig/bn-jpn.elf` comes from.
+`make modules` (`tools/fetch_modules.py`) extracts them into `orig/modules/<name>.so` and
+checks each sha1 against `config/modules.txt`, the registry of the modules. They are the
+files as shipped: Sony's, and JustSystems' for the ATOK engine.
 
 | module | size | notes |
 |---|---:|---|
@@ -23,11 +25,14 @@ module: they are the same for every language. They are Sony's files, as shipped.
 | `moviedata` | 58,736 | |
 | `netconf` | 83,396 | |
 | `download` | 150,696 | |
-| `ispconf` | 153,884 | mentions DNAS: check for encrypted code before starting |
-| `edclient` | 160,408 | mentions DNAS (36 strings): same |
+| `ispconf` | 153,884 | no encrypted code; `.data` holds about 64 KB of encrypted DNAS authentication data |
+| `edclient` | 160,408 | encrypted DNAS2 regions (`__sce_dnas2_symbol7*`, `sceDNAS2KakinEncrypt`/`Decrypt`), used to encrypt the saved ID |
 | `movie` | 246,712 | |
 | `dbconvert` | 550,024 | |
 | `mailer` | 771,440 | |
+| `player` | 2,423,304 | the music player: one variadic native, `playerExecCommand` |
+| `atokcodeconv` | 216,744 | ATOK engine (JustSystems): code conversion; no `FuncTable` |
+| `atok12engine` | 2,514,788 | ATOK engine (JustSystems): the conversion engine; no `FuncTable` |
 
 ## Layout: one `modules/<name>` folder per root
 
@@ -98,6 +103,11 @@ fields and the `cpt.offset` of `.compact_rel` are copied from the original with
 `tools/relink/compact_rel.py`, for the same reason as for bn (`docs/original-bytes.md`).
 
 ## State
+
+Only `top` is decompiled. The other twelve modules are still to be decompiled: `photo`,
+`moviedata`, `netconf`, `download`, `ispconf`, `edclient`, `movie`, `dbconvert`, `mailer`,
+`player` and the ATOK engine (`atokcodeconv`, `atok12engine`). The scripts already name the
+natives of each library after its module (`src/bnx/include/<library>.inc`, `docs/scripts.md`).
 
 | module | named | unnamed | universe | matched | skipped | anomalies |
 |---|---:|---:|---:|---:|---:|---|
